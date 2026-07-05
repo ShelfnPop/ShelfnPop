@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Funko Collection</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="Collection overview">
+        <div>
+          <p class="eyebrow">Funko vault</p>
+          <h1>Collection tracker</h1>
+        </div>
+        <div class="summary" id="summary"></div>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel controls" aria-label="Collection controls">
+          <label>Search<input id="searchInput" type="search" placeholder="Name, series, number" /></label>
+          <label>Status<select id="statusFilter"><option value="all">All</option><option value="owned">Owned</option><option value="wishlist">Wishlist</option><option value="preorder">Preorder</option></select></label>
+          <label>Sort<select id="sortSelect"><option value="name">Name</option><option value="series">Series</option><option value="value">Estimated value</option></select></label>
+
+          <form id="addForm" class="add-form">
+            <h2>Add Pop</h2>
+            <label>Name<input name="name" required placeholder="Spider-Man" /></label>
+            <label>Series<input name="series" required placeholder="Marvel" /></label>
+            <label>Number<input name="number" placeholder="923" /></label>
+            <label>Estimated value<input name="value" type="number" min="0" step="1" placeholder="24" /></label>
+            <label>Status<select name="status"><option value="owned">Owned</option><option value="wishlist">Wishlist</option><option value="preorder">Preorder</option></select></label>
+            <button type="submit">Add to collection</button>
+          </form>
+        </aside>
+
+        <section class="collection-area" aria-label="Collection results">
+          <div class="section-head">
+            <h2>Collection</h2>
+            <button id="resetButton" type="button">Reset sample data</button>
+          </div>
+          <div class="grid" id="collectionGrid"></div>
+          <p class="empty" id="emptyState">No figures match the current filters.</p>
+        </section>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

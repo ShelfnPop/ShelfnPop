@@ -1,0 +1,13 @@
+schemaname,tablename,policyname,permissive,roles,cmd,qual,with_check
+public,dashboard_snapshots,Users can delete their own dashboard snapshots,PERMISSIVE,{public},DELETE,(auth.uid() = user_id),null
+public,dashboard_snapshots,Users can insert their own dashboard snapshots,PERMISSIVE,{public},INSERT,null,(auth.uid() = user_id)
+public,dashboard_snapshots,Users can update their own dashboard snapshots,PERMISSIVE,{public},UPDATE,(auth.uid() = user_id),(auth.uid() = user_id)
+public,dashboard_snapshots,Users can view their own dashboard snapshots,PERMISSIVE,{public},SELECT,(auth.uid() = user_id),null
+public,pop_catalog,Authenticated users can read pop catalog,PERMISSIVE,{authenticated},SELECT,true,null
+public,profiles,Users can insert their own profile,PERMISSIVE,{public},INSERT,null,(auth.uid() = id)
+public,profiles,Users can update their own profile,PERMISSIVE,{public},UPDATE,(auth.uid() = id),(auth.uid() = id)
+public,profiles,Users can view their own profile,PERMISSIVE,{public},SELECT,(auth.uid() = id),null
+public,user_collection_items,Users can delete their own collection items,PERMISSIVE,{authenticated},DELETE,(auth.uid() = user_id),null
+public,user_collection_items,Users can insert their own collection items,PERMISSIVE,{authenticated},INSERT,null,(auth.uid() = user_id)
+public,user_collection_items,Users can update their own collection items,PERMISSIVE,{authenticated},UPDATE,(auth.uid() = user_id),(auth.uid() = user_id)
+public,user_collection_items,Users can view their own collection items,PERMISSIVE,{authenticated},SELECT,(auth.uid() = user_id),null

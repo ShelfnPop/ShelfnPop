@@ -1,0 +1,28 @@
+schema_name,function_name,arguments,result_type,function_definition
+public,handle_new_user,,trigger,"CREATE OR REPLACE FUNCTION public.handle_new_user()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+begin
+  insert into public.profiles (
+    id,
+    username,
+    display_name,
+    is_public,
+    created_at
+  )
+  values (
+    new.id,
+    new.email,
+    new.email,
+    true,
+    now()
+  )
+  on conflict (id) do nothing;
+
+  return new;
+end;
+$function$
+"

@@ -1,0 +1,5 @@
+table_name,column_name,foreign_table_name,foreign_column_name,constraint_name
+user_collection_items,pop_catalog_id,pop_catalog,id,user_collection_items_pop_catalog_id_fkey
+user_collection_items,user_id,profiles,id,user_collection_items_user_id_fkey
+wishlist_items,pop_catalog_id,pop_catalog,id,wishlist_items_pop_catalog_id_fkey
+wishlist_items,user_id,profiles,id,wishlist_items_user_id_fkey

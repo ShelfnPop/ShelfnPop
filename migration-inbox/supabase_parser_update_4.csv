@@ -1,0 +1,7 @@
+upc,pop_name,character,franchise,number,variant,pop_style,estimated_value,api_source,raw_title,clean_title,needs_review
+889698529631,6,6,The Simpsons,6,null,Standard,14.99,barcodelookup,Pop 6,6,false
+849803053086,Bobblehead,Bobblehead,null,null,Chase,Jumbo,8.95,barcodelookup,Funko Pop! Bobblehead,Bobblehead,true
+889698888165,Figurine Heroes Superman,Figurine Heroes Superman,DC,10,null,Standard,39.99,go-upc+barcodelookup_value,Funko Figurine Pop Heroes Superman,Figurine Heroes Superman,false
+889698807623,Figurine Superman The 1978,Figurine Superman The 1978,DC,1978,null,Deluxe,28.79,go-upc+barcodelookup_value,Funko Figurine Pop Deluxe Superman The Movie 1978,Figurine Deluxe Superman The Movie 1978,false
+889698785396,Figurine Wolverine,Figurine Wolverine,Marvel,1376,null,Standard,20.46,go-upc+barcodelookup_value,Funko Figurine Pop Marvel Comics #1376 Wolverine,Figurine Marvel Comics #1376 Wolverine,false
+889698901673,Franny SE,Franny SE,null,null,null,Standard,20.19,go-upc+barcodelookup_value,Funko Pop Franny SE Vinyl Figure,Franny SE,true

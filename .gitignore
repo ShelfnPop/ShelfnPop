@@ -1,0 +1,9 @@
+﻿node_modules/
+.pnpm-store/
+.expo/
+.next/
+dist/
+build/
+*.log
+.env
+.env.*
