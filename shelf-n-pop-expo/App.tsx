@@ -32,6 +32,9 @@ import type {
   SharedShelfCollectionItem,
   SharedShelfGroupedItem,
 } from "./src/types";
+import { AdminCatalogFixScreen, AdminScreen } from "./src/ui/AdminScreens";
+import { ShelfBreakdownScreenImpl } from "./src/ui/ShelfBreakdownScreen";
+import { ShelfStatsScreen } from "./src/ui/ShelfStatsScreen";
 import { compactName, integer, money } from "./src/utils/format";
 
 type Screen =
@@ -45,7 +48,9 @@ type Screen =
   | "sharedShelf"
   | "sharedShelfDetail"
   | "shelfStats"
-  | "shelfBreakdown";
+  | "shelfBreakdown"
+  | "admin"
+  | "adminCatalogFix";
 
 const SORTS = ["Newest first", "Value high-low", "Gain/Loss high-low", "Name A-Z"] as const;
 type SortMode = (typeof SORTS)[number];
@@ -477,16 +482,20 @@ function groupSharedShelfItems(items: SharedShelfCollectionItem[]): SharedShelfG
       number: item.number,
       variant: item.variant,
       exclusivity: item.exclusivity,
+      pop_type: item.pop_type,
       pop_style: item.pop_style,
       set_name: item.set_name,
       image_url: item.image_url,
       vault_status: item.vault_status,
+      release_date: item.release_date,
       estimated_value: item.estimated_value,
       value_each: item.value_each,
       display_description: item.display_description,
       limited_edition: item.limited_edition,
       limited_count: item.limited_count,
       edition_notes: item.edition_notes,
+      signed_count: item.signed_count ?? null,
+      signature_authentication: item.signature_authentication ?? null,
       total_quantity: quantityNumber(item.quantity),
       owner_count: 1,
       owner_names: ownerName,
@@ -651,13 +660,32 @@ function SignedInApp({ session }: { session: Session }) {
   const [selectedItem, setSelectedItem] = useState<CollectionItem | null>(null);
   const [selectedShelf, setSelectedShelf] = useState<SharedShelf | null>(null);
   const [selectedPublicProfileId, setSelectedPublicProfileId] = useState<string | null>(null);
+  const [selectedAdminFix, setSelectedAdminFix] = useState<{ catalogId: string; reportId?: string } | null>(null);
   const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>(NO_COLLECTION_FILTER);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", session.user.id)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (!cancelled) setIsAdmin(Boolean(data && !error));
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.user.id]);
 
   const goHome = () => {
     setSelectedItem(null);
     setSelectedShelf(null);
     setSelectedPublicProfileId(null);
+    setSelectedAdminFix(null);
     setScreen("dashboard");
     setRefreshKey((value) => value + 1);
   };
@@ -680,6 +708,7 @@ function SignedInApp({ session }: { session: Session }) {
           }}
           onSharedShelf={() => setScreen("sharedShelf")}
           onProfile={() => setScreen("profile")}
+          onAdmin={isAdmin ? () => setScreen("admin") : undefined}
         />
       )}
       {screen === "scan" && (
@@ -719,6 +748,7 @@ function SignedInApp({ session }: { session: Session }) {
           session={session}
           onBack={goHome}
           onOpenBreakdown={() => setScreen("shelfBreakdown")}
+          styles={styles}
           onOpenFilter={(filter) => {
             setCollectionFilter(filter);
             setScreen("collection");
@@ -730,13 +760,15 @@ function SignedInApp({ session }: { session: Session }) {
         />
       )}
       {screen === "shelfBreakdown" && (
-        <ShelfBreakdownScreen
+        <ShelfBreakdownScreenImpl
           session={session}
           onBack={() => setScreen("shelfStats")}
           onOpenFilter={(filter) => {
             setCollectionFilter(filter);
             setScreen("collection");
           }}
+          styles={styles}
+          appVersion={APP_VERSION}
         />
       )}
       {screen === "detail" && selectedItem && (
@@ -771,6 +803,32 @@ function SignedInApp({ session }: { session: Session }) {
         />
       )}
       {screen === "profile" && <ProfileScreen session={session} onBack={goHome} />}
+      {screen === "admin" && isAdmin && (
+        <AdminScreen
+          appVersion={APP_VERSION}
+          session={session}
+          onBack={goHome}
+          onFixCatalog={(catalogId, reportId) => {
+            setSelectedAdminFix({ catalogId, reportId });
+            setScreen("adminCatalogFix");
+          }}
+          styles={styles}
+        />
+      )}
+      {screen === "adminCatalogFix" && isAdmin && selectedAdminFix && (
+        <AdminCatalogFixScreen
+          appVersion={APP_VERSION}
+          session={session}
+          catalogId={selectedAdminFix.catalogId}
+          reportId={selectedAdminFix.reportId}
+          onBack={() => setScreen("admin")}
+          onSaved={() => {
+            setSelectedAdminFix(null);
+            setScreen("admin");
+          }}
+          styles={styles}
+        />
+      )}
       {screen === "publicProfile" && selectedPublicProfileId && (
         <PublicProfileScreen
           userId={selectedPublicProfileId}
@@ -899,6 +957,7 @@ function DashboardScreen({
   onOpenItem,
   onSharedShelf,
   onProfile,
+  onAdmin,
 }: {
   session: Session;
   refreshKey: number;
@@ -908,6 +967,7 @@ function DashboardScreen({
   onOpenItem: (item: CollectionItem) => void;
   onSharedShelf: () => void;
   onProfile: () => void;
+  onAdmin?: () => void;
 }) {
   const [dashboard, setDashboard] = useState<DashboardHome | null>(null);
   const [highestValuePop, setHighestValuePop] = useState<CollectionItem | null>(null);
@@ -1022,494 +1082,12 @@ function DashboardScreen({
             <Pressable onPress={onProfile} style={styles.dashboardProfileLink}>
               <Text style={styles.dashboardProfileText}>Profile & settings</Text>
             </Pressable>
-            <VersionFooter />
-          </View>
-        </>
-      )}
-    </ScreenFrame>
-  );
-}
-
-function ShelfStatsScreen({
-  session,
-  onBack,
-  onOpenBreakdown,
-  onOpenFilter,
-  onOpenItem,
-}: {
-  session: Session;
-  onBack: () => void;
-  onOpenBreakdown: () => void;
-  onOpenFilter: (filter: CollectionFilter) => void;
-  onOpenItem: (item: CollectionItem) => void;
-}) {
-  const [items, setItems] = useState<CollectionItem[]>([]);
-  const [busy, setBusy] = useState(true);
-  const [groupMode, setGroupMode] = useState<StatsGroupMode>("franchise");
-  const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    setBusy(true);
-    try {
-      const rows = await fetchUserCollectionItems(session.user.id);
-      setItems(rows);
-    } catch (error) {
-      Alert.alert("Shelf Stats error", error instanceof Error ? error.message : "Unable to load your shelf stats.");
-    } finally {
-      setBusy(false);
-    }
-  }, [session.user.id]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const stats = useMemo(() => {
-    const rowTotalPops = items.reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
-    const rowTotalValue = items.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
-    const rowTotalPaid = items.reduce((sum, item) => sum + Number(item.total_cost ?? 0), 0);
-    const totalPops = rowTotalPops;
-    const totalValue = rowTotalValue;
-    const totalPaid = rowTotalPaid;
-    const gainLoss = totalValue - totalPaid;
-    const gainLossPercent = totalPaid > 0 ? (gainLoss / totalPaid) * 100 : null;
-    const rowUniqueShelfItems = new Set(items.map(duplicateShelfKey)).size;
-    const uniqueShelfItems = rowUniqueShelfItems;
-    const duplicateShelfKeys = buildDuplicateShelfKeys(items);
-    const duplicateRows = items.filter((item) => duplicateShelfKeys.has(duplicateShelfKey(item)));
-    const duplicateCopies = duplicateRows.reduce((sum, item) => sum + quantityNumber(item.quantity), 0) - duplicateShelfKeys.size;
-    const vaultedCount = items.reduce((sum, item) => {
-      const status = String(item.vault_status ?? "").toLowerCase();
-      return sum + (status.includes("vault") ? quantityNumber(item.quantity) : 0);
-    }, 0);
-    const limitedCount = items.reduce(
-      (sum, item) => sum + (item.limited_edition || item.limited_count || item.edition_notes ? quantityNumber(item.quantity) : 0),
-      0,
-    );
-    const missingImage = items.filter((item) => !item.image_url).length;
-    const missingValue = items.filter((item) => Number(perPopValue(item) ?? 0) <= 0).length;
-    const unknownCondition = items.filter((item) => !item.condition || item.condition === "Unknown").length;
-    const rowRecentAdds = items.reduce((sum, item) => sum + (isRecentCollectionItem(item) ? quantityNumber(item.quantity) : 0), 0);
-    const recentAdds = rowRecentAdds;
-
-    const topValue = [...items].sort((a, b) => Number(perPopValue(b) ?? 0) - Number(perPopValue(a) ?? 0))[0] ?? null;
-    const biggestGain = [...items].sort((a, b) => Number(b.gain_loss ?? 0) - Number(a.gain_loss ?? 0))[0] ?? null;
-    const lowestValue = [...items]
-      .filter((item) => Number(perPopValue(item) ?? 0) > 0)
-      .sort((a, b) => Number(perPopValue(a) ?? 0) - Number(perPopValue(b) ?? 0))[0] ?? null;
-
-    const franchiseGroups = buildStatsGroups(items, "franchise");
-    const setGroups = buildStatsGroups(items, "set");
-
-    return {
-      totalPops,
-      uniqueItems: uniqueShelfItems,
-      shelfEntries: items.length,
-      totalValue,
-      totalPaid,
-      gainLoss,
-      gainLossPercent,
-      averageValue: totalPops > 0 ? totalValue / totalPops : 0,
-      averagePaid: totalPops > 0 ? totalPaid / totalPops : 0,
-      duplicateRows: duplicateRows.length,
-      duplicateCopies,
-      vaultedCount,
-      limitedCount,
-      missingImage,
-      missingValue,
-      unknownCondition,
-      recentAdds,
-      topValue,
-      biggestGain,
-      lowestValue,
-      franchiseGroups,
-      setGroups,
-    };
-  }, [items]);
-
-  const visibleGroups = groupMode === "franchise" ? stats.franchiseGroups : stats.setGroups;
-  const groupTitle = groupMode === "franchise" ? "Franchise Totals" : "Set Totals";
-
-  return (
-    <ScreenFrame title="Shelf Stats" onBack={onBack}>
-      {busy ? (
-        <ActivityIndicator color="#7e67f4" />
-      ) : (
-        <>
-          <View style={styles.statsHero}>
-            <Text style={styles.dashboardEyebrow}>Personal shelf recap</Text>
-            <Text style={styles.statsHeroValue}>{money(stats.totalValue)}</Text>
-            <Text style={styles.dashboardSubtext}>
-              {integer(stats.totalPops)} Pops, {integer(stats.uniqueItems)} unique Pops, {money(stats.gainLoss)} gain/loss.
-            </Text>
-          </View>
-
-          <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Avg Value" value={money(stats.averageValue)} />
-            <MetricCard label="Avg Paid" value={money(stats.averagePaid)} />
-            <MetricCard label="Return" value={stats.gainLossPercent == null ? "--" : percent(stats.gainLossPercent)} />
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Shelf Mix</Text>
-            <View style={styles.statsTwoColumn}>
-              <StatPill label="Vaulted" value={integer(stats.vaultedCount)} onPress={() => onOpenFilter({ kind: "vaulted", label: "Vaulted" })} />
-              <StatPill label="Limited" value={integer(stats.limitedCount)} onPress={() => onOpenFilter({ kind: "limited", label: "Limited" })} />
-              <StatPill label="Duplicate Pops" value={integer(stats.duplicateCopies)} onPress={() => onOpenFilter({ kind: "duplicates", label: "Duplicate Pops" })} />
-              <StatPill label="Added 30 days" value={integer(stats.recentAdds)} onPress={() => onOpenFilter({ kind: "recent", label: "Added 30 days" })} />
-            </View>
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Standout Pops</Text>
-            <TopStatRow label="Highest Value" item={stats.topValue} value={money(stats.topValue ? perPopValue(stats.topValue) : null)} onPress={stats.topValue ? () => onOpenItem(stats.topValue as CollectionItem) : undefined} />
-            <TopStatRow
-              label="Biggest Gain"
-              item={stats.biggestGain}
-              value={money(stats.biggestGain?.gain_loss)}
-              valueStyle={gainLossColorStyle(stats.biggestGain?.gain_loss)}
-              onPress={stats.biggestGain ? () => onOpenItem(stats.biggestGain as CollectionItem) : undefined}
-            />
-            <TopStatRow
-              label="Lowest Value"
-              item={stats.lowestValue}
-              value={money(stats.lowestValue ? perPopValue(stats.lowestValue) : null)}
-              onPress={stats.lowestValue ? () => onOpenItem(stats.lowestValue as CollectionItem) : undefined}
-            />
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Shelf Health</Text>
-            <View style={styles.statsTwoColumn}>
-              <StatPill label="Missing images" value={integer(stats.missingImage)} onPress={() => onOpenFilter({ kind: "missingImages", label: "Missing images" })} />
-              <StatPill label="Missing values" value={integer(stats.missingValue)} onPress={() => onOpenFilter({ kind: "missingValues", label: "Missing values" })} />
-              <StatPill label="Unknown condition" value={integer(stats.unknownCondition)} onPress={() => onOpenFilter({ kind: "unknownCondition", label: "Unknown condition" })} />
-              <StatPill label="Shelf entries" value={integer(stats.shelfEntries)} />
-            </View>
-          </View>
-
-          <Pressable onPress={onOpenBreakdown} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
-            <Text style={styles.statsBreakdownButtonText}>Set & Franchise Breakdown</Text>
-          </Pressable>
-
-          <View style={styles.dashboardInsightPanel}>
-            <View style={styles.statsPanelHeader}>
-              <View style={styles.flex}>
-                <Text style={styles.dashboardSectionTitle}>{groupTitle}</Text>
-                <Text style={styles.mutedSmall}>Tap a row to see the Pops inside it.</Text>
-              </View>
-              <View style={styles.segmentedControl}>
-                {(["franchise", "set"] as const).map((mode) => (
-                  <Pressable
-                    key={mode}
-                    onPress={() => {
-                      setGroupMode(mode);
-                      setExpandedGroupKey(null);
-                    }}
-                    style={[styles.segmentButton, groupMode === mode && styles.segmentButtonActive]}
-                  >
-                    <Text style={[styles.segmentText, groupMode === mode && styles.segmentTextActive]}>
-                      {mode === "franchise" ? "Franchises" : "Sets"}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {visibleGroups.length === 0 ? (
-              <Text style={styles.mutedText}>Add Pops to your shelf to see totals here.</Text>
-            ) : (
-              visibleGroups.map((group) => {
-                const expanded = expandedGroupKey === group.key;
-                const filterKind = groupMode === "franchise" ? "franchise" : "setName";
-                return (
-                  <View key={group.key} style={styles.statsGroupBlock}>
-                    <Pressable
-                      onPress={() => setExpandedGroupKey(expanded ? null : group.key)}
-                      style={({ pressed }) => [styles.statsGroupHeader, pressed && styles.pressed]}
-                    >
-                      <View style={styles.flex}>
-                        <Text style={styles.statsListTitle} numberOfLines={1}>
-                          {group.name}
-                        </Text>
-                        <Text style={styles.mutedSmall}>
-                          {integer(group.count)} Pops, {integer(group.uniqueCount)} unique
-                        </Text>
-                        <Text style={styles.mutedSmall}>Avg pop {money(group.averageValue)}</Text>
-                      </View>
-                      <View style={styles.alignEnd}>
-                        <Text style={styles.statsListValue}>{money(group.value)}</Text>
-                        <Text style={styles.groupChevron}>{expanded ? "Hide" : "Open"}</Text>
-                      </View>
-                    </Pressable>
-
-                    {expanded ? (
-                      <View style={styles.statsGroupDetail}>
-                        <Pressable
-                          onPress={() => onOpenFilter({ kind: filterKind, label: group.name, value: group.name })}
-                          style={({ pressed }) => [styles.groupFilterButton, pressed && styles.pressed]}
-                        >
-                          <Text style={styles.groupFilterText}>View all in My Shelf</Text>
-                        </Pressable>
-                        {group.items.map((item) => (
-                          <StatsPopRow key={item.collection_item_id} item={item} onPress={() => onOpenItem(item)} />
-                        ))}
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })
-            )}
-          </View>
-        </>
-      )}
-    </ScreenFrame>
-  );
-}
-
-function ShelfBreakdownScreen({
-  session,
-  onBack,
-  onOpenFilter,
-}: {
-  session: Session;
-  onBack: () => void;
-  onOpenFilter: (filter: CollectionFilter) => void;
-}) {
-  const [items, setItems] = useState<CollectionItem[]>([]);
-  const [sharedItems, setSharedItems] = useState<SharedShelfCollectionItem[]>([]);
-  const [sharedShelves, setSharedShelves] = useState<SharedShelf[]>([]);
-  const [activeShelfId, setActiveShelfId] = useState<string | null>(null);
-  const [selectedMemberId, setSelectedMemberId] = useState("all");
-  const [busy, setBusy] = useState(true);
-  const [groupMode, setGroupMode] = useState<StatsGroupMode>("franchise");
-  const [sortMode, setSortMode] = useState<BreakdownSortMode>("value");
-  const [searchText, setSearchText] = useState("");
-
-  const load = useCallback(async () => {
-    setBusy(true);
-    try {
-      const [rows, shelves] = await Promise.all([
-        fetchUserCollectionItems(session.user.id),
-        fetchMySharedShelves().catch(() => [] as SharedShelf[]),
-      ]);
-      const firstShelf = shelves[0] ?? null;
-      const shelfRows = firstShelf ? await fetchSharedShelfCollectionItems(firstShelf.id) : [];
-
-      setItems(rows);
-      setSharedShelves(shelves);
-      setActiveShelfId(firstShelf?.id ?? null);
-      setSharedItems(shelfRows);
-      setSelectedMemberId("all");
-    } catch (error) {
-      Alert.alert("Shelf Breakdown error", error instanceof Error ? error.message : "Unable to load your shelf breakdown.");
-    } finally {
-      setBusy(false);
-    }
-  }, [session.user.id]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const activeShelf = useMemo(
-    () => sharedShelves.find((shelf) => shelf.id === activeShelfId) ?? null,
-    [activeShelfId, sharedShelves],
-  );
-  const memberTabs = useMemo(() => buildSharedStatsMembers(sharedItems), [sharedItems]);
-
-  useEffect(() => {
-    if (selectedMemberId !== "all" && !memberTabs.some((member) => member.id === selectedMemberId)) {
-      setSelectedMemberId("all");
-    }
-  }, [memberTabs, selectedMemberId]);
-
-  const selectedMember = memberTabs.find((member) => member.id === selectedMemberId) ?? memberTabs[0] ?? null;
-  const breakdownItems = useMemo<StatsSourceItem[]>(() => {
-    if (!activeShelf) return items;
-    if (selectedMemberId === "all") return sharedItems;
-    return sharedItems.filter((item) => (item.owner_user_id || item.user_id || "unknown") === selectedMemberId);
-  }, [activeShelf, items, selectedMemberId, sharedItems]);
-
-  const groups = useMemo(() => buildStatsGroups(breakdownItems, groupMode), [breakdownItems, groupMode]);
-
-  const filteredGroups = useMemo(() => {
-    const term = searchText.trim().toLowerCase();
-    const visible = term ? groups.filter((group) => group.name.toLowerCase().includes(term)) : groups;
-    return [...visible].sort((a, b) => {
-      if (sortMode === "count") {
-        return b.count - a.count || b.value - a.value || a.name.localeCompare(b.name);
-      }
-      if (sortMode === "average") {
-        return b.averageValue - a.averageValue || b.count - a.count || a.name.localeCompare(b.name);
-      }
-      return b.value - a.value || b.count - a.count || a.name.localeCompare(b.name);
-    });
-  }, [groups, searchText, sortMode]);
-
-  const summary = useMemo(() => {
-    const totalPops = breakdownItems.reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
-    const uniquePops = new Set(breakdownItems.map(duplicateShelfKey)).size;
-    const totalValue = breakdownItems.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
-    const strongestGroup = [...groups].sort((a, b) => b.value - a.value)[0] ?? null;
-    return { totalPops, uniquePops, totalValue, strongestGroup };
-  }, [breakdownItems, groups]);
-
-  const maxValue = Math.max(1, ...filteredGroups.map((group) => group.value));
-  const filterKind = groupMode === "franchise" ? "franchise" : "setName";
-  const title = groupMode === "franchise" ? "Franchises" : "Sets";
-  const canOpenGroup = !activeShelf;
-  const memberCount = Math.max(0, memberTabs.length - 1);
-  const scopeName = activeShelf
-    ? selectedMemberId === "all"
-      ? activeShelf.name || "Shared Shelf"
-      : `${selectedMember?.name ?? "Collector"}'s Shelf`
-    : "My Shelf";
-  const scopeCopy = activeShelf
-    ? selectedMemberId === "all"
-      ? `${integer(summary.totalPops)} Pops across ${integer(memberCount)} members, ${money(summary.totalValue)} total value.`
-      : `${integer(summary.totalPops)} Pops from ${selectedMember?.name ?? "this member"}, ${money(summary.totalValue)} total value.`
-    : `${integer(summary.totalPops)} Pops, ${integer(summary.uniquePops)} unique, ${money(summary.totalValue)} total value.`;
-
-  return (
-    <ScreenFrame title="Shelf Breakdown" onBack={onBack}>
-      {busy ? (
-        <ActivityIndicator color="#7e67f4" />
-      ) : (
-        <>
-          <View style={styles.breakdownHero}>
-            <Text style={styles.dashboardEyebrow}>{activeShelf ? "Shared shelf map" : "Shelf organizer"}</Text>
-            <Text style={styles.dashboardSectionTitle}>{scopeName}</Text>
-            <Text style={styles.dashboardSubtext}>{scopeCopy}</Text>
-            {summary.strongestGroup ? (
-              <View style={styles.breakdownHeroMetaRow}>
-                <View style={styles.breakdownHeroTile}>
-                  <Text style={styles.breakdownHeroLabel}>Top by value</Text>
-                  <Text style={styles.breakdownHeroValue} numberOfLines={1}>
-                    {summary.strongestGroup.name}
-                  </Text>
-                </View>
-                <View style={styles.breakdownHeroTile}>
-                  <Text style={styles.breakdownHeroLabel}>Avg pop</Text>
-                  <Text style={styles.breakdownHeroValue}>{money(summary.strongestGroup.averageValue)}</Text>
-                </View>
-              </View>
+            {onAdmin ? (
+              <Pressable onPress={onAdmin} style={styles.dashboardProfileLink}>
+                <Text style={styles.dashboardProfileText}>Admin Console</Text>
+              </Pressable>
             ) : null}
-          </View>
-
-          {activeShelf && memberTabs.length > 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.breakdownMemberTabs}>
-              {memberTabs.map((member) => (
-                <Pressable
-                  key={member.id}
-                  onPress={() => setSelectedMemberId(member.id)}
-                  style={[styles.breakdownMemberTab, selectedMemberId === member.id && styles.breakdownMemberTabActive]}
-                >
-                  <Text style={styles.breakdownMemberTabName} numberOfLines={1}>
-                    {member.name}
-                  </Text>
-                  <Text style={styles.breakdownMemberTabMeta}>{integer(member.count)} in shelf</Text>
-                  <Text style={styles.breakdownMemberTabValue}>{money(member.value)}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          ) : null}
-
-          <View style={styles.breakdownControls}>
-            <View style={styles.segmentedControl}>
-              {(["franchise", "set"] as const).map((mode) => (
-                <Pressable
-                  key={mode}
-                  onPress={() => setGroupMode(mode)}
-                  style={[styles.segmentButton, groupMode === mode && styles.segmentButtonActive]}
-                >
-                  <Text style={[styles.segmentText, groupMode === mode && styles.segmentTextActive]}>
-                    {mode === "franchise" ? "Franchises" : "Sets"}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <NativeTextInput
-              value={searchText}
-              onChangeText={setSearchText}
-              placeholder={groupMode === "franchise" ? "Search franchises" : "Search sets"}
-              placeholderTextColor="#8d96a3"
-              style={styles.breakdownSearchInput}
-            />
-
-            <View style={styles.breakdownSortRow}>
-              {([
-                ["value", "Value"],
-                ["count", "Pops"],
-                ["average", "Avg"],
-              ] as const).map(([mode, label]) => (
-                <Pressable
-                  key={mode}
-                  onPress={() => setSortMode(mode)}
-                  style={[styles.breakdownSortChip, sortMode === mode && styles.breakdownSortChipActive]}
-                >
-                  <Text style={[styles.breakdownSortText, sortMode === mode && styles.breakdownSortTextActive]}>{label}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>{title} Breakdown</Text>
-            <Text style={styles.mutedSmall}>
-              {activeShelf ? "See how the shared shelf is shaped by franchise or set." : "Tap a row to open the matching shelf view."}
-            </Text>
-
-            {filteredGroups.length === 0 ? (
-              <Text style={styles.mutedText}>No matching groups found.</Text>
-            ) : (
-              filteredGroups.map((group) => {
-                const barWidth = `${Math.max(4, Math.min(100, (group.value / maxValue) * 100))}%` as `${number}%`;
-                return (
-                  <Pressable
-                    key={group.key}
-                    onPress={canOpenGroup ? () => onOpenFilter({ kind: filterKind, label: group.name, value: group.name }) : undefined}
-                    style={({ pressed }) => [styles.breakdownGroupRow, pressed && canOpenGroup && styles.pressed]}
-                  >
-                    <View style={styles.flex}>
-                      <View style={styles.breakdownGroupHeaderRow}>
-                        <View style={styles.flex}>
-                          <Text style={styles.breakdownGroupName} numberOfLines={1}>
-                            {group.name}
-                          </Text>
-                          <Text style={styles.breakdownGroupMeta}>{integer(group.uniqueCount)} unique Pops</Text>
-                        </View>
-                        {canOpenGroup ? <Text style={styles.groupChevron}>View</Text> : null}
-                      </View>
-                      <View style={styles.breakdownMetricRow}>
-                        <View style={styles.breakdownMetricTile}>
-                          <Text style={styles.breakdownMetricLabel}>Pops</Text>
-                          <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                            {integer(group.count)}
-                          </Text>
-                        </View>
-                        <View style={styles.breakdownMetricTile}>
-                          <Text style={styles.breakdownMetricLabel}>Value</Text>
-                          <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                            {money(group.value)}
-                          </Text>
-                        </View>
-                        <View style={styles.breakdownMetricTile}>
-                          <Text style={styles.breakdownMetricLabel}>Avg</Text>
-                          <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                            {money(group.averageValue)}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={styles.breakdownBarTrack}>
-                        <View style={[styles.breakdownBarFill, { width: barWidth }]} />
-                      </View>
-                    </View>
-                  </Pressable>
-                );
-              })
-            )}
+            <VersionFooter />
           </View>
         </>
       )}
@@ -3572,27 +3150,6 @@ function MetricCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StatPill({ label, value, onPress }: { label: string; value: string; onPress?: () => void }) {
-  const content = (
-    <>
-      <Text style={styles.dashboardInsightLabel}>{label}</Text>
-      <Text style={styles.statPillValue} adjustsFontSizeToFit numberOfLines={1}>
-        {value}
-      </Text>
-    </>
-  );
-
-  if (!onPress) {
-    return <View style={styles.statPill}>{content}</View>;
-  }
-
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.statPill, styles.pressableStatRow, pressed && styles.pressed]}>
-      {content}
-    </Pressable>
-  );
-}
-
 function TopStatRow({
   label,
   item,
@@ -3630,27 +3187,6 @@ function TopStatRow({
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.statsListRow, styles.pressableStatRow, pressed && styles.pressed]}>
       {content}
-    </Pressable>
-  );
-}
-
-function StatsPopRow({ item, onPress }: { item: StatsSourceItem; onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.statsPopRow, pressed && styles.pressed]}>
-      {item.image_url ? <Image source={{ uri: item.image_url }} style={styles.statsPopImage} /> : <View style={styles.statsPopImagePlaceholder} />}
-      <View style={styles.flex}>
-        <Text style={styles.statsListTitle} numberOfLines={1}>
-          {compactName(item.pop_name)}
-        </Text>
-        <Text style={styles.mutedSmall} numberOfLines={1}>
-          {[item.set_name, item.number ? `#${item.number}` : null, item.display_variant || item.owned_variant].filter(Boolean).join("  ")}
-        </Text>
-        <Text style={styles.mutedSmall}>Qty {integer(item.quantity)}</Text>
-      </View>
-      <View style={styles.alignEnd}>
-        <Text style={styles.statsListValue}>{money(perPopValue(item))}</Text>
-        <Text style={styles.mutedSmall}>each</Text>
-      </View>
     </Pressable>
   );
 }
@@ -4797,10 +4333,149 @@ const styles = StyleSheet.create({
     borderColor: "#26313d",
     backgroundColor: "#151a1f",
   },
+  metricCardPressable: {
+    cursor: IS_WEB ? "pointer" : undefined,
+  },
+  metricCardActive: {
+    borderColor: "#7bd1c3",
+    backgroundColor: "#1b2f31",
+  },
   metricValue: {
     color: "#fff",
     fontSize: 22,
     fontWeight: "900",
+  },
+  adminTabs: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  adminTab: {
+    minHeight: 38,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
+  },
+  adminTabActive: {
+    borderColor: "#7bd1c3",
+    backgroundColor: "#1b2f31",
+  },
+  adminTabText: {
+    color: "#b8c0cc",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  adminTabTextActive: {
+    color: "#fff",
+  },
+  adminNotice: {
+    gap: 6,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#f6c95f",
+    backgroundColor: "#2b2414",
+  },
+  adminQueueRow: {
+    minHeight: 98,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
+  },
+  adminQueueImage: {
+    width: 56,
+    height: 72,
+    resizeMode: "contain",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  adminQueueImagePlaceholder: {
+    width: 56,
+    height: 72,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  adminBadgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 5,
+    marginTop: 4,
+  },
+  adminIssueBadge: {
+    alignSelf: "flex-start",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    backgroundColor: "#f6c95f",
+    color: "#101318",
+    fontSize: 10,
+    fontWeight: "900",
+  },
+  adminReasonBadge: {
+    alignSelf: "flex-start",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    backgroundColor: "#27313c",
+    color: "#d7dbe5",
+    fontSize: 10,
+    fontWeight: "900",
+  },
+  adminQueueMeta: {
+    width: 84,
+    alignItems: "flex-start",
+    gap: 4,
+  },
+  adminFixButton: {
+    minHeight: 30,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    backgroundColor: "#7e67f4",
+  },
+  adminFixButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  adminReportCard: {
+    gap: 10,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
+  },
+  adminReportTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  adminReportActions: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  adminAuditRow: {
+    minHeight: 70,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
   },
   sharedShelfHeroRow: {
     flexDirection: "row",
@@ -5355,3 +5030,4 @@ const styles = StyleSheet.create({
     gap: 14,
   },
 });
+

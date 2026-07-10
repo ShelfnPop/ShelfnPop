@@ -22,6 +22,7 @@ export type DashboardHome = {
 
 export type PopCatalog = {
   id: string;
+  created_at?: string | null;
   upc: string | null;
   pop_name: string | null;
   character: string | null;
@@ -29,15 +30,21 @@ export type PopCatalog = {
   number: string | null;
   variant: string | null;
   exclusivity: string | null;
+  pop_type: string | null;
   pop_style: string | null;
   set_name: string | null;
   image_url: string | null;
   vault_status: string | null;
+  release_date: string | null;
   estimated_value: number | null;
   display_description: string | null;
   limited_edition: boolean | null;
   limited_count: number | null;
   edition_notes: string | null;
+  api_last_updated?: string | null;
+  parse_confidence?: number | null;
+  parse_reason_codes?: string[] | null;
+  needs_review?: boolean | null;
 };
 
 export type CollectionItem = {
@@ -61,10 +68,12 @@ export type CollectionItem = {
   number: string | null;
   variant: string | null;
   exclusivity: string | null;
+  pop_type: string | null;
   pop_style: string | null;
   set_name: string | null;
   image_url: string | null;
   vault_status: string | null;
+  release_date: string | null;
   estimated_value: number | null;
   value_each: number | null;
   total_value: number | null;
@@ -75,6 +84,14 @@ export type CollectionItem = {
   limited_edition: boolean | null;
   limited_count: number | null;
   edition_notes: string | null;
+  signed: boolean | null;
+  signed_by: string | null;
+  signature_authentication: string | null;
+  signature_cert_number: string | null;
+  signature_location: string | null;
+  signature_personalized: boolean | null;
+  signature_notes: string | null;
+  signed_value_boost_percent: number | null;
 };
 
 export type SharedShelf = {
@@ -89,6 +106,16 @@ export type SharedShelf = {
   member_count: number | null;
 };
 
+export type SharedShelfMember = {
+  id: string;
+  shelf_id: string;
+  user_id: string;
+  role: "owner" | "member" | string;
+  created_at: string;
+  display_name: string | null;
+  username: string | null;
+};
+
 export type SharedShelfCollectionItem = CollectionItem & {
   shelf_id: string;
   shelf_name: string;
@@ -96,6 +123,8 @@ export type SharedShelfCollectionItem = CollectionItem & {
   owner_user_id: string;
   owner_display_name: string;
   created_at: string | null;
+  signed_count?: number | null;
+  signature_authentication?: string | null;
 };
 
 export type SharedShelfGroupedItem = {
@@ -110,10 +139,12 @@ export type SharedShelfGroupedItem = {
   number: string | null;
   variant: string | null;
   exclusivity: string | null;
+  pop_type: string | null;
   pop_style: string | null;
   set_name: string | null;
   image_url: string | null;
   vault_status: string | null;
+  release_date: string | null;
   estimated_value: number | null;
   display_description: string | null;
   limited_edition: boolean | null;
@@ -128,6 +159,8 @@ export type SharedShelfGroupedItem = {
   total_cost: number | null;
   gain_loss: number | null;
   newest_added_at: string | null;
+  signed_count: number | null;
+  signature_authentication: string | null;
 };
 
 export type Profile = {
@@ -156,10 +189,12 @@ export type PublicWishlistItem = {
   number: string | null;
   variant: string | null;
   exclusivity: string | null;
+  pop_type: string | null;
   pop_style: string | null;
   set_name: string | null;
   image_url: string | null;
   vault_status: string | null;
+  release_date: string | null;
   estimated_value: number | null;
   display_description: string | null;
   limited_edition: boolean | null;
@@ -173,4 +208,69 @@ export type LookupResponse = {
   message?: string;
   error?: string;
   pop?: PopCatalog;
+};
+
+export type AdminUser = {
+  user_id: string;
+  created_at: string | null;
+  notes: string | null;
+};
+
+export type CatalogIssueReport = {
+  id: string;
+  reporter_user_id: string;
+  pop_catalog_id: string | null;
+  collection_item_id: string | null;
+  issue_type: string;
+  notes: string | null;
+  status: "open" | "resolved" | "ignored" | string;
+  admin_notes: string | null;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  reporter_display_name?: string | null;
+  reporter_username?: string | null;
+  upc?: string | null;
+  pop_name?: string | null;
+  franchise?: string | null;
+  number?: string | null;
+  variant?: string | null;
+  set_name?: string | null;
+  image_url?: string | null;
+  estimated_value?: number | null;
+};
+
+export type AdminAuditEvent = {
+  id: string;
+  actor_user_id: string | null;
+  action: string;
+  table_name: string;
+  row_id: string | null;
+  related_report_id: string | null;
+  before_data: Record<string, unknown> | null;
+  after_data: Record<string, unknown> | null;
+  changed_fields: string[] | null;
+  created_at: string | null;
+};
+
+export type CatalogParserOverride = {
+  id: string;
+  upc: string;
+  pop_catalog_id: string | null;
+  override_data: Record<string, unknown>;
+  learned_from_audit_event_id: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  is_active: boolean;
+  notes: string | null;
+  pop_name?: string | null;
+  character?: string | null;
+  franchise?: string | null;
+  number?: string | null;
+  variant?: string | null;
+  set_name?: string | null;
+  image_url?: string | null;
 };
