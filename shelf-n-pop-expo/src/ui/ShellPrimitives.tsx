@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Text } from "./Primitives";
 
-const APP_LOGO = require("../assets/shelf-n-pop-logo.png");
+const APP_LOGO = require("../../assets/shelf-n-pop-logo.png");
 
 export function ScreenFrame({
     title,
