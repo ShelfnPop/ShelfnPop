@@ -505,6 +505,10 @@ export function auditActionLabel(value: string): string {
   if (value === "catalog_update") return "Catalog update";
   if (value === "report_status_update") return "Report status";
   if (value === "report_update") return "Report update";
+  if (value === "parser_override_create") return "Override created";
+  if (value === "parser_override_update") return "Override updated";
+  if (value === "parser_override_disable") return "Override disabled";
+  if (value === "parser_override_delete") return "Override deleted";
   return compactName(value.replace(/_/g, " "));
 }
 
@@ -522,8 +526,10 @@ export function auditSubjectText(event: AdminAuditEvent): string {
   const name = String(source.pop_name ?? source.character ?? source.issue_type ?? "").trim();
   const number = String(source.number ?? "").trim();
   const status = String(source.status ?? "").trim();
+  const upc = String(source.upc ?? "").trim();
   if (name && number) return `${name} #${number}`;
   if (name) return name;
+  if (upc && event.table_name === "catalog_parser_overrides") return `UPC ${upc}`;
   if (status && event.table_name === "catalog_issue_reports") return `Report ${status}`;
   return event.row_id ?? event.table_name;
 }
