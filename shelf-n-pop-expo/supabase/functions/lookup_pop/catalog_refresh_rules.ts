@@ -6,6 +6,7 @@ export const BLOCKED_IMAGE_UPCS = new Set([
 ]);
 
 export const SET_TOTAL_OVERRIDES: Record<string, number> = {
+  "300": 6,
   "300 Movie": 6,
   "Animaniacs": 8,
   "Aquaman and the Lost Kingdom": 13,
@@ -36,6 +37,7 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Despicable Me 2": 10,
   "Dexter": 3,
   "Disney 90th Anniversary": 4,
+  "Disney Land : 65th Anniversary": 20,
   "Disney Archives": 8,
   "Disturbed": 1,
   "Dolly Parton": 6,
@@ -60,6 +62,7 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Get Out": 3,
   "Grey's Anatomy": 4,
   "Guardians of the Galaxy Holiday Special": 5,
+  "The Guardians of the Galaxy Holiday Special": 5,
   "Gwen-Verse": 4,
   "Hall of Armor": 4,
   "Hellboy": 16,

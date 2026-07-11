@@ -225,6 +225,7 @@ Deno.test("Lucky Cat #190 keeps the confirmed silver metallic variant", () => {
 });
 
 Deno.test("specific set total overrides fill known small buckets", () => {
+  assertEquals(getSetTotalOverride("300"), 6, "300 should tolerate the shorter movie set label");
   assertEquals(getSetTotalOverride("300 Movie"), 6, "300 Movie should use the full 2023 movie release total");
   assertEquals(getSetTotalOverride("Animaniacs"), 8, "Animaniacs should use three original Pops, four 2025 character releases, and the Water Tower deluxe");
   assertEquals(getSetTotalOverride("Ant-Man and the Wasp: Quantumania"), 13, "Quantumania should use the full Pop checklist total");
@@ -254,6 +255,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Despicable Me 2"), 10, "Despicable Me 2 should use the full movie checklist total");
   assertEquals(getSetTotalOverride("Dexter"), 3, "Dexter should use the full Pop checklist total");
   assertEquals(getSetTotalOverride("Disney 90th Anniversary"), 4, "Disney 90th Anniversary should use the four figure Donald Duck anniversary total");
+  assertEquals(getSetTotalOverride("Disney Land : 65th Anniversary"), 20, "Disney Land punctuation variant should use the Disneyland Resort 65th Anniversary total");
   assertEquals(getSetTotalOverride("Disney Archives"), 8, "Disney Archives should use the Disney Archives Pop checklist total");
   assertEquals(getSetTotalOverride("Disturbed"), 1, "Disturbed should use the one figure checklist total");
   assertEquals(getSetTotalOverride("Dolly Parton"), 6, "Dolly Parton should use the full Funko checklist total");
@@ -278,6 +280,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Get Out"), 3, "Get Out should use the three Chris Washington releases");
   assertEquals(getSetTotalOverride("Grey's Anatomy"), 4, "Grey's Anatomy should use the full television checklist total");
   assertEquals(getSetTotalOverride("Guardians of the Galaxy Holiday Special"), 5, "Guardians Holiday Special should use the five figure holiday release total");
+  assertEquals(getSetTotalOverride("The Guardians of the Galaxy Holiday Special"), 5, "Guardians Holiday Special should tolerate the leading The alias");
   assertEquals(getSetTotalOverride("Gwen-Verse"), 4, "Gwen-Verse should use the four figure lineup total");
   assertEquals(getSetTotalOverride("Hall of Armor"), 4, "Hall of Armor should use the four deluxe armor release total");
   assertEquals(getSetTotalOverride("Hellboy"), 16, "Hellboy should use the full checklist total");
