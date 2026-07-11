@@ -1,5 +1,6 @@
 node_modules/
 .expo/
+.eas-cache/
 dist/
 web-build/
 .env

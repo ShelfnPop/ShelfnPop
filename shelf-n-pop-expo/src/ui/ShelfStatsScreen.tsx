@@ -25,7 +25,7 @@ import { ScreenFrame } from "./ShellPrimitives";
 
 type ShelfStatsScreenStyles = Record<string, any>;
 
-const APP_VERSION = "0.1.3";
+const APP_VERSION = "0.1.4";
 
 export interface ShelfStatsScreenProps {
   session: Session;

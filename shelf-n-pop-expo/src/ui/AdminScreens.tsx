@@ -1,4 +1,4 @@
-import { Alert, Image, Pressable, Switch, View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, Alert, Image, Linking, Pressable, Switch, View } from "react-native";
 import type { Session } from "@supabase/supabase-js";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -31,6 +31,37 @@ type AdminHealthRow = PopCatalog & {
 };
 
 type AdminOverrideRow = CatalogParserOverride;
+
+function buildEbaySoldSearchUrl({
+  upc,
+  popName,
+  franchise,
+  number,
+  variant,
+  exclusivity,
+}: {
+  upc?: string | null;
+  popName: string;
+  franchise: string;
+  number: string;
+  variant: string;
+  exclusivity: string;
+}) {
+  const terms = [
+    "Funko Pop",
+    popName.trim(),
+    franchise.trim(),
+    number.trim() ? `#${number.trim().replace(/^#/, "")}` : "",
+    !/^common$/i.test(variant.trim()) ? variant.trim() : "",
+    exclusivity.trim(),
+  ].filter(Boolean);
+  const uniqueTerms = terms.filter((term, index) => (
+    terms.findIndex((candidate) => candidate.toLowerCase() === term.toLowerCase()) === index
+  ));
+  const query = uniqueTerms.join(" ") || upc?.trim() || "Funko Pop";
+
+  return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_Sold=1&LH_Complete=1`;
+}
 
 type AdminScreenProps = {
   appVersion: string;
@@ -548,6 +579,26 @@ const response = data as { found?: boolean; pop?: PopCatalog; message?: string; 
     Alert.alert("API refresh complete", "The latest lookup data has been loaded into this fix screen.");
   };
 
+  const reviewEbaySold = async () => {
+    const url = buildEbaySoldSearchUrl({
+      upc: catalog?.upc,
+      popName,
+      franchise,
+      number,
+      variant,
+      exclusivity,
+    });
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert(
+        "Could not open eBay",
+        error instanceof Error ? error.message : "Open eBay sold listings in a browser and search for this Pop.",
+      );
+    }
+  };
+
   return (
     <ScreenFrame appVersion={appVersion} title="Fix Catalog Item" onBack={onBack} rightLabel="Reload" onRight={load}>
       {busy && !catalog ? <ActivityIndicator color="#7e67f4" /> : catalog ? (
@@ -572,7 +623,7 @@ const response = data as { found?: boolean; pop?: PopCatalog; message?: string; 
           </View>
           <View style={styles.detailTwoColumn}>
             <SecondaryButton label={apiBusy ? "Refreshing..." : "Refresh API"} onPress={refreshFromApi} disabled={busy || apiBusy} />
-            <SecondaryButton label="Reload Saved" onPress={load} disabled={busy || apiBusy} />
+            <SecondaryButton label="Review eBay Sold" onPress={reviewEbaySold} disabled={busy || apiBusy} />
           </View>
           <View style={styles.detailSection}>
             <Text style={styles.dashboardSectionTitle}>Identity</Text>

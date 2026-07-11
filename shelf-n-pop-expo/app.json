@@ -2,7 +2,7 @@
   "expo": {
     "name": "Shelf-n-Pop",
     "slug": "shelf-n-pop",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "orientation": "portrait",
     "icon": "./assets/shelf-n-pop-logo.png",
     "userInterfaceStyle": "dark",
