@@ -1,0 +1,18 @@
+-- Audit note: Thor completion-count fix applied 2026-07-07.
+-- Scope: Shelf Stats checklist matching for Thor: Love and Thunder.
+--
+-- Live data fix:
+--   * Corrected the Thor: Love and Thunder checklist row for Mighty Thor #1041
+--     Glow in the Dark / Collectors Corps so it links to UPC 889698641593
+--     instead of the common Mighty Thor UPC 889698624220.
+--
+-- App fix:
+--   * Shelf Stats now uses matched checklist rows for the displayed completion
+--     count and progress bar once checklist rows are loaded.
+--   * Checklist matching now trusts an exact pop_catalog_id link even when the
+--     checklist row has a variant or exclusivity, unless that catalog id is
+--     reused by multiple checklist rows.
+--
+-- Why:
+--   * The Thor card could show 100% from raw owned-row count while the expanded
+--     checklist still showed missing items.

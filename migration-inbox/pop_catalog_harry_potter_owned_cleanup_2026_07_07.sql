@@ -1,0 +1,58 @@
+-- Harry Potter owned-catalog cleanup pass.
+-- Date: 2026-07-07
+-- Scope: high-confidence owned rows only; values were not changed.
+--
+-- Sources:
+-- - https://www.harrypotterpopvinyls.com/harry-potter
+-- - https://www.harrypotterpopvinyls.com/harry-potter/page/2
+-- - https://www.harrypotterpopvinyls.com/harry-potter/page/3
+-- - https://www.harrypotterpopvinyls.com/harry-potter/page/4
+-- - https://www.harrypotterpopvinyls.com/harry-potter/page/5
+-- - https://www.harrypotterpopvinyls.com/harry-potter/page/6
+-- - https://funko.com/pop-movie-poster-undesirable-no.-1-harry-potter/81688.html
+--
+-- Applied live:
+-- - Cleaned 33 owned Harry Potter catalog rows where the checklist/product
+--   source had clearer names, styles, variants, or exclusivities.
+-- - Set those repaired rows to set_total = 219.
+-- - Left Split Hedwig in the Split set; it is not a Harry Potter item.
+-- - Did not bulk-insert the full 219-item checklist in this pass.
+--
+-- Parser protection:
+-- - Added lookup_pop UPC overrides for the same repaired rows so future scans
+--   do not overwrite the cleaned identities.
+--
+-- Notable corrections:
+-- - Harry Potter #8 -> Harry Potter (Quidditch), Hot Topic Pre-release.
+-- - Harry Potter #42 -> Harry Potter (Marauder's Map).
+-- - Luna Lovegood #47 -> Luna Lovegood (Lion Hat).
+-- - Harry Potter #51 -> Harry Potter (Firebolt), BoxLunch.
+-- - Bloody Baron #74 no longer carries a duplicate "Bloody" variant.
+-- - Patronus Severus Snape #128 and Patronus Minerva McGonagall #129 now
+--   carry Patronus variants.
+-- - Undesirable No. 1 Harry Potter #175 is treated as Movie Poster style and
+--   Amazon exclusive.
+-- - Harry Potter #196 -> Harry Potter (With Resurrection Stone).
+--
+-- Follow-up pass:
+-- - UPC 889698902717 was corrected from Neville Longbottom #22 to
+--   Neville Longbottom (With Sword of Gryffindor) #194.
+-- - UPC 889698864381 Horace Slughorn #186 had the vague Exclusive label
+--   cleared.
+-- - UPC 889698889780 Harry Potter (Quidditch) #188 exclusivity was clarified
+--   as 2025 Winter Convention / CCXP.
+--
+-- Collection-number pass:
+-- - Loaded 219 required Harry Potter checklist rows into
+--   public.pop_set_checklist_items.
+-- - Marked public.pop_sets.canonical_name = 'Harry Potter' as reviewed at
+--   0.90 confidence from HarryPotterPopVinyls pages 1-6.
+-- - Loaded checklist rows without pop_catalog_id auto-linking because duplicate
+--   box numbers such as #175 can make broad character/number joins ambiguous.
+-- - Verification after load:
+--   checklist_rows = 219, distinct_numbers = 207, required_rows = 219.
+--   catalog_rows = 59, distinct_box_numbers = 58, owned_quantity = 59,
+--   unique_owned_catalog_rows = 58, missing_images = 0, needs_review = 0.
+-- - Ownership note: #42 Harry Potter (Marauder's Map) has two collection rows;
+--   #147 Harry Potter (With Gryffindor Sword and Basilisk Fang) is in catalog
+--   but has no collection row. No ownership rows were changed in this pass.

@@ -1,0 +1,40 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: Black Adam and Deadpool & Wolverine owned-row cleanup plus reviewed set totals.
+-- Sources:
+--   Black Adam Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=688
+--   Deadpool & Wolverine Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1341&ssid=2
+--   Deadpool with Swords official Funko cross-check:
+--     https://funko.com/pop-deadpool-with-swords/79766.html
+--   X-23 official Funko cross-check:
+--     https://www.funko.com/ee/pop-x-23-with-sunglasses/84849.html
+--   Wade Wilson official Funko cross-check:
+--     https://funko.com/pop-wade-wilson-assistant-to-the-assistant-regional-manager-drivemax/84906.html
+--   Ladypool Diamond official Funko cross-check:
+--     https://funko.com/pop-ladypool-diamond/85289.html
+--   Elektra with Sai official Funko cross-check:
+--     https://funko.com/pop-elektra-with-sai-metallic/88644.html
+--   Wolverine Finale official Funko cross-check:
+--     https://funko.com/ie/pop-plus-wolverine-time-ripper/89327.html
+--
+-- Live changes made:
+--   * Seeded reviewed Black Adam set total: 13 required checklist rows.
+--   * Seeded reviewed Deadpool & Wolverine set total: 18 required checklist rows.
+--   * Added Deadpool with Swords #1362 from official Funko because it was not in the Figure Realm
+--     Deadpool & Wolverine set list used for the first pass.
+--   * Kept X-23 as #1497 based on the official Funko/UPC source, despite the Figure Realm list typo.
+--   * Corrected Black Adam UPC rows for Hawkman in Cruiser, Black Adam (Cape),
+--     Black Adam Glow in the Dark Chase, and Black Adam (with Cloak) Winter Convention.
+--   * Corrected Deadpool & Wolverine UPC rows for Deadpool with Swords, Wolverine with Babypool,
+--     Ladypool common, Ladypool Diamond, Wade Wilson, X-23, Elektra Metallic, and Wolverine Finale.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these identity corrections.
+--
+-- Verification after live update:
+--   Black Adam: 13 checklist rows / 13 required; 9 owned unique / 10 owned quantity = 69.2% unique owned.
+--   Deadpool & Wolverine: 18 checklist rows / 18 required; 11 owned unique / 11 owned quantity = 61.1% unique owned.
+--   Catalog rows in these two sets have no literal "Common" variant values.
+--
+-- Deferred:
+--   * The Mandalorian is still the next large set-count candidate. It has enough rows that it should
+--     be handled as its own extraction pass instead of folded into a mixed cleanup batch.

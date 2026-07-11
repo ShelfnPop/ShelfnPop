@@ -1,0 +1,59 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Harry Potter main-line set first pass.
+--
+-- Sources reviewed:
+-- - HarryPotterPopVinyls main Harry Potter checklist:
+--   https://www.harrypotterpopvinyls.com/harry-potter
+--   https://www.harrypotterpopvinyls.com/harry-potter/page/2
+--   https://www.harrypotterpopvinyls.com/harry-potter/page/3
+--   https://www.harrypotterpopvinyls.com/harry-potter/page/4
+--   https://www.harrypotterpopvinyls.com/harry-potter/page/5
+--   https://www.harrypotterpopvinyls.com/harry-potter/page/6
+-- - FigureRealm Harry Potter Pop! Vinyl cross-check:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2407&ssid=20
+--
+-- Important correction:
+-- - Split Hedwig is not Harry Potter. It belongs to the movie Split and was
+--   intentionally left unchanged/excluded from this pass.
+--
+-- Live database changes already applied:
+-- - Updated Harry Potter owned catalog rows to set_total = 219.
+-- - Marked pop_sets.canonical_name = 'Harry Potter' as draft, not reviewed,
+--   because the full 219-row checklist was generated but not bulk-applied.
+-- - Cleaned owned rows:
+--   - UPC 849803058593: Ron Weasley #2, corrected from #105.
+--   - UPC 889698917636: Harry Potter (With Hedwig) #197.
+--   - UPC 889698469951: Patronus Ron Weasley #105, moved from
+--     Wizarding World Pre-Release to Harry Potter.
+--
+-- Parser changes made in shelf-n-pop-expo/supabase/functions/lookup_pop/index.ts:
+-- - Added UPC safeguards for:
+--   - 849803058593 Ron Weasley #2
+--   - 889698917636 Harry Potter (With Hedwig) #197
+--   - 889698469951 Patronus Ron Weasley #105
+--
+-- Draft denominator:
+-- - HarryPotterPopVinyls pages 1-6 parsed to 219 main-line Harry Potter Pop
+--   entries.
+-- - Excludes Fantastic Beasts, Split, Kinder Joy, Bitty Pop!, Pop! Pins,
+--   Pocket Keychains, Advent Calendars, and alternate non-main checklist groups.
+--
+-- Follow-up needed:
+-- - Bulk-apply the generated 219-row checklist once Supabase CLI db query/link
+--   is repaired, or apply through smaller MCP chunks.
+-- - Then promote pop_sets.status from draft to reviewed after verifying owned
+--   links and missing rows.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.
+-- - No Split Hedwig movement.
+--
+-- Superseded review note, 2026-07-08:
+-- - Later live verification showed Harry Potter is now reviewed with 219
+--   checklist rows and 54 linked catalog rows.
+-- - The one remaining Harry Potter catalog row without set_total was UPC
+--   889698311533, corrected live to Dobby (10" Super Sized Pop) #63,
+--   Target exclusive, Jumbo style, set_total = 219.
+-- - See pop_set_checklists_dc_jim_lee_harry_potter_apply_review_2026_07_08.md.

@@ -1,0 +1,45 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: Fantastic Four reviewed set totals and Venom: Let There Be Carnage count correction.
+--
+-- Sources reviewed:
+--   Fantastic Four Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1769
+--   Fantastic Four: First Steps Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6540
+--   Venom: Let There Be Carnage Pop Shop Guide checklist:
+--     https://www.popshopguide.com/funko-pop-series/pop-marvel/venom-let-there-be-carnage/
+--   Venom: Let There Be Carnage PriceCharting cross-checks:
+--     https://www.pricecharting.com/game/funko-pop-marvel/carnage-890
+--     https://www.pricecharting.com/game/funko-pop-marvel/carnage-926
+--
+-- Live changes made:
+--   * Created reviewed Fantastic Four set total: 22 Pop! Vinyl/Jumbo rows.
+--     Current catalog-linked rows: 6.
+--   * Created reviewed Fantastic Four: First Steps set total: 12 Pop! Vinyl
+--     rows. Pop! Pocket Keychain excluded from completion. Current catalog-
+--     linked rows: 12.
+--   * Corrected Venom: Let There Be Carnage set total from 3 to 4:
+--       #888 Venom
+--       #889 Carnage
+--       #890 Carnage / 10-inch / Walmart
+--       #926 Carnage / Fall Convention
+--   * Merged malformed duplicate catalog UPC 8969858598 into real Carnage UPC
+--     889698563031. The two scanned copies now sit under the same catalog row
+--     as quantity 2 / two owned rows.
+--   * Rebuilt the Venom: Let There Be Carnage checklist so Carnage #889 links
+--     to UPC 889698563031, not the malformed duplicate.
+--
+-- Verification after live update:
+--   Fantastic Four: reviewed, 22 checklist rows, 6 linked catalog rows.
+--   Fantastic Four: First Steps: reviewed, 12 checklist rows, 12 linked catalog rows.
+--   Venom: Let There Be Carnage: reviewed, 4 checklist rows, 1 linked catalog row.
+--   Venom: Let There Be Carnage catalog now has one Carnage #889 row with
+--   owned_qty = 2.
+--   Target catalog buckets have 0 review flags, 0 missing numbers, and
+--   0 missing images.
+--
+-- Intentionally not changed:
+--   * No values were changed.
+--   * No images were changed.
+--   * No purchase prices were changed.
+--   * No parser/edge-function deploy was needed for this pass.

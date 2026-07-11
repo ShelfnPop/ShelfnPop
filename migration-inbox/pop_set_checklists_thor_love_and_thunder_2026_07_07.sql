@@ -1,0 +1,34 @@
+-- Audit note: live Thor: Love and Thunder set review applied 2026-07-07.
+-- Scope: reviewed set-completion denominator and identity cleanup for
+-- Thor: Love and Thunder.
+--
+-- Sources:
+--   FigureRealm Thor: Love and Thunder checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5507&mode=2&series=thorfunko&ssid=4
+--   Funko official boxed multipacks:
+--     https://funko.com/pop-thor-mighty-thor-2-pack/63176.html
+--     https://funko.com/pop-thor-mighty-thor-valkyrie-gorr-4-pack/65086.html
+--
+-- Live changes made:
+--   * Changed Thor: Love and Thunder from draft to reviewed.
+--   * Seeded 18 required checklist rows: 16 FigureRealm rows plus the two
+--     Funko-official boxed multipacks already present in the live catalog.
+--   * Updated set_total to 18 for live Thor: Love and Thunder catalog rows.
+--   * Corrected owned catalog labels/exclusivities:
+--       - Mighty Thor #1046: Glow in the Dark, Pop In A Box.
+--       - Mighty Thor #1076: Metallic, Books-A-Million.
+--       - Gorr (with Stormbreaker) #1092: Specialty Series.
+--       - Gorr's Daughter #1188: Summer Convention, limited edition.
+--       - Thor (In Toga) #1261: Summer Convention.
+--       - Target 2-Pack and Walmart 4-Pack display names.
+--   * Updated lookup_pop overrides for the corrected Thor UPCs.
+--
+-- Verification after live update:
+--   * Thor: Love and Thunder: reviewed, 18 checklist rows.
+--   * 17 checklist rows link to current live catalog rows.
+--   * The only missing checklist item is Goat Boat #290.
+--   * Live catalog has 17 Thor: Love and Thunder rows, no missing images.
+--   * The two missing numbers are expected boxed multipacks.
+--
+-- Notes:
+--   * No catalog values were intentionally changed in this pass.

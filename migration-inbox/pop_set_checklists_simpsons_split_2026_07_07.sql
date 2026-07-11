@@ -1,0 +1,40 @@
+-- Audit note: live Simpsons set split applied 2026-07-07.
+-- Scope: reviewed set-completion denominators for The Simpsons and
+-- The Simpsons: Treehouse of Horror.
+--
+-- Sources:
+--   FigureRealm Simpsons Pop! Vinyl Figures / full checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=4701&mode=2&ns=40&series=simpsonsfunko&ssid=-1
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=4701&ns=100&series=simpsonsfunko&ssid=-1
+--   FigureRealm Treehouse of Horror Pop checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=4701&ssid=6
+--   FunkyPriceGuide Simpsons umbrella checklist cross-check:
+--     https://funkypriceguide.com/checklist/funko-pop-the-simpsons/
+--     https://funkypriceguide.com/api/checklists/funko-pop-the-simpsons/collectibles?ctid=1&page=1&perPage=100
+--   Funko official Krusty Doll page:
+--     https://funko.com/pop-krusty-doll/74105.html
+--
+-- Live changes made:
+--   * Changed The Simpsons from draft to reviewed with 58 required core
+--     Pop! Vinyl checklist rows.
+--   * Added The Simpsons: Treehouse of Horror as reviewed with 29 required
+--     Treehouse checklist rows.
+--   * Moved Krusty Doll #1381 from The Simpsons to Treehouse of Horror and
+--     set Funko Shop exclusivity.
+--   * Added New York Comic-Con exclusivity to owned Comic Book Guy #832 and
+--     Evil Groundskeeper Willie #824 so checklist matching remains accurate.
+--   * Updated catalog set_total to 58 for The Simpsons and 29 for Treehouse.
+--   * Updated lookup_pop overrides for the corrected UPCs.
+--
+-- Verification after live update:
+--   * The Simpsons: reviewed, 58 checklist rows, 30 live catalog rows, no
+--     missing numbers/images.
+--   * The Simpsons: Treehouse of Horror: reviewed, 29 checklist rows, 15 live
+--     catalog rows, no missing numbers/images.
+--
+-- Notes:
+--   * FigureRealm separates Treehouse from Pop! Vinyl Figures, while FPG has a
+--     70-item umbrella list. The app now follows the split set model.
+--   * Some checklist rows are not in the current live catalog and will appear
+--     in the Missing tab as intended.
+--   * No values were intentionally changed in this pass.

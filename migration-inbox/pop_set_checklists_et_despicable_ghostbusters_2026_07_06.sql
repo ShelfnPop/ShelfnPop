@@ -1,0 +1,21 @@
+-- Applied to Supabase on 2026-07-06.
+-- Adds reviewed set-completion checklists for:
+-- - E.T. 40th Anniversary: 8 Pop! Vinyl checklist items, source Figure Realm.
+-- - Despicable Me 3: 11 Pop! Vinyl checklist items, source Figure Realm.
+-- - Ghostbusters: Afterlife: 20 Pop! Vinyl checklist items, source Figure Realm.
+--
+-- Verification after insert:
+-- - Despicable Me 3: 2 owned of 11 total, 18.2% complete.
+-- - E.T. 40th Anniversary: 2 owned of 8 total, 25.0% complete.
+-- - Ghostbusters: Afterlife: 3 owned of 20 total, 15.0% complete.
+--
+-- Notes:
+-- - Beetlejuice was intentionally skipped for a dedicated pass because the Pop! Vinyl line
+--   is broad and the catalog-owned rows are only a small slice of a larger 18-item line.
+-- - E.T. catalog row spelling uses "Elliot", while the checklist source uses "Elliott";
+--   matching was tightened by number for existing catalog rows after insertion.
+--
+-- Sources:
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&figures=et&id=1621
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=7600&mode=3&series=despicableme3funko
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&figures=afterlife&id=2129

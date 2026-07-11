@@ -1,0 +1,41 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: What If...? and Zombieland reviewed set totals, checklist rows, and owned-row polish.
+--
+-- Sources:
+--   What If...? Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3263&ssid=44
+--   What If...? FunkyPriceGuide checklist/API cross-check:
+--     https://funkypriceguide.com/checklist/funko-pop-marvel-studios-what-if/
+--     https://funkypriceguide.com/api/checklists/funko-pop-marvel-studios-what-if/collectibles?ctid=1&page=1&perPage=75
+--   Captain Carter (1602) official Funko cross-check:
+--     https://funko.com/pop-captain-carter-1602/68040.html
+--   Infinity Captain Carter official Funko cross-check:
+--     https://funko.com/pop-infinity-captain-carter/68046.html
+--   Happy "The Freak" Hogan official Funko cross-check:
+--     https://funko.com/pop-happy-the-freak-hogan/68045.html
+--   Kahhori official Funko cross-check:
+--     https://funko.com/pop-kahhori/68042.html
+--   Zombieland Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6346&ssid=1
+--
+-- Live changes made:
+--   * Created/updated reviewed What If...? set row with 49 required checklist rows.
+--     Figure Realm lists 46; FunkyPriceGuide adds Infinity Killmonger #969 and
+--     Zombie Hunter Spidey Metallic Walmart #945; official Funko confirms
+--     Captain Carter (1602) #1468 Target.
+--   * Created/updated reviewed Zombieland set row with 5 required checklist rows:
+--     Tallahassee #997, Columbus #998, Wichita #999, Bill Murray #1000,
+--     and Bill Murray Chase #1000.
+--   * Set What If...? owned catalog rows to set_total 49 and Zombieland rows to set_total 5.
+--   * Corrected What If...? owned-row display names/exclusivities/styles for:
+--       Hydra Stomper (Deluxe) #872, The Collector #893 MCC,
+--       Zombie Iron Man #944 Amazon, Zombie Strange #946 Target,
+--       Zombie Hunter Spidey (Unmasked) #947 Hot Topic,
+--       Captain Carter (Stealth Suit) #968, Gamora (with Blade of Thanos) #970,
+--       Happy "The Freak" Hogan #1465, and Captain Carter (1602) #1468 Target.
+--   * Linked checklist rows conservatively by number, name/character, variant, and exclusivity.
+--
+-- Verification after live update:
+--   What If...?: 49 checklist rows / 49 required; 21 owned unique = 42.9% owned.
+--   Zombieland: 5 checklist rows / 5 required; 4 owned unique = 80.0% owned.
+--   Both sets have 0 missing numbers, 0 missing images, and 0 needs_review rows.

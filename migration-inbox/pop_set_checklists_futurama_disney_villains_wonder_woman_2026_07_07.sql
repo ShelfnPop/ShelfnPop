@@ -1,0 +1,69 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Futurama, Disney Villains, and Wonder Woman set cleanup.
+--
+-- Sources reviewed:
+-- - FigureRealm Futurama Pop! Vinyl Figures:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1972&ssid=5
+-- - FigureRealm Disney Villains Browse All:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1479&ssid=-1
+-- - Funko Ursula stained-glass deluxe:
+--   https://funko.com/pop-deluxe-ursula-ariel-stained-glass/77992.html
+-- - Funko Disguised Evil Queen with Raven:
+--   https://funko.com/pop-buddy-disguised-evil-queen-with-raven-black-light/76719.html
+-- - FigureRealm Wonder Woman Pop! Vinyl Figures:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6123&ssid=7
+-- - FigureRealm Wonder Woman WW80 Pop!:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6123&ssid=8
+-- - FigureRealm Wonder Woman WW84 Pop!:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6123&ssid=9
+-- - FigureRealm Batman v Superman Pop!:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=24
+--
+-- Live database changes already applied:
+-- - Futurama:
+--   - Added set_total = 21.
+--   - Corrected Bender (Burping) #1757 Specialty Series.
+--   - Corrected Matador Bender #1756.
+--   - Loaded reviewed 21-row checklist.
+-- - Disney Villains:
+--   - Added set_total = 44.
+--   - Loaded reviewed 44-row checklist: 43 FigureRealm rows plus the Funko
+--     Ursula stained-glass deluxe row.
+--   - Moved older Maleficent #09 to Sleeping Beauty so it does not inflate
+--     the Disney Villains completion denominator.
+--   - Moved Cruella De Vil (Phone) #1090 from Villains to Disney Villains.
+--   - Corrected Ursula in Cart #17 to Pop! Trains / Train / Funko Shop.
+--   - Corrected Captain Hook and Dr. Facilier Blacklight exclusivity to Hot Topic.
+--   - Corrected Disguised Evil Queen with Raven #1426 and Ursula stained glass #1638.
+-- - Wonder Woman:
+--   - Loaded reviewed checklists for:
+--     - Wonder Woman: 20 rows.
+--     - Wonder Woman 1984: 15 rows.
+--     - Wonder Woman 80th Anniversary: 20 rows.
+--     - Batman V. Superman Dawn Of Justice: 16 rows.
+--   - Moved Wonder Woman (Superman: Red Son), Black Lantern, Odyssey,
+--     Flashpoint, and White Lantern into Wonder Woman 80th Anniversary.
+--   - Corrected WW84 Golden Armor Metallic #323 from the old DC Super Heroes
+--     #8 Metallic misclassification.
+--   - Corrected Doctor Maru #433 from a generic Wonder Woman row.
+--   - Moved Wonder Woman with String Light Lasso #354 to DC Holiday.
+--   - Moved Wonder Woman #600 to DC New Classics.
+--
+-- Validation:
+-- - Touched sets have 0 missing owned images and 0 needs_review flags.
+-- - Reviewed checklist counts after load:
+--   - Futurama: 21 rows.
+--   - Disney Villains: 44 rows.
+--   - Wonder Woman: 20 rows.
+--   - Wonder Woman 1984: 15 rows.
+--   - Wonder Woman 80th Anniversary: 20 rows.
+--   - Batman V. Superman Dawn Of Justice: 16 rows.
+-- - No ownership quantities, paid values, or current values were changed.
+-- - lookup_pop parser overrides were added for corrected owned rows.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.
+-- - Batman v Superman non-Wonder-Woman rows were not deeply corrected beyond
+--   checklist inclusion; a full BvS pass can tighten those remaining links later.

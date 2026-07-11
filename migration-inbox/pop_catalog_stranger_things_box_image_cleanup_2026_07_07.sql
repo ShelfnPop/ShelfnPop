@@ -1,0 +1,65 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: Stranger Things missing box numbers, title-number oddities, and missing images.
+--
+-- Sources:
+--   Funko Barb Holland (Split):
+--     https://funko.com/pop-barb-holland-split/93086.html
+--   Funko Holly Wheeler:
+--     https://funko.com/pop-holly-wheeler/75752.html
+--   Funko Joyce in Lights:
+--     https://funko.com/st---joyce-in-lights/13347-PX-1T3.html
+--   Funko Robin Buckley with Flashlight:
+--     https://www.funko.com/mt/pop-robin-buckley-with-flashlight/88521.html
+--   Funko Max Mayfield:
+--     https://funko.com/pop-max-mayfield/90288.html
+--   Funko Steve Harrington:
+--     https://funko.com/pop-steve-harrington/75749.html
+--   Funko Vecna Mid-Transformation:
+--     https://www.funko.com/ae/pop-vecna-mid-transformation/80138.html
+--   Funko Robin / Steve / Vecna 3-Pack:
+--     https://funko.com/pop-robin-%2F-steve-%2F-vecna---3-pack/66909.html
+--   FunkyPriceGuide Stranger Things checklist image source:
+--     https://funkypriceguide.com/checklist/funko-pop-stranger-things/
+--   Retail/eBay cross-checks used for Dustin with Shield #1463, Mike with Will's Painting #1539,
+--   and Flayed Billy #844.
+--
+-- Live changes made:
+--   * Filled box numbers:
+--       Barb Holland (Split) #1908, Flayed Billy #844, Holly Wheeler #1782,
+--       Dustin (with Shield) #1463, Joyce (with Lights) #436,
+--       Max Mayfield #1805, Mike (with Will's Painting) #1539,
+--       Robin Buckley (with Flashlight) #1799, Steve Harrington #1779,
+--       and Vecna (Mid-Transformation) #1540.
+--   * Cleaned names/characters for those rows.
+--   * Set Robin Buckley (with Flashlight) exclusivity to Target.
+--   * Cleaned Robin, Steve & Vecna as a Walmart 3-Pack and left its box number blank
+--     because official Funko product data does not provide a standard box number.
+--   * Filled the missing Eleven #545 image using the FunkyPriceGuide checklist image.
+--
+-- Verification after live update:
+--   Stranger Things missing image_url rows: 0.
+--   Stranger Things names/characters ending with stray box-number text: 0.
+--   Stranger Things missing number rows: 1, the Robin, Steve & Vecna Walmart 3-Pack.
+--
+-- Addendum: box-number dimension cleanup applied live 2026-07-07.
+-- Cause: older source payloads included product dimensions such as 9 cm / 10 cm,
+-- which were previously treated as box numbers for several newer Stranger Things rows.
+--
+-- Sources:
+--   Funko Lucas:
+--     https://funko.com/pop-lucas/62395.html
+--   Funko Dustin Henderson with Flashlight:
+--     https://funko.com/ie/pop-dustin-henderson-with-flashlight/88959.html
+--   Retail/eBay cross-checks used for Nancy Wheeler with Shotgun #1460
+--   and Robin Buckley with Cocktail #1461.
+--
+-- Live changes made:
+--   * Dustin Henderson (with Flashlight), UPC 889698889599: #1796, Target.
+--   * Lucas, UPC 889698623957: #1241.
+--   * Nancy Wheeler (with Shotgun), UPC 889698721394: #1460.
+--   * Robin Buckley (with Cocktail), UPC 889698721400: #1461.
+--   * Linked Stranger Things checklist rows for Lucas #1241 and Nancy #1460
+--     to their matching catalog rows.
+--
+-- Verification after addendum:
+--   Stranger Things rows with number = '10': 0.

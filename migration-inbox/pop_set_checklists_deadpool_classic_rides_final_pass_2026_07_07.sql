@@ -1,0 +1,22 @@
+-- Deadpool final cleanup pass staged from live review on 2026-07-07.
+-- Live data changes already applied:
+-- - Deadpool Rides reviewed as 4 checklist entries:
+--   Deadpool on Unicorn #36, Deadpool on Scooter #48, Sheriff Deadpool Riding Horsey #99,
+--   Deadpool on a Zamboni Machine #1443.
+-- - Deadpool Classic reviewed as 13 checklist entries:
+--   #111 Deadpool (Two Swords) common and X-Force Convention, #112 Centers Up variants,
+--   #113 Pirate, #114 Bath Time, #115 Chef, #116 Rubber Chicken, #117 Cowboy,
+--   #123 Leaping, #145 Dressed to Kill.
+-- - Lady Deadpool #549 moved from broad Deadpool to Marvel 80th Anniversary based on the
+--   official Funko Marvel 80th listing.
+-- Verification after live changes:
+-- - Deadpool Classic: reviewed, required_count 13, checklist_count 13, confidence 0.86.
+-- - Deadpool Rides: reviewed, required_count 4, checklist_count 4, confidence 0.94.
+-- - Broad Deadpool now has 6 catalog rows, with 0 missing numbers, 0 missing images,
+--   and 0 needs_review rows.
+-- - Marvel 80th Anniversary has 11 catalog rows and 1 pre-existing missing number
+--   unrelated to this Deadpool pass.
+-- Parser guardrails:
+-- - lookup_pop UPC overrides updated for Deadpool Rides, Deadpool Classic, and Lady Deadpool.
+-- - The remaining broad Deadpool rows were left broad because they appear to be standalone
+--   or special releases without a clean reviewed set denominator in this pass.

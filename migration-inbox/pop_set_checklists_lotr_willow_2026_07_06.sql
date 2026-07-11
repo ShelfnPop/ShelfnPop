@@ -1,0 +1,43 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: The Lord of the Rings owned-row cleanup and Willow reviewed checklist.
+-- Sources:
+--   The Lord of the Rings Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3119&ssid=-1
+--   Bilbo Baggins with Bag-End official Funko cross-check:
+--     https://funko.com/pop-town-bilbo-baggins-with-bag-end/80835.html
+--   Gollum (Glow) official Funko cross-check:
+--     https://funko.com/pop-plus-gollum-glow/86429.html
+--   Eowyn official Funko cross-check:
+--     https://funko.com/pop-eowyn/51527.html
+--   Guritz official Funko cross-check:
+--     https://funko.com/pop-guritz/90312.html
+--   Peregrin Took official Funko cross-check:
+--     https://funko.com/pop-peregrin-took/90313.html
+--   Willow Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6089&ssid=1
+--   Willow Sorsha official Funko cross-check:
+--     https://funko.com/pop-sorsha/65767.html
+--
+-- Live changes made:
+--   * Normalized The Lord Of The Rings and The Lord of the Rings into one set bucket.
+--   * Cleaned 19 owned Lord of the Rings catalog rows with high-confidence names, numbers,
+--     variants, exclusivities, pop_type, and pop_style corrections.
+--   * Corrected Town/Deluxe/Plus style rows including Bilbo Baggins with Bag-End,
+--     Elrond with Rivendell, Gandalf at the Doors of Durin, Treebeard with Merry & Pippin,
+--     Gollum (Glow), and Frodo Baggins (Glow).
+--   * Seeded reviewed Willow checklist with 5 required Pop! Vinyl rows.
+--   * Cleaned owned Willow Sorsha row to Sorsha (Helmet), Chase.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these identity corrections.
+--
+-- Verification after live update:
+--   Willow: 4 owned unique / 5 required = 80.0%.
+--   Willow: 5 checklist rows, 4 linked catalog rows.
+--   The Lord of the Rings owned rows now display under one set bucket.
+--
+-- Deferred:
+--   * The Lord of the Rings should get a separate reviewed-total pass because the line spans
+--     Pop! Vinyl, Pop! Town, Pop! Plus, Pop! Moments, Pop! Rides, Pop! Sets, and VHS Covers.
+--     Figure Realm also includes non-completion categories such as Pocket Keychains, Soda,
+--     Rewind, and Wacky Wobblers that should not inflate the app's Pop set total.
+--   * The Eowyn UPC is a styles-may-vary item with a possible masked Chase. The owned catalog row
+--     remains common unless the user marks the owned copy as Chase.

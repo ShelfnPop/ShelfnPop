@@ -1,0 +1,27 @@
+-- Audit note: live checklist review applied 2026-07-07.
+-- Scope: Avengers: Endgame and Five Nights at Freddy's set-completion visibility.
+--
+-- Sources:
+--   Avengers: Endgame FunkyPriceGuide checklist:
+--     https://funkypriceguide.com/checklist/funko-pop-avengers-endgame/
+--     https://funkypriceguide.com/api/checklists/funko-pop-avengers-endgame/collectibles?ctid=1&page=1&perPage=100
+--   Avengers Figure Realm cross-check:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=396&ssid=-1
+--   Five Nights at Freddy's Figure Realm Pop! Vinyl Figures checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1851&ssid=15
+--   Five Nights at Freddy's FunkyPriceGuide cross-check:
+--     https://funkypriceguide.com/checklist/funko-pop-five-nights-at-freddys/
+--
+-- Live changes made:
+--   * Created/updated reviewed Avengers: Endgame set row.
+--   * Seeded 68 required Avengers: Endgame checklist rows from FPG.
+--   * Set Avengers: Endgame catalog rows to set_total 68.
+--   * Created/updated Five Nights at Freddy's as draft only.
+--
+-- Notes:
+--   * Avengers: Endgame is reviewed and should now show set completion in the app.
+--   * Five Nights at Freddy's is intentionally draft. Figure Realm lists 103 Pop! Vinyl
+--     Figures and includes newer owned catalog rows; FPG currently lists only 28 and is
+--     too incomplete for a reviewed completion denominator.
+--   * The app filters set-completion rows to status = reviewed, so draft Five Nights
+--     will not appear until the full 103-row checklist is extracted and seeded.

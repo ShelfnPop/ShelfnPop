@@ -1,0 +1,22 @@
+-- Five Nights at Freddy's reviewed checklist load, 2026-07-07
+-- Live Supabase data update already applied.
+--
+-- Sources:
+-- - Figure Realm Pop! Vinyl Figures checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1851&ssid=15
+-- - My Pop Figures mirror used to parse the three paged checklist chunks:
+--   https://www.mypopfigures.com/pop?action=seriesitemlist&id=1851&series=fivenightsatfreddysfunko&ssid=15
+-- - Official Funko supplemental owned rows:
+--   https://funko.com/pop-dj-music-man-help-wanted-2/86117.html
+--   https://funko.com/pop-eclipse-glow/88302.html
+--
+-- Result:
+-- - Loaded 105 required rows into pop_set_checklist_items.
+-- - Marked pop_sets.canonical_name = Five Nights at Freddy's as reviewed.
+-- - Completion denominator is 105:
+--   103 Figure Realm checklist rows
+--   + DJ Music Man #1131, official Funko supplemental owned row
+--   + Eclipse #1109 Glow in the Dark GameStop, official Funko supplemental owned row
+-- - Linked all 13 owned catalog rows to checklist rows.
+-- - Updated owned catalog rows for this set to set_total = 105.
+-- - No ownership quantities, paid values, or current values were changed.

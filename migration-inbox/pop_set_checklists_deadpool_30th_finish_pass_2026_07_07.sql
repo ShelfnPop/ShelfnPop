@@ -1,0 +1,60 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: Deadpool 30th finish pass plus remaining holiday bucket cleanup.
+--
+-- Sources:
+--   Funko Barista Deadpool official vault page:
+--     https://funko.com/pop-barista-deadpool/54653.html
+--   Funko Deadpool In Cake official vault page:
+--     https://funko.com/pop-deadpool-in-cake/54654.html
+--   Funko Dinopool official vault page:
+--     https://funko.com/pop-dinopool/54655.html
+--   Funko Flamenco Deadpool official vault page:
+--     https://funko.com/pop-flamenco-deadpool/54656.html
+--   Funko Roman Senator Deadpool official page:
+--     https://funko.com/pop-roman-senator-deadpool/54657.html
+--   Figure Realm Deadpool checklist cross-check:
+--     https://figurerealm.com/actionfigure?action=seriesitemlist&id=1339&series=deadpoolfunko&ssid=-1
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1339&ns=80&series=deadpoolfunko&ssid=-1
+--
+-- Live changes made:
+--   * Moved owned Deadpool 30th rows out of broad Deadpool:
+--       Barista Deadpool #775
+--       Deadpool In Cake #776
+--       Dinopool #777
+--       Dinopool #777 Black / Marvel Collector Corps
+--       Flamenco Deadpool #778
+--       Roman Senator Deadpool #779 / Walmart
+--       Ninja Deadpool #785 / Marvel Collector Corps
+--   * Seeded Deadpool 30th as a reviewed set with 14 required checklist rows:
+--       #774 Backyard Griller Deadpool
+--       #775 Barista Deadpool
+--       #776 Deadpool In Cake
+--       #777 Dinopool
+--       #777 Dinopool Black / Marvel Collector Corps
+--       #778 Flamenco Deadpool
+--       #779 Roman Senator Deadpool / Walmart
+--       #780 LARP Deadpool
+--       #781 Construction Worker Deadpool
+--       #782 Ballerina Deadpool / Hot Topic
+--       #783 Birthday Glasses Deadpool / Target
+--       #784 Sherlock Deadpool
+--       #785 Ninja Deadpool / Marvel Collector Corps
+--       #786 Nerd Deadpool
+--   * Moved remaining owned holiday Deadpool rows out of broad Deadpool:
+--       Holiday Deadpool (Supper Hero) #534 -> Marvel Holiday
+--       Deadpool with Hot Cocoa #1442 -> Marvel Holiday
+--   * Updated lookup_pop UPC overrides for the moved owned rows and deployed the
+--     edge function. Also corrected an earlier parser typo that had accidentally
+--     placed Deadpool on Scooter #48 in Deadpool Legacy Collection.
+--
+-- Verification after live update:
+--   Deadpool: 33 catalog rows, 0 missing numbers, 0 missing images, 0 review flags.
+--   Deadpool 30th: reviewed, 14 required checklist rows, 7 owned catalog rows.
+--   Deadpool Legacy Collection: reviewed, 3 required checklist rows, 2 owned rows.
+--   Deadpool & Wolverine: reviewed, 18 required checklist rows, 12 owned rows.
+--   Marvel Holiday Deadpool rows: 4 catalog rows, 0 missing numbers/images/review flags.
+--
+-- Deferred:
+--   * Broad Deadpool remains draft because later parody, ride, moment, literary,
+--     Pride, Deadpool 2, and classic-variant rows still need intentional inclusion
+--     rules before the full denominator is safe to show as reviewed.

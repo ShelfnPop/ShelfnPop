@@ -1,0 +1,37 @@
+-- Audit note: reviewed set-completion checklist pass for Shelf-n-Pop.
+-- Applied directly to Supabase on 2026-07-06.
+--
+-- Sources:
+-- - Ted Lasso Funko checklist, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5400
+-- - Fallout Funko checklist, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1750
+-- - Vault Boy #1767, Funko:
+--   https://funko.com/pop-vault-boy/87075.html
+--
+-- Data cleanup performed:
+-- - Ted Lasso: normalized Ted variant names for #1351, #1356, and #1573.
+-- - Ted Lasso: corrected #1356 exclusivity to Amazon.
+-- - Fallout: moved the current TV-show rows from set_name "Fallout" to
+--   "Fallout (TV Show)" so they do not mix with older Fallout game-era Pops.
+-- - Fallout: changed those rows from Pop! Games to Pop! Television.
+-- - Fallout: normalized Ghoul with CX404, Hank MacLean in Power Armor,
+--   and removed uncertain Walmart exclusivity from Maximus/Caesar.
+--
+-- Reviewed set totals added:
+-- - Ted Lasso: 23 required Pop! Vinyl checklist items.
+--   Soda items were intentionally excluded.
+-- - Fallout (TV Show): 10 required checklist items for the current TV-show
+--   subset: Lucy, Maximus, Maximus Chase, Ghoul with CX404, Vault Boy,
+--   Cooper Howard Chase, Hank MacLean in Power Armor, Caesar,
+--   Deathclaw (Super), and Victor (Securitron).
+--
+-- Verification after apply:
+-- - Ted Lasso: 10 unique owned, 11 owned quantity,
+--   23 required, 43.5% complete.
+-- - Fallout (TV Show): 6 unique owned, 6 owned quantity,
+--   10 required, 60.0% complete.
+--
+-- Deferred:
+-- - Broader Fallout game-era set completion remains deferred. Only the current
+--   TV-show subset is reviewed here.

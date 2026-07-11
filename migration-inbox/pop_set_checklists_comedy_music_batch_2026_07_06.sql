@@ -1,0 +1,30 @@
+-- Applied to Supabase on 2026-07-06.
+-- Adds reviewed set-completion checklists for:
+-- - Clueless: 7 Pop! Vinyl checklist items, source Figure Realm.
+-- - NSYNC: 6 checklist items including Pop! Album #19 and Pop! Rocks #111-115, source Figure Realm.
+-- - Office Space: 6 checklist items, source Figure Realm.
+-- - Super Troopers: 5 checklist items, source Figure Realm.
+-- - The Goonies: 12 Pop! Vinyl checklist items, source Figure Realm.
+--
+-- Also corrected pop_catalog for NSYNC / JC Chasez:
+-- - variant was parsed as "Chase" from the name "Chasez"; set back to null/common.
+--
+-- Verification after insert:
+-- - Clueless: 4 owned of 7 total, 57.1% complete.
+-- - NSYNC: 6 owned of 6 total, 100.0% complete.
+-- - Office Space: 6 owned of 6 total, 100.0% complete.
+-- - Super Troopers: 5 owned of 5 total, 100.0% complete.
+-- - The Goonies: 6 owned of 12 total, 50.0% complete.
+--
+-- Notes:
+-- - Animaniacs was intentionally skipped because the current catalog has duplicate/mismatched
+--   Yakko numbering that would inflate completion until cleaned.
+-- - Office Space Sticky Note Man has source/listing number disagreement; matched to the owned
+--   catalog row #774 and left a lower confidence note in the checklist row.
+--
+-- Sources:
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6480&mode=3&series=cluelessfunko
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&figures=nsyncfunko&id=6899
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3839
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=7476&ssid=1
+-- - https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2232&mode=2&series=gooniesfunko&ssid=3

@@ -1,0 +1,42 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: The Lord of the Rings reviewed set checklist and parser protection.
+--
+-- Source reviewed:
+-- - FigureRealm Lord of the Rings Funko checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3119&ssid=-1
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3119&ns=40&series=lordoftheringsfunko&ssid=-1
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3119&ns=80&series=lordoftheringsfunko&ssid=-1
+--
+-- Live database changes already applied:
+-- - Marked pop_sets.canonical_name = 'The Lord of the Rings' as reviewed.
+-- - Seeded 72 required checklist rows for the Pop-only The Lord of the Rings set.
+-- - Excluded non-Pop formats from the completion denominator:
+--   Pocket Keychains, Rewind, Soda, and Wacky Wobblers.
+-- - Included Pop! Movies, Pop! Deluxe, Pop! Moments, Pop! Nooks, Pop! Plus,
+--   Pop! Rides, Pop! Sets, Pop! Towns, and Pop! VHS Covers rows.
+-- - Updated pop_catalog.set_total = 72 for owned catalog rows in this set.
+-- - Cleaned owned descriptions for Gandalf, Samwise Gamgee, Legolas, Gimli,
+--   Legolas Greenleaf (Bow & Arrow), Nazgul, and Eomer.
+--
+-- Parser changes made in shelf-n-pop-expo/supabase/functions/lookup_pop/index.ts:
+-- - Added UPC safeguards for owned LOTR rows that were cleaned during review:
+--   889698135504 Gandalf #443
+--   889698135535 Samwise Gamgee #445 Glow in the Dark
+--   889698332477 Legolas #628
+--   889698332484 Gimli #629
+--   889698808316 Legolas Greenleaf (Bow & Arrow) #1577
+--   889698837859 Nazgul #1744
+--   889698903103 Eomer #1982
+--
+-- Verification after live changes:
+-- - 29 owned catalog rows.
+-- - 72 reviewed checklist rows.
+-- - 43 missing checklist rows.
+-- - 0 missing box numbers.
+-- - 0 missing images.
+-- - 0 needs_review flags.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.

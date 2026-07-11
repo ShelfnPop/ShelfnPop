@@ -1,0 +1,29 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Superman rows shown near Justice League / BvS.
+--
+-- Sources reviewed:
+-- - FigureRealm Batman v Superman Pop! checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=25
+-- - UPC/product checks for:
+--   - 849803060268: Superman #85, Batman v Superman.
+--   - 889698649278: Superman #1123, Zack Snyder's Justice League / Justice League listings.
+--
+-- Live database changes already applied:
+-- - Moved UPC 849803060268 to Batman v Superman: Dawn of Justice as
+--   Superman #85.
+-- - Linked Superman #85 into the reviewed BvS checklist.
+-- - Moved UPC 889698649278 to Zack Snyder's Justice League as Superman #1123.
+-- - Preserved the two owned shelf variants on user_collection_items:
+--   - Common.
+--   - Glow in the Dark Chase.
+--
+-- Validation target:
+-- - BvS should now show 15 owned of 16, with only the base Batman vs Superman
+--   moment missing.
+-- - Zack Snyder's Justice League should include Superman #1123 without being
+--   grouped under the plain Superman set.
+-- - No paid values, current values, quantities, or images changed.
+--
+-- Parser:
+-- - lookup_pop overrides were added for 849803060268 and 889698649278.

@@ -1,0 +1,34 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: Moon Knight and Solo: A Star Wars Story.
+-- Sources:
+--   Moon Knight Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3573&ssid=1
+--   Moon Knight Scarlet Scarab official Funko cross-check:
+--     https://funko.com/pop-scarlet-scarab/65332.html
+--   Moon Knight Mr. Knight official Funko cross-check:
+--     https://funko.com/pop-mr.-knight/64255.html
+--   Solo: A Star Wars Story Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&figures=solo&id=5132
+--   Solo Fighting Droids UPC cross-check:
+--     https://www.ebay.com/itm/366393003348
+--
+-- Live changes made:
+--   * Seeded reviewed Moon Knight checklist with 14 required TV Pop! Vinyl rows.
+--   * Split comic-line Moon Knight #266 and Mr. Knight #1199 into Moon Knight (Comics).
+--   * Corrected Moon Knight #1048 rows, Moon Knight (Kicking) #1047, Temple of Khonshu Statue #1053,
+--     Moon Knight (Unmasked) #1302, and Scarlet Scarab #1093 exclusivity.
+--   * Seeded reviewed Solo: A Star Wars Story checklist with 21 required rows.
+--     Total includes 20 Pop! Vinyl Figures from Figure Realm plus the GameStop Fighting Droids 2-Pack; excludes Dorbz.
+--   * Corrected Solo owned rows for Chewbacca (Flocked BoxLunch), Han Solo #248 Target,
+--     Mudtrooper #248 Funko Shop, and Fighting Droids 2-Pack GameStop.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these identity corrections.
+--
+-- Verification after live update:
+--   Moon Knight: 12 owned unique / 14 required = 85.7%.
+--   Solo: A Star Wars Story: 15 owned unique / 21 required = 71.4%.
+--   Moon Knight: 12 linked checklist rows.
+--   Solo: A Star Wars Story: 15 linked checklist rows.
+--
+-- Deferred:
+--   * Loki remains mixed across TV, comics, and Thor movie moments and should be split before a reviewed total is seeded.
+--   * DuckTales and Darkwing Duck remain cleanup-only until a second clean source confirms standard Pop vs Digital totals.

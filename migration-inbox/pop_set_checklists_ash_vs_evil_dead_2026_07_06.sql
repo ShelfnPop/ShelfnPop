@@ -1,0 +1,19 @@
+-- Audit note: reviewed set-completion checklist pass for Shelf-n-Pop.
+-- Applied directly to Supabase on 2026-07-06.
+--
+-- Source:
+-- - Evil Dead (Funko), Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1715
+--
+-- Reviewed set total added:
+-- - Ash Vs. Evil Dead: 5 required checklist items.
+--
+-- Scope note:
+-- - Figure Realm lists 7 Evil Dead Pop! Vinyl items overall.
+-- - This Shelf-n-Pop set intentionally counts only the 5 Ash vs Evil Dead
+--   show-specific items: Ash, Ash Bloody, Pablo, Kelly, and Ruby.
+-- - The broader Evil Dead Ash #1142 items were excluded from this set.
+--
+-- Verification after apply:
+-- - Ash Vs. Evil Dead: 5 unique owned, 5 owned quantity,
+--   5 required, 100.0% complete.

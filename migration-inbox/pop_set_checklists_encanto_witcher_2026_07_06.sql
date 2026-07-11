@@ -1,0 +1,38 @@
+-- Audit note: reviewed set-completion checklist pass for Shelf-n-Pop.
+-- Applied directly to Supabase on 2026-07-06.
+--
+-- Sources:
+-- - Encanto Pop! Vinyl Figures, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1688&ssid=3
+-- - Witcher Funko checklist, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6107&ssid=-1
+-- - Jurassic World - Dominion, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2844
+--
+-- Data cleanup performed:
+-- - Encanto: removed redundant "Encanto" prefixes from owned names.
+-- - Encanto: corrected UPC 889698767774 to Isabela with Cactus #1409.
+-- - Encanto: labeled Bruno GITD as Funko Shop and Bruno with Prophecy as
+--   BoxLunch.
+-- - The Witcher: normalized Geralt and Roach, Yennefer (Flames),
+--   Jaskier (Red Outfit), Geralt (Blue Shield), Geralt (Training), and
+--   Ciri (Training).
+-- - Jurassic World: Dominion: corrected #1218 to Atrociraptor (Tiger)
+--   Specialty Series and #1219 to Atrociraptor (Ghost) (Lunging) Target.
+--
+-- Reviewed set totals added:
+-- - Encanto: 11 required checklist items.
+-- - The Witcher: 20 required checklist items, including Pop! Ride and Pop! Set.
+--
+-- Verification after apply:
+-- - Encanto: 9 unique owned, 9 owned quantity,
+--   11 required, 81.8% complete.
+-- - The Witcher: 15 unique owned, 18 owned quantity,
+--   20 required, 75.0% complete.
+--
+-- Deferred:
+-- - Jurassic World: Dominion full checklist was not marked reviewed yet because
+--   the source list is 26 items and includes noisy/broader rows that need a
+--   dedicated pass.
+-- - Darkwing Duck and DuckTales were deferred because their catalog rows mix
+--   standard/figure/Digital styles and should be reviewed as set families.

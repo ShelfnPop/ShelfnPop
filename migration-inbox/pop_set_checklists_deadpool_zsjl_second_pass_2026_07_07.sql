@@ -1,0 +1,57 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: second-pass cleanup for remaining Deadpool draft work and Zack Snyder's Justice League.
+--
+-- Sources reviewed:
+--   Deadpool checklist / cross-checks:
+--     https://www.popshopguide.com/funko-pop-checklists/pop-marvel-checklist/pop-deadpool-checklist/
+--     https://www.pricecharting.com/game/funko-pop-marvel/deadpool-with-teddy-pants-754
+--     https://www.pricecharting.com/game/funko-pop-marvel/deadpool-bunny-1298
+--     https://www.pricecharting.com/game/funko-pop-marvel/pumpkin-spice-deadpool-1299
+--     https://www.pricecharting.com/game/funko-pop-marvel/snow-day-deadpool-1296
+--     https://www.pricecharting.com/game/funko-pop-marvel/deadpool-with-jeff-1297
+--   Zack Snyder's Justice League checklist / cross-checks:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=7266&ssid=1
+--     https://www.popshopguide.com/funko-pop-checklists/pop-movies-checklist/pop-zack-snyders-justice-league-checklist/
+--     https://www.sweetsandgeeks.com/products/funko-heros-dc-comics-superman-preorder
+--
+-- Live changes made:
+--   * Promoted broad Deadpool from draft to reviewed with the two remaining
+--     one-off Pop rows after prior Deadpool sub-set splits:
+--       #320 Deadpool / Pride
+--       #754 Deadpool With Teddy Pants / Spring Convention
+--   * Created reviewed Deadpool Bucket List checklist with 4 Pop rows:
+--       #887 Artist Deadpool / Blacklight / GameStop
+--       #929 Lazy River Deadpool / GameStop
+--       #930 Paintball Deadpool / GameStop
+--       #931 Safari Deadpool / GameStop
+--     Owned/catalog-linked rows: Artist and Safari.
+--   * Created reviewed Deadpool Seasons checklist with 4 Pop rows:
+--       #1296 Snow Day Deadpool / GameStop
+--       #1297 Deadpool With Jeff / GameStop
+--       #1298 Deadpool Bunny / GameStop
+--       #1299 Pumpkin Spice Deadpool / GameStop
+--     Owned/catalog-linked rows: Bunny and Pumpkin Spice.
+--   * Created reviewed Zack Snyder's Justice League checklist with 12 Pop rows.
+--     Figure Realm was useful for the set shape but has visible numbering
+--     oddities for Desaad, so Pop Shop Guide / retail sources were used for
+--     the corrected #1125 and Superman #1123/#1127 mapping.
+--   * Corrected UPC 889698568012 from Superman #1127 to Superman #1123.
+--   * Corrected Zack Snyder's Justice League Pop type to Pop! Movies.
+--   * Corrected Superman Landing #1127 exclusivity to Hot Topic.
+--   * Corrected Darkseid on Throne style to Deluxe.
+--   * Added parser UPC overrides in lookup_pop/index.ts for the corrected
+--     Deadpool and Zack Snyder rows.
+--
+-- Verification after live update:
+--   Deadpool: reviewed, 2 checklist rows, 2 linked.
+--   Deadpool Bucket List: reviewed, 4 checklist rows, 2 linked.
+--   Deadpool Seasons: reviewed, 4 checklist rows, 2 linked.
+--   Zack Snyder's Justice League: reviewed, 12 checklist rows, 9 linked.
+--   Justice League (2017): reviewed, 20 checklist rows, 19 linked.
+--   Batman v Superman: Dawn of Justice: reviewed, 16 checklist rows, 15 linked.
+--   Target catalog buckets have 0 review flags and 0 missing images.
+--
+-- Intentionally not changed:
+--   * No values were changed.
+--   * No images were changed.
+--   * No quantities or purchase prices were changed.

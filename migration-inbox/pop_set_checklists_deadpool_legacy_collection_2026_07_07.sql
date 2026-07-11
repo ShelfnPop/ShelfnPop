@@ -1,0 +1,34 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: Deadpool Legacy Collection mini-set.
+--
+-- Sources:
+--   Funko Deadpool on Bridge official product page:
+--     https://funko.com/pop-deluxe-deadpool-on-bridge/80848.html
+--   Funko Wade Wilson (Baby Legs) official product page:
+--     https://funko.com/pop-wade-wilson-baby-legs/80853.html
+--   Funko Deadpool (X-Men Trainee) official product page:
+--     https://funko.com/pop-deadpool-x-men-trainee/80854.html
+--   Funko Deadpool with Claws official cross-check:
+--     https://funko.com/pop-deadpool-with-claws/90456.html
+--
+-- Live changes made:
+--   * Moved Wade Wilson (Baby Legs) #1581 from broad Deadpool to
+--     Deadpool Legacy Collection.
+--   * Seeded Deadpool Legacy Collection as a reviewed set with 3 required
+--     checklist rows: Deadpool on Bridge #1580, Wade Wilson (Baby Legs) #1581,
+--     and Deadpool (X-Men Trainee) #1582.
+--   * Linked owned catalog rows for #1580 and #1581; #1582 is intentionally
+--     left as the missing checklist item.
+--   * Kept Deadpool with Claws #1583 out of this mini-set because Funko's
+--     official page places it in Marvel Studios' Deadpool & Wolverine.
+--   * Updated the lookup_pop UPC override for #1581 and deployed the edge
+--     function so future scans preserve the Legacy Collection set.
+--
+-- Verification after live update:
+--   Deadpool Legacy Collection: reviewed, 3 required checklist rows, 3 checklist rows.
+--   Checklist links: #1580 and #1581 linked to catalog rows; #1582 unowned/missing.
+--
+-- Deferred:
+--   * Deadpool core remains draft. Do not use the broad Figure Realm count as
+--     the final denominator until Deadpool 30th, Marvel Holiday, rides/moments,
+--     and other sub-buckets are split or intentionally included.

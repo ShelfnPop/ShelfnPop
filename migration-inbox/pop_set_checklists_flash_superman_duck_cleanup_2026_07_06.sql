@@ -1,0 +1,29 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: The Flash (2023), Superman (2025), DuckTales, Darkwing Duck.
+-- Sources:
+--   The Flash (2023): https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1855&ssid=4
+--   The Flash (2023) Pop! Moment: https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1855&ssid=1&universeid=18
+--   Superman (2025): https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6474
+--   Superman (2025) cross-check: https://www.popshopguide.com/funko-pop-checklists/pop-dc-heroes-checklist/pop-superman-2025-movie-checklist/
+--   Darkwing Duck review source, cleanup-only: https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6675
+--   DuckTales review source, cleanup-only: https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6674
+--
+-- Live changes made:
+--   * Normalized owned The Flash (2023) names for Barry Allen variants, Batman variants, and Flash (Saving Babies).
+--   * Seeded reviewed The Flash (2023) checklist: 16 required items.
+--   * Normalized Superman (2025) rows for Engineer, Hawkgirl, Fortress of Solitude, and Superman (Jumbo).
+--   * Seeded reviewed Superman (2025) checklist: 14 required items.
+--   * Cleaned DuckTales names/numbers/exclusivity/type for Huey, Louie, Webby, Magica De Spell, and Flintheart Glomgold.
+--   * Normalized Darkwing Duck franchise labels for current owned rows.
+--
+-- Verification after live update:
+--   The Flash (2023): 14 owned unique / 16 required = 87.5%.
+--   Superman (2025): 12 owned unique / 14 required = 85.7%.
+--   The Flash (2023): 14 linked checklist rows; missing checklist rows are Batman #1342 and Flash (Glows in the Dark) #1343.
+--   Superman (2025): 13 linked checklist rows; missing checklist row is DCs Ultraman #583 Chase.
+--
+-- Deferred:
+--   * Darkwing Duck and DuckTales reviewed totals were not seeded because the available source pages mix standard Pop,
+--     Pop! Digital, and action figure rows in a way that needs a second source before marking the total reviewed.
+--   * Guardians of the Galaxy Vol. 1, Vol. 2, and Vol. 3 were deferred for a focused pass because cross-line
+--     variants/exclusives make the checklist larger and easier to get wrong.

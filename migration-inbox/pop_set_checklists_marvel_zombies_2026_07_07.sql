@@ -1,0 +1,50 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: Marvel Zombies reviewed set total, checklist rows, missing box numbers, and owned-row polish.
+--
+-- Sources:
+--   Marvel Zombies Figure Realm Pop! Vinyl checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3313&ssid=4
+--   Marvel Zombies FunkyPriceGuide checklist/API cross-check:
+--     https://funkypriceguide.com/checklist/funko-pop-marvel-zombies/
+--     https://funkypriceguide.com/api/checklists/funko-pop-marvel-zombies/collectibles?ctid=1&page=1&perPage=100
+--   Zombie Morbius #105 cross-check:
+--     https://www.pricecharting.com/game/funko-pop-marvel/zombie-morbius-105
+--   Zombie Wolverine Black & White Glow official Funko cross-check:
+--     https://funko.com/pop-zombie-wolverine-black-white-glow/88261.html
+--   Zombie Gambit official Funko cross-check:
+--     https://funko.com/pop-zombie-gambit/49941.html
+--   Blade Knight #1552 and Zombie Hawkeye #1553 retail/UPC cross-checks:
+--     https://www.bestbuy.com/product/funko-pop-marvel-zombies-blade-knight-multicolor/J3ZK3XCSYY
+--     https://www.bestbuy.com/product/funko-pop-marvel-zombies-hawkeye-multicolor/J3ZK3XCSYH
+--
+-- Live changes made:
+--   * Created/updated reviewed Marvel Zombies set row with 35 required checklist rows.
+--     Figure Realm lists 34 Pop! Vinyl Figures; older Zombie Morbius #105 Marvel
+--     Collector Corps was included because retail/price-guide sources confirm it
+--     as a Zombie Morbius Pop.
+--   * Set all owned Marvel Zombies catalog rows to set_total 35.
+--   * Filled missing/incorrect box numbers:
+--       Blade Knight #1552, Zombie Hawkeye #1553, and Zombie Wolverine
+--       Black & White Glow in the Dark #662.
+--   * Corrected Zombie Hawkeye away from duplicate #791, which belongs to Zombie M.O.D.O.K.
+--   * Cleaned variant/exclusivity labels for:
+--       Zombie Morbius #105 Marvel Collector Corps,
+--       Zombie Mysterio Glow in the Dark Walmart,
+--       Zombie Deadpool #661 Walmart,
+--       Zombie Wolverine Glow in the Dark Entertainment Earth,
+--       Zombie Wolverine Black & White Glow in the Dark BoxLunch,
+--       Zombie Thor Glow in the Dark Entertainment Earth,
+--       Zombie She-Hulk Hot Topic,
+--       and Zombie Morbius #763 Emerald City Comic Con.
+--   * Linked all 25 owned Marvel Zombies rows to matching checklist rows.
+--
+-- Verification after live update:
+--   Marvel Zombies: 35 checklist rows / 35 required; 25 owned unique = 71.4% owned.
+--   Linked checklist rows: 25.
+--   Catalog rows have 0 missing numbers, 0 missing images, and 0 needs_review rows.
+--
+-- Deferred:
+--   * Deadpool remains the next focused pass. FunkyPriceGuide has a 50-row structured
+--     Deadpool source, but it blends standalone Deadpool rows with Deadpool & Wolverine
+--     rows that are already reviewed; Figure Realm spans multiple pages and should be
+--     used to split the standalone Deadpool denominator carefully.

@@ -1,0 +1,62 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: Game of Thrones draft denominator and remaining owned-row polish.
+-- Sources:
+--   FunkyPriceGuide Game of Thrones category count:
+--     https://funkypriceguide.com/checklist/funko-pop-game-of-thrones/
+--   Figure Realm Game of Thrones Pop! Vinyl checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2061&series=gameofthronesfunko&ssid=11
+--   Figure Realm Game of Thrones Pop! Sets checklist:
+--     https://figurerealm.com/actionfigure?action=seriesitemlist&id=2061&mode=1&series=gameofthronesfunko&ssid=10
+--   Hero Habit Game of Thrones checklist:
+--     https://herohabit.com/funko-game-of-thrones/
+--   PriceCharting Drogon (Iron) #16 cross-check:
+--     https://www.pricecharting.com/game/funko-pop-game-of-thrones/drogon-iron-16
+--   Retail cross-checks for Mag the Mighty #48 identify it as a 6-inch Summer Convention exclusive.
+--
+-- Live changes made:
+--   * Set Game of Thrones catalog rows to draft set_total 149.
+--   * Corrected Drogon [Iron] #16 to Drogon (Iron), variant Iron.
+--   * Corrected Mag the Mighty #48 to Jumbo style and Summer Convention exclusivity.
+--   * Added UPC overrides for Drogon (Iron) and Mag the Mighty.
+--
+-- Verification after live update:
+--   Game of Thrones: 72 catalog rows / 73 owned quantity.
+--   Game of Thrones catalog rows now have min/max set_total 149.
+--   Game of Thrones set source remains draft until the full checklist rows are extracted.
+--
+-- Denominator note:
+--   FunkyPriceGuide reports 149 Funko Pops in the complete Game of Thrones category.
+--   This is useful for the first ownership percentage, but the checklist rows should
+--   still be extracted separately because sources split Pop! Vinyl, Pop! Sets, Rides,
+--   Digital/NFT, and other formats differently.
+--
+-- Full-pass addendum applied 2026-07-07:
+--   * Replaced the draft 149 total with reviewed total 129.
+--   * Seeded 129 checklist rows from Hero Habit:
+--       117 Funko Pop Game of Thrones rows.
+--       6 Game of Thrones Pop Digital/NFT redemption rows.
+--       6 Game of Thrones Pop Rides rows.
+--   * Excluded House of the Dragon and non-Pop product families from this set total.
+--   * Marked the Game of Thrones set reviewed at 0.90 confidence.
+--   * Normalized checklist labels for Jumbo, Deluxe, Rides, Digital, Moments,
+--     combo packs, and Glow in the Dark variants.
+--   * Corrected owned catalog styles for Drogon #46, Rhaegal #47, Wun Wun #55,
+--     and The Mountain (Unmasked) #85.
+--   * Corrected high-confidence owned catalog labels:
+--       Ned Stark on Throne #93, Jon Snow (Castle Black) #26,
+--       Tyrion Lannister (Essos) #50, Cersei Lannister (Queen) #51,
+--       Tormund Giantsbane #53, Daenerys Targaryen (Beyond the Wall) #59,
+--       Bran Stark (Three-Eyed Raven) #67, Night King (Crystal) #84,
+--       Khal Drogo (with Daggers) #90, and Robb Stark (with Sword) #91.
+--
+-- Verification after full pass:
+--   Game of Thrones set summary: reviewed, required_count 129, checklist_count 129.
+--   Owned coverage: 72 unique catalog rows / 73 owned quantity / 55.8% owned.
+--   Catalog rows: 72 rows, min/max set_total 129.
+--   Linked checklist rows: 67 distinct catalog links.
+--   Common variant cleanup: 0 Game of Thrones rows still use variant = Common.
+--
+-- Follow-up note:
+--   The remaining unlinked owned rows are mostly Iron Anniversary/source-gap rows
+--   that should be handled as a supplemental mini-pass before changing the
+--   denominator beyond the 129 reviewed Hero Habit rows.

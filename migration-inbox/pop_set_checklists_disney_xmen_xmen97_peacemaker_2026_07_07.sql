@@ -1,0 +1,61 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Disney umbrella cleanup, X-Men/X-Men '97 cleanup, and Peacemaker reviewed checklist.
+--
+-- Sources reviewed:
+-- - FigureRealm X-Men franchise overview:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6281
+-- - FigureRealm X-Men '97 Pop checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6281&ssid=9
+-- - FigureRealm X-Men '97 Pop Plus checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6281&ssid=10
+-- - FigureRealm Peacemaker checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3928
+-- - Target Cyclops Wasteland #1596 listing:
+--   https://www.target.com/p/funko-pop-marvel-x-men-39-97-cyclops-wasteland-target-exclusive/-/A-94638470
+--
+-- Live database changes already applied:
+-- - Split broad Disney-owned rows into narrower sets:
+--   - Mickey Mouse
+--   - Lilo & Stitch
+--   - Disney Holiday
+-- - Cleaned selected X-Men owned rows:
+--   - Quicksilver #179
+--   - Dark Phoenix #422
+--   - Gambit #904
+--   - Dazzler #1506 Diamond Collection San Diego Comic-Con
+-- - Split Apocalypse #1459 and Blink #1458 into X-Men: Age of Apocalypse.
+-- - Cleaned X-Men '97 owned rows:
+--   - Cyclops (Wasteland) #1596 Target
+--   - Jean Grey #1287 Marvel Collector Corps
+--   - Goblin Queen #1304 New York Comic-Con, not Chase
+--   - Jubilee #1536 common and Chase
+--   - Storm #1539
+--   - Bastion Nimrod #1541 Chase, Pop Plus
+-- - Cleaned Peacemaker owned row names:
+--   - Peacemaker (In Underwear) #1233
+--   - Peacemaker (Shield) #1237
+--
+-- Reviewed checklist totals loaded:
+-- - Peacemaker: 10 rows, 10 owned rows linked.
+-- - X-Men '97: 30 rows, 10 owned rows linked.
+--   - 27 FigureRealm Pop rows.
+--   - 2 FigureRealm Pop Plus rows.
+--   - 1 Target-confirmed Cyclops Wasteland #1596 supplemental row.
+--
+-- Set totals updated on owned catalog rows:
+-- - Peacemaker set_total = 10.
+-- - X-Men '97 set_total = 30.
+-- - X-Men set_total = 55 from the FigureRealm X-Men Pop subset.
+--
+-- Validation:
+-- - Touched Disney, X-Men, X-Men '97, Age of Apocalypse, and Peacemaker rows
+--   have 0 missing owned images and 0 needs_review flags.
+-- - No ownership quantities, paid values, or current values were changed.
+-- - lookup_pop parser overrides were added for corrected owned rows.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.
+-- - Disney did not receive reviewed set checklists; this pass only separated
+--   obvious umbrella rows into better owned set labels.

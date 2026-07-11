@@ -1,0 +1,45 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: focused owned-row cleanup for the broad Deadpool family.
+--
+-- Sources:
+--   Figure Realm Deadpool checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1339&series=deadpoolfunko&ssid=-1
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1339&ns=40&series=deadpoolfunko&ssid=-1
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1339&ns=80&series=deadpoolfunko&ssid=-1
+--   Funko Wade Wilson (Baby Legs) official cross-check:
+--     https://funko.com/pop-wade-wilson-baby-legs/80853.html
+--   Funko Holiday Deadpool in Ugly Sweater official cross-check:
+--     https://funko.com/pop-holiday-deadpool-in-ugly-sweater/72187.html
+--   PriceCharting Domino #315 cross-check:
+--     https://www.pricecharting.com/game/funko-pop-marvel/domino-315
+--   Funko regional Deadpool Finale cross-check:
+--     https://funko.com/at/pop-plus-deadpool-time-ripper/89326.html
+--
+-- Live changes made:
+--   * Corrected 16 owned Deadpool-related catalog rows.
+--   * Moved Domino into Deadpool as #315.
+--   * Moved Deadpool Finale #1567 back into Deadpool & Wolverine as Pop! Plus.
+--   * Corrected Wade Wilson (Baby Legs) to #1581 and cleared the generic Common variant.
+--   * Corrected Holiday Deadpool in Ugly Sweater to Marvel Holiday #1283.
+--   * Corrected Deadpool on Scooter to Pop! Rides / Ride.
+--   * Corrected Deadpool vs. Cable to Pop! Moments / Moment.
+--   * Normalized Dinopool Black and Ninja Deadpool to Marvel Collector Corps.
+--   * Cleared all remaining generic Common variants in the reviewed Deadpool-related rows.
+--   * Linked Deadpool Finale #1567 to the existing Deadpool & Wolverine checklist row.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these
+--     identity corrections.
+--
+-- Verification after live update:
+--   Deadpool: 42 rows, 0 missing numbers, 0 missing images, 0 needs_review,
+--     0 Common variants; styles: Moment, Ride, Standard.
+--   Deadpool & Wolverine: 12 owned rows, 18 reviewed checklist rows,
+--     12 linked checklist rows.
+--   Deadpool Legacy Collection: 1 row, 0 missing numbers/images/review flags.
+--   Marvel Holiday Deadpool-related rows: 5 rows, 0 missing numbers/images/review flags.
+--
+-- Deferred:
+--   * Standalone Deadpool was saved as a draft pop_sets row with confidence 0.82.
+--     Figure Realm shows 97 Deadpool universe entries, but that includes Dorbz,
+--     Pop! Pins, and an ornament. The Pop-family denominator should be extracted
+--     into pop_set_checklist_items before marking the set reviewed so Shelf Stats
+--     does not show a misleading completion percent.

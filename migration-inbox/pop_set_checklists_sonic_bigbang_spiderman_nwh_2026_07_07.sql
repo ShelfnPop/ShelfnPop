@@ -1,0 +1,54 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Justice League x Sonic, The Big Bang Theory, and Spider-Man: No Way Home.
+--
+-- Sources reviewed:
+-- - Target / Funko retail pages for the Justice League x Sonic 2025 crossover:
+--   https://www.target.com/p/funko-pop-heroes-dc-justice-league-dead-silver-gl-figure/-/A-94663107
+--   https://www.target.com/p/funko-pop-heroes-dc-justice-league-dead-and-sonic-shadow-batman-figure/-/A-94663105
+--   https://www.target.com/p/funko-pop-heroes-dc-justice-league-dead-and-sonic-sonic-flash-figure/-/A-94663102
+-- - FigureRealm The Big Bang Theory Pop! Vinyl checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=637
+-- - FigureRealm Spider-Man: No Way Home Pop! Vinyl checklist:
+--   https://ns1.figurerealm.com/actionfigure?action=seriesitemlist&id=4910&mode=2&series=spidermannowayhomefunko&ssid=3
+-- - UPC-specific checks for Raj Koothrappali as Aquaman #832 and Spider-Man #1073.
+--
+-- Live database changes already applied:
+-- - Justice League x Sonic:
+--   - Added reviewed 6-row checklist.
+--   - Set total = 6.
+--   - Corrected owned rows:
+--     - Shadow as Batman #591.
+--     - Sonic as The Flash #593.
+--     - Tails as Cyborg #594.
+--     - Amy as Wonder Woman #595.
+--     - Knuckles as Superman #596.
+--   - Silver as Green Lantern #592 was added to the checklist as the missing row.
+-- - The Big Bang Theory:
+--   - Added reviewed 34-row Pop! Vinyl checklist.
+--   - Set total = 34.
+--   - Corrected UPC 889698417044 from plain Raj Koothrappali to
+--     Raj Koothrappali as Aquaman #832, San Diego Comic-Con.
+-- - Spider-Man: No Way Home:
+--   - Added reviewed 38-row Pop! Vinyl checklist.
+--   - Set total = 38.
+--   - Corrected:
+--     - Statue of Liberty #1123.
+--     - The Amazing Spider-Man #1171, Unmasked PX Previews.
+--     - Spider-Man #1073 cleaned to Spider-Man (Unmasked), AAA Anime Exclusive.
+--
+-- Validation:
+-- - Touched owned rows have 0 needs_review flags.
+-- - Touched owned rows have 0 missing images.
+-- - Reviewed checklist counts:
+--   - Justice League x Sonic: 6 rows.
+--   - The Big Bang Theory: 34 rows.
+--   - Spider-Man: No Way Home: 38 rows.
+-- - No ownership quantities, paid values, or current values were changed.
+-- - lookup_pop parser overrides were added for corrected owned UPCs.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.
+-- - Spider-Man #1073 was not forced to Chase because marketplace/source data
+--   shows shared UPC ambiguity; the user can mark the shelf item Chase if needed.

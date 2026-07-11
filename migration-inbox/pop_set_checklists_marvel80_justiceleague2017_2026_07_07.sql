@@ -1,0 +1,59 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Marvel 80th Anniversary and Justice League (2017) reviewed set cleanup.
+--
+-- Sources reviewed:
+-- - FigureRealm 80 Years Pop! - Marvel checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3263&ssid=16
+-- - Funko official Lady Deadpool listing:
+--   https://funko.com/pop-marvel-80th---lady-deadpool/44333.html
+-- - FigureRealm Justice League Funko checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2855&ssid=-1
+-- - FigureRealm Justice League Pop! Vinyl Figures subseries:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2855&ssid=5
+--
+-- Live database changes already applied:
+-- - Created/updated reviewed pop_sets rows for:
+--   - Marvel 80th Anniversary
+--   - Justice League (2017)
+-- - Seeded reviewed checklist rows:
+--   - Marvel 80th Anniversary: 40 required rows.
+--   - Justice League (2017): 20 required rows.
+-- - Updated owned catalog set_total values:
+--   - Marvel 80th Anniversary set_total = 40.
+--   - Justice League (2017) set_total = 20.
+--
+-- Marvel 80th notes:
+-- - FigureRealm lists 39 rows for 80 Years Pop!.
+-- - Funko official product data confirms Lady Deadpool #549 as POP Marvel: 80th,
+--   so the app denominator was set to 40.
+-- - Cleaned owned names including:
+--   Spider-Man (1st Appearance), Beast (1st Appearance),
+--   Angel (1st Appearance), Thanos (1st Appearance),
+--   Captain Marvel (Mar-Vell) (1st Appearance),
+--   Deadpool (1st Appearance), Wolverine (1st Appearance),
+--   Beta Ray Bill (1st Appearance), and Vulture (1st Appearance).
+--
+-- Justice League (2017) notes:
+-- - Treated as the 2017 movie Pop subset.
+-- - Included movie Pop! Vinyl rows and the Batman / Aquaman and
+--   The Flash / Superman (Racing) 2-packs.
+-- - Excluded the broader comic Justice League, Justice League Unlimited,
+--   Pop! Pins, Comic Covers, and Zack Snyder's Justice League rows.
+-- - Two missing rows remain for completion:
+--   Superman #207 and Wonder Woman (Gold) #206.
+-- - Two owned 2-packs intentionally have no single box number.
+--
+-- Parser changes made in shelf-n-pop-expo/supabase/functions/lookup_pop/index.ts:
+-- - Added UPC safeguards for owned Marvel 80th rows.
+-- - Added UPC safeguards for owned Justice League (2017) rows.
+--
+-- Verification after live changes:
+-- - Marvel 80th Anniversary: 11 of 40 owned, 29 missing, 0 missing owned images,
+--   0 needs_review flags.
+-- - Justice League (2017): 18 of 20 owned, 2 missing, 0 missing owned images,
+--   0 needs_review flags.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.

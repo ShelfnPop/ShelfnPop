@@ -1,0 +1,26 @@
+-- Audit note: reviewed set-completion checklist pass for Shelf-n-Pop.
+-- Applied directly to Supabase on 2026-07-06.
+--
+-- Sources:
+-- - Monty Python and the Holy Grail (Funko), Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3568
+-- - Star Trek Beyond Pop!, Figure Realm:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5015&ssid=1
+--
+-- Data cleanup performed:
+-- - Consolidated duplicate Monty Python French Taunter catalog row into the
+--   canonical UPC row and preserved ownership as quantity 2.
+-- - Renamed Tim El Mago Monty Python to Tim the Enchanter.
+-- - Renamed Star Trek Beyond "Beyond Uhura" to Uhura.
+-- - Renamed Star Trek Beyond "Chekov Survival Suit" to
+--   Chekov (Survival Suit) and set exclusivity to GameStop.
+--
+-- Reviewed set totals added:
+-- - Monty Python And The Holy Grail: 6 required checklist items.
+-- - Star Trek Beyond: 11 required checklist items.
+--
+-- Verification after apply:
+-- - Monty Python And The Holy Grail: 4 unique owned, 5 owned quantity,
+--   6 required, 66.7% complete.
+-- - Star Trek Beyond: 6 unique owned, 6 owned quantity,
+--   11 required, 54.5% complete.

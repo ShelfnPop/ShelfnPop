@@ -1,0 +1,40 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: Guardians of the Galaxy Vol. 2 and Guardians of the Galaxy Vol. 3.
+-- Sources:
+--   Vol. 2 Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2291
+--   Vol. 3 Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2292&mode=2&series=guardiansofthegalaxyvolume3funko
+--   Vol. 3 Collector Corps cross-checks:
+--     https://www.pricecharting.com/game/funko-pop-marvel/adam-warlock-1214
+--     https://www.pricecharting.com/game/funko-pop-marvel/ayesha-1215
+--
+-- Live changes made:
+--   * Seeded reviewed Guardians of the Galaxy Vol. 2 checklist with 29 required items.
+--     Total includes Pop! Vinyl Figures and Pop! Sets; excludes Hero Plushies.
+--   * Seeded reviewed Guardians of the Galaxy Vol. 3 checklist with 27 required items.
+--     Total includes Pop! Vinyl Figures and Pop! Sets; excludes Pocket Keychains and Soda.
+--   * Added Collector Corps Adam Warlock #1214 to Vol. 3 even though it is absent from the Figure Realm checklist.
+--   * Updated Vol. 2 owned catalog labels:
+--       Star-Lord #198 Chase -> Star-Lord (Masked)
+--       Rocket #201 -> Rocket (Jetpack)
+--       Groot #208 -> Groot (Shield)
+--       Drax With Groot #262 -> Drax (with Groot)
+--       Groot #280 -> Groot (Eye)
+--       Groot #1222 -> Groot (with Bomb)
+--   * Updated Vol. 3 owned catalog labels:
+--       Groot #25 -> Groot #1203
+--       Groot #1213 -> Groot (Wings)
+--       Mantis #1212 -> Mantis (Green Suit)
+--       High Evolutionary #2023 -> The High Evolutionary #1289
+--       Ayesha #1215 and Adam Warlock #1214 -> Collectors Corps exclusivity
+--
+-- Verification after live update:
+--   Guardians of the Galaxy Vol. 2: 11 owned unique / 29 required = 37.9%.
+--   Guardians of the Galaxy Vol. 3: 14 owned unique / 27 required = 51.9%.
+--   Guardians of the Galaxy Vol. 2: 11 linked checklist rows.
+--   Guardians of the Galaxy Vol. 3: 14 linked checklist rows.
+--
+-- Deferred:
+--   * Guardians of the Galaxy Vol. 1 / broad Guardians remains mixed with Holiday Special,
+--     Gamerverse/comic-cover style items, and possible misplaced Marvel rows, so it was not marked reviewed.

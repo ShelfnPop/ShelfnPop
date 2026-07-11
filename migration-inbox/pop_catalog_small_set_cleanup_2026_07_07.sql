@@ -1,0 +1,61 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: small high-confidence set cleanup batch.
+--
+-- Sets touched:
+--   * Clueless
+--   * Five Nights at Freddy's
+--   * Five Nights at Freddy's: Help Wanted 2
+--   * Supergirl
+--   * Peacemaker
+--
+-- Sources:
+--   Clueless Tai #1809:
+--     https://www.bestbuy.com/product/funko-pop-movies-clueless-tai-30th-anniversary-collectibles-multicolor/J3ZK3X79KX
+--   Clueless Cher Horowitz #1810:
+--     https://www.target.com/p/funko-pop-movies-sayings-clueless-cher-as-if-vinyl-figure-1810-83873/-/A-1010199024
+--   Funko Withered Bonnie #1083:
+--     https://funko.com/pop-withered-bonnie/83864.html
+--   Funko Withered Chica #1084:
+--     https://funko.com/pop-withered-chica/83865.html
+--   Funko Withered Foxy #1085:
+--     https://funko.com/pop-withered-foxy/83866.html
+--   Funko Tiger Rock #1153:
+--     https://funko.com/hu/pop-tiger-rock/91821.html
+--   Funko DJ Music Man #1131:
+--     https://funko.com/pop-dj-music-man-help-wanted-2/86117.html
+--   Funko Jack-O-Moon #1133:
+--     https://funko.com/pop-jack-o-moon/88555.html
+--   Funko Supergirl with Puppy Krypto #633:
+--     https://funko.com/pop-buddy-supergirl-with-puppy-krypto/90801.html
+--   Funko Kara Zor-El with Cedric #634:
+--     https://funko.com/pop-kara-zor-el-with-cedric/90795.html
+--   Funko Lobo #636:
+--     https://funko.com/pop-lobo/90800.html
+--   Funko Peacemaker in Briefs #1233:
+--     https://funko.com/pop-peacemaker-in-briefs/64182.html
+--   Funko Peacemaker with Peace Sign #1260:
+--     https://funko.com/pop-peacemaker-with-peace-sign/65200.html
+--   Funko Peacemaker on Peacecycle #146:
+--     https://funko.com/pop-rides-peacemaker-on-peacecycle/91991.html
+--
+-- Live changes made:
+--   * Corrected 16 owned catalog rows.
+--   * Cleared missing box numbers for Clueless, Five Nights at Freddy's,
+--     Help Wanted 2, and Supergirl rows in this batch.
+--   * Corrected Supergirl rows to Pop! Heroes and Pop! & Buddy where applicable.
+--   * Corrected Peacemaker with Eagly, Peacemaker in Briefs, Peacemaker with
+--     Peace Sign, Peacemaker on Peacecycle, and Peacemaker Introduction labels.
+--   * Added matching lookup_pop UPC overrides so future scans preserve these
+--     identity corrections.
+--
+-- Verification after live update:
+--   Clueless: 4 rows, 0 missing numbers/images/review flags/Common variants.
+--   Five Nights at Freddy's: 7 rows, 0 missing numbers/images/review flags/Common variants.
+--   Five Nights at Freddy's: Help Wanted 2: 2 rows, 0 missing numbers/images/review flags/Common variants.
+--   Supergirl: 3 rows, 0 missing numbers/images/review flags/Common variants.
+--   Peacemaker: 10 rows, 1 missing number/images 0/review flags 0/Common variants 0.
+--
+-- Deferred:
+--   * Peacemaker Introduction remains without a box number. It is confirmed as
+--     a Pop! Moments Deluxe / DC Shop item, but no reliable box number was found
+--     in this pass.

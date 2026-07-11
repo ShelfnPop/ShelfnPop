@@ -1,0 +1,81 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-07.
+-- Scope: remaining Deadpool broad-bucket split after Deadpool 30th and Legacy passes.
+--
+-- Sources:
+--   Funko Deadpool Literary Classics official product pages:
+--     https://funko.com/pop-plus-deadpool-as-cthulhu/83984.html
+--     https://funko.com/pop-plus-deadpool-as-cthulhu-glow/84892.html
+--     https://funko.com/pop-plus-deadpool-as-don-quixote/83985.html
+--     https://funko.com/pop-plus-deadpool-as-long-john-silver/83986.html
+--     https://funko.com/pop-plus-deadpool-as-jacob-marley/83987.html
+--   Funko Deadpool Parody official vault cross-check:
+--     https://funko.com/pop-deadpool-parody/30850.html
+--   Figure Realm Deadpool checklist cross-check:
+--     https://figurerealm.com/actionfigure?action=seriesitemlist&id=1339&series=deadpoolfunko&ssid=-1
+--   Deadpool Shenanigans retail bundle/listing cross-checks:
+--     https://www.amazon.com/Funko-Pop-Deadpool-Set-Lederhosen/dp/B0CTHWF1JF
+--     https://realpopmania.com/collections/deadpool
+--
+-- Live changes made:
+--   * Created reviewed Deadpool Literary Classics set total: 5 required rows.
+--       #1491 Deadpool as Cthulhu
+--       #1491 Deadpool as Cthulhu / Glow in the Dark / Funko Shop / 750 pieces
+--       #1492 Deadpool as Don Quixote
+--       #1493 Deadpool as Long John Silver
+--       #1494 Deadpool as Jacob Marley
+--     Owned rows linked: 4. Missing row: glow Cthulhu.
+--
+--   * Created reviewed Deadpool Parody set total: 18 required rows.
+--       #314 Cable
+--       #315 Domino
+--       #316 Colossus
+--       #317 Negasonic Teenage Warhead
+--       #318 Deadpool vs. Cable
+--       #319 Deadpool as Bob Ross
+--       #320 Deadpool Parody
+--       #321 Mermaid Deadpool
+--       #321 Mermaid Deadpool / Metallic
+--       #322 Clown Deadpool
+--       #323 Chicken Deadpool
+--       #324 Wizard Deadpool
+--       #325 Cheerleader Deadpool
+--       #326 King Deadpool
+--       #327 Bedtime Deadpool
+--       #328 Pandapool
+--       #328 Pandapool / Chase
+--       #329 Samurai Deadpool
+--     Owned rows linked: 14. Missing rows: Negasonic, Mermaid common,
+--     Clown, and Pandapool common.
+--
+--   * Moved Colossus #316 from X-Men to Deadpool Parody so the reviewed wave
+--     owns it in the app's set breakdown.
+--
+--   * Created reviewed Deadpool Shenanigans set total: 6 required rows.
+--       #1340 Beauty Pageant Deadpool
+--       #1341 Lederhosen Deadpool
+--       #1342 Bowling Deadpool
+--       #1343 Heavy Metal Deadpool
+--       #1344 Sleepover Deadpool
+--       #1345 Tourist Deadpool
+--     Owned rows linked: 1. Missing rows: 5.
+--
+--   * Updated lookup_pop UPC overrides and deployed the edge function so future
+--     scans preserve the Deadpool Parody, Deadpool Literary Classics, and
+--     Deadpool Shenanigans buckets.
+--
+-- Verification after live update:
+--   Deadpool & Wolverine: reviewed, 18 required.
+--   Deadpool 30th: reviewed, 14 required.
+--   Deadpool Legacy Collection: reviewed, 3 required.
+--   Deadpool Literary Classics: reviewed, 5 required.
+--   Deadpool Parody: reviewed, 18 required.
+--   Deadpool Shenanigans: reviewed, 6 required.
+--   Deadpool-related catalog buckets have 0 missing numbers, 0 missing images,
+--   and 0 review flags.
+--
+-- Deferred:
+--   * Broad Deadpool remains draft with 15 owned rows. It now contains mostly
+--     classic/early releases, Deadpool on Scooter, Pride #320, Lady Deadpool,
+--     Teddy Pants, Artist, Safari, Bunny, and Pumpkin Spice. Do not mark the
+--     broad denominator reviewed until the classic variants and one-off/themed
+--     rows are intentionally modeled.

@@ -1,0 +1,30 @@
+-- Five Nights at Freddy's owned-row cleanup, 2026-07-07
+-- Evidence:
+-- - Figure Realm Five Nights at Freddy's Pop! Vinyl Figures checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1851&ssid=15
+-- - Figure Realm series index lists Pop! Vinyl Figures [103]:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1851
+-- - Funko source checks used for Ruined Chica #986 and DJ Music Man #1131.
+--
+-- Summary:
+-- - Normalized 13 owned/catalog rows into set_name = Five Nights at Freddy's.
+-- - Set pop_type = Pop! Games and set_total = 103 on those rows.
+-- - Preserved owned quantities and user_collection_items values.
+-- - No missing images after the pass.
+-- - pop_sets metadata remains draft because the full 103-item checklist was not
+--   loaded into checklist rows in this pass.
+--
+-- Current verified owned rows:
+--   889698642323  Freddy (Tie-Dye)                     #878   Tie-Dye
+--   889698676250  Balloon Bonnie                       #909
+--   889698724869  Snow Chica                           #939   Holiday
+--   889698724715  Ruined Chica                         #986
+--   889698830911  Withered Golden Freddy               #1033
+--   889698871167  Freddy Fazbear (10th Anniversary)    #1060  10th Anniversary
+--   889698838641  Withered Bonnie                      #1083
+--   889698838658  Withered Chica                       #1084
+--   889698838665  Withered Foxy                        #1085
+--   889698883023  Eclipse                              #1109  Glow in the Dark, GameStop
+--   889698861175  DJ Music Man                         #1131
+--   889698885553  Jack-O-Moon                          #1133  Hot Topic
+--   889698918213  Tiger Rock                           #1153  TargetCon

@@ -1,0 +1,64 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Supernatural, Mean Girls, The Dark Knight Trilogy, and Batman 85 Years set review.
+--
+-- Sources reviewed:
+-- - FigureRealm Supernatural Pop! Vinyl checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5341&ssid=5
+-- - FigureRealm Mean Girls Pop! Vinyl checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3378&ssid=1
+-- - FigureRealm Dark Knight Trilogy Pop checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=29
+-- - Funko official Dark Knight Joker Glow 2-pack listing:
+--   https://funko.com/pop-dark-knight-the-joker-glow-2-pack/3899.html
+-- - FigureRealm Batman 85 Years Pop checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=11
+--
+-- Live database changes already applied:
+-- - Created/updated reviewed pop_sets rows for:
+--   - Supernatural
+--   - Mean Girls
+--   - The Dark Knight Trilogy
+--   - Batman 85 Years
+-- - Seeded reviewed checklist rows:
+--   - Supernatural: 29 required rows.
+--   - Mean Girls: 9 required rows.
+--   - The Dark Knight Trilogy: 5 required rows.
+--   - Batman 85 Years: 17 required rows.
+-- - Updated owned catalog set_total values:
+--   - Supernatural set_total = 29.
+--   - Mean Girls set_total = 9.
+--   - The Dark Knight Trilogy set_total = 5.
+--   - Batman 85 Years set_total = 17.
+--
+-- Notes:
+-- - Supernatural denominator is Pop! Vinyl only; excludes Dorbz, Pocket Keychains,
+--   Rides, and Pop! Sets.
+-- - Mean Girls includes the original 2016 Pops, 20th Anniversary wave, and
+--   Regina (Make Fetch Happen).
+-- - The Dark Knight Trilogy includes the four FigureRealm rows plus the Funko
+--   confirmed Glow in the Dark Joker 2-pack.
+-- - Batman 85 Years includes Two-Face #371 because FigureRealm lists that NFT
+--   release inside the Batman 85 Years Pop subseries; the owned row remains
+--   typed as Pop! Digital with limited_count = 5000.
+--
+-- Parser changes made in shelf-n-pop-expo/supabase/functions/lookup_pop/index.ts:
+-- - Added UPC safeguards for owned Supernatural rows.
+-- - Added UPC safeguards for owned Mean Girls rows.
+-- - Added UPC safeguards for owned Dark Knight Trilogy rows.
+-- - Updated the Batman 85 Two-Face safeguard from Batman 85th Series 2 to
+--   Batman 85 Years.
+--
+-- Verification after live changes:
+-- - Supernatural: 3 of 29 owned, 26 missing, 0 missing owned images,
+--   0 needs_review flags.
+-- - Mean Girls: 4 of 9 owned, 5 missing, 0 missing owned images,
+--   0 needs_review flags.
+-- - The Dark Knight Trilogy: 2 of 5 owned, 3 missing, 0 missing owned images,
+--   0 needs_review flags.
+-- - Batman 85 Years: 1 of 17 owned, 16 missing, 0 missing owned images,
+--   0 needs_review flags.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.

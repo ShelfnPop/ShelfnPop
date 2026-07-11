@@ -1,0 +1,39 @@
+-- Four-set reviewed checklist batch, 2026-07-07
+-- Live Supabase data update already applied.
+--
+-- Sources:
+-- - Doctor Strange in the Multiverse of Madness:
+--   https://www.mypopfigures.com/pop?action=seriesitemlist&figures=doctorstrangeinthemultiverseofmadnessfunko&id=1493
+-- - Thor: Ragnarok:
+--   https://www.mypopfigures.com/pop?action=seriesitemlist&id=5507&ssid=6
+-- - Guardians of the Galaxy:
+--   https://www.mypopfigures.com/pop?action=seriesitemlist&id=2294&ssid=14
+-- - Loki:
+--   https://www.mypopfigures.com/pop?action=seriesitemlist&id=3082&ssid=-1
+--
+-- Reviewed checklist totals loaded:
+-- - Doctor Strange in the Multiverse of Madness: 25 rows
+-- - Thor: Ragnarok: 24 rows
+-- - Guardians of the Galaxy: 35 rows
+-- - Loki: 28 rows, scoped to Loki TV Pop rows and related Pop moments/sets
+--
+-- Owned-row cleanup included:
+-- - Stan Lee in Ragnarok Outfit corrected to Thor: Ragnarok #655.
+-- - Loki bucket narrowed by moving non-TV rows out:
+--   Loki #36 -> Marvel Comics
+--   Hulk Smashing Loki #362 -> Marvel Studios 10
+--   Loki with Tesseract #747 -> Avengers: Endgame
+--   Frost Giant Loki #972 -> What If...?
+--   Lady Loki #1029 -> Marvel Comics
+--   Loki with Scepter #985 -> Avengers
+--   Loki (Agent of Asgard) #1247 -> Marvel Comics
+--   Frost Giant Loki #1269 -> Marvel Comics
+-- - Guardians comic rows moved out of the movie checklist:
+--   Groot Comic Cover #12 -> Guardians of the Galaxy Comics
+--   Rocket Raccoon (Classic) #396 -> Guardians of the Galaxy Comics
+--
+-- Validation:
+-- - All four canonical sets are marked reviewed in pop_sets.
+-- - No ownership quantities, paid values, or current values were changed.
+-- - Missing-image and needs-review counts remained 0 for the reviewed sets.
+-- - lookup_pop parser overrides were deployed for the corrected owned rows.

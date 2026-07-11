@@ -1,0 +1,32 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Batman v Superman re-pass after UI review.
+--
+-- Sources reviewed:
+-- - FigureRealm Batman v Superman Pop! checklist:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=25
+-- - UPC spot checks:
+--   - 889698115285: Wonder Woman (Sepia) #86, Walmart.
+--   - 889698106474: Wonder Woman (Patina) #86.
+--   - 849803060275: Wonder Woman #86.
+--
+-- Live database changes already applied:
+-- - Renamed set display from Batman V. Superman Dawn Of Justice to
+--   Batman v Superman: Dawn of Justice.
+-- - Normalized owned rows to Pop! Heroes.
+-- - Corrected UPC 889698115285 from duplicate plain Wonder Woman to
+--   Wonder Woman (Sepia) #86, Walmart.
+-- - Corrected Aquaman Patina display name for UPC 889698102643.
+-- - Rebuilt the reviewed 16-row checklist so owned rows link correctly.
+-- - Preserved set_total = 16.
+--
+-- Validation target:
+-- - 16 checklist rows.
+-- - 14 linked owned catalog rows.
+-- - Missing rows should be Superman #85, the base Batman vs Superman moment,
+--   and any genuinely unowned row only.
+-- - No ownership quantities, paid values, current values, or images changed.
+--
+-- Parser:
+-- - lookup_pop overrides and the set-name normalizer were updated to use
+--   Batman v Superman: Dawn of Justice.

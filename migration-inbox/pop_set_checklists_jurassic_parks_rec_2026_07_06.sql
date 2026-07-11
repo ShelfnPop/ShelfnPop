@@ -1,0 +1,37 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: Jurassic World: Dominion and Parks and Recreation.
+-- Sources:
+--   Jurassic World: Dominion Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2844&mode=1&series=jurassicworlddominionfunko&ssid=1
+--   Jurassic World: Dominion Owen Grady official Funko cross-check:
+--     https://funko.com/pop-owen-grady/55295.html
+--   Jurassic World: Dominion T. Rex official Funko cross-check:
+--     https://funko.com/pop-t.rex/62222.html
+--   Parks and Recreation Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3920
+--   Ann Perkins Pawnee Goddesses official Funko cross-check:
+--     https://funko.com/pop-ann-perkins-pawnee-goddesses/72655.html
+--
+-- Live changes made:
+--   * Seeded reviewed Jurassic World: Dominion checklist with 26 required Pop! Vinyl rows.
+--     Total includes the Figure Realm Dominion Pop! Vinyl list, including 2024 Funko Fusion/fossil rows.
+--   * Cleaned owned Jurassic rows for Atrociraptor (Ghost), T. Rex,
+--     Atrociraptor (Tiger), and Atrociraptor (Ghost) (Lunging).
+--   * Seeded reviewed Parks and Recreation checklist with 40 required rows.
+--     Total includes Pop! Vinyl Figures plus Pop! Sets; excludes Soda.
+--   * Cleaned owned Parks rows for Andy (As Princess Rainbow Sparkle), Janet Snakehole,
+--     Jeremy Jamm, Ann Perkins (Pawnee Goddesses), April Ludgate (Pawnee Goddesses),
+--     Ron Swanson (Pawnee Rangers), April Ludgate (Scissors), and Ron Swanson (Pyramid of Greatness).
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these identity corrections.
+--
+-- Verification after live update:
+--   Jurassic World: Dominion: 10 owned unique / 26 required = 38.5%.
+--   Jurassic World: Dominion: 26 checklist rows, 10 linked catalog rows.
+--   Parks and Recreation: 8 owned unique / 40 required = 20.0%.
+--   Parks and Recreation: 40 checklist rows, 9 linked catalog rows.
+--
+-- Deferred:
+--   * Jurassic World: Dominion has one owned duplicate Maisie collection row; completion uses unique catalog ownership.
+--   * Therizinosaurus #1206 appears in Figure Realm as Blue and Green variants; owned UPC sources name it without color,
+--     so the catalog row remains uncolored and the checklist keeps a lower-confidence Green row.
+--   * Lord of the Rings still has a duplicate capitalization bucket and needs a separate deeper pass.

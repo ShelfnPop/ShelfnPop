@@ -1,0 +1,41 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: The Simpsons, Thor: Love and Thunder, and WandaVision.
+--
+-- Sources:
+--   The Simpsons FunkyPriceGuide checklist:
+--     https://funkypriceguide.com/checklist/funko-pop-the-simpsons/
+--     https://funkypriceguide.com/api/checklists/funko-pop-the-simpsons/collectibles?ctid=1&page=1&perPage=100
+--   WandaVision FunkyPriceGuide checklist:
+--     https://funkypriceguide.com/checklist/funko-pop-wandavision/
+--     https://funkypriceguide.com/api/checklists/funko-pop-wandavision/collectibles?ctid=1&page=1&perPage=100
+--   Funko official item pages used for high-confidence row checks:
+--     https://funko.com/pop-itchy/52958.html
+--     https://funko.com/pop-scratchy/52961.html
+--     https://funko.com/pop-billy-and-tommy-halloween-2-pack/54315.html
+--     https://funko.com/pop-scarlet-witch-black-light/62746.html
+--   Thor: Love and Thunder partial source check:
+--     https://funkypriceguide.com/checklist/funko-pop-thor-love-and-thunder/
+--
+-- Live changes made:
+--   * Corrected Simpsons identity rows including Itchy #903, Scratchy #904,
+--     Lard Lad #906, Sideshow Bob #774, Fallout Boy #1655, Mr. Plow Homer #910,
+--     Mr. Sparkle #1465, Milhouse #765, and Treehouse of Horror casing/splits.
+--   * Corrected WandaVision rows including Vision (70s) #718 GameStop,
+--     Scarlet Witch #823 Glow in the Dark Entertainment Earth, Scarlet Witch
+--     (Black Light) #986 Target, and Billy and Tommy (Halloween) 2-Pack.
+--   * Corrected Thor: Love and Thunder common Mighty Thor #1041 by removing
+--     the Collectors Corps exclusivity from the common UPC.
+--   * Created/updated a reviewed WandaVision set row and seeded 16 required
+--     checklist rows from FunkyPriceGuide.
+--   * Created/updated draft The Simpsons and Thor: Love and Thunder set rows.
+--   * Updated lookup_pop UPC overrides so future refreshes keep these identities.
+--
+-- Notes:
+--   * WandaVision is reviewed and should now show set completion in the app.
+--   * The Simpsons remains draft because FPG's 70-item checklist is an umbrella
+--     list that mixes core Simpsons with Treehouse of Horror. Because the app
+--     separates those sets, the denominator needs a split review before it is
+--     safe to expose completion percentages.
+--   * Thor: Love and Thunder remains draft because the public FPG API only
+--     exposed one item during review, despite the live catalog having many rows.
+--   * No catalog values were intentionally changed in this pass.

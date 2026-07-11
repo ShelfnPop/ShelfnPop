@@ -1,0 +1,51 @@
+-- Shelf-n-Pop catalog audit note
+-- Date: 2026-07-07
+-- Scope: Toy Story, Batman v Superman, and Fantastic Four set cleanup.
+--
+-- Sources reviewed:
+-- - FigureRealm Toy Story Browse All:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5618
+-- - FigureRealm Batman v Superman Pop! Vinyl:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=500&ssid=25
+-- - FigureRealm Fantastic Four Pop! Vinyl:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=1769
+-- - FigureRealm Fantastic Four: First Steps Browse All:
+--   https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=6540
+-- - Funko Bullseye #520:
+--   https://funko.com/pop-bullseye/37013.html
+-- - Retail/source snippets for current UPC-specific Toy Story 5 and First Steps Target exclusives:
+--   889698907668, 889698907699, 889698919845, 889698919852,
+--   889698853576, 889698853583, 889698853590.
+--
+-- Live database changes already applied:
+-- - Batman V. Superman Dawn Of Justice:
+--   - Confirmed reviewed set total of 16.
+--   - Corrected Aquaman (Underwater), Wonder Woman (Patina), Doomsday 6-inch,
+--     Superman (False God), Superman Soldier, and Batman vs Superman moment variants.
+-- - Fantastic Four:
+--   - Confirmed classic Fantastic Four set total of 22.
+--   - Corrected Galactus with Silver Surfer #809 Orange Chase / PX Previews / Jumbo.
+--   - Moved Galactus #1519 to Fantastic Four: First Steps as Galactus (Deluxe).
+-- - Fantastic Four: First Steps:
+--   - Confirmed set total of 13 from the reviewed source.
+--   - Corrected Target Space Suit variants for Mister Fantastic #1520,
+--     Human Torch #1521, Invisible Woman #1522, and The Thing #1523.
+--   - Corrected The Thing (Trench Coat) #1524.
+-- - Toy Story:
+--   - Confirmed high-level Toy Story set total of 57 from FigureRealm.
+--   - Corrected Sox into Lightyear.
+--   - Corrected Jessie UPC 889698907668 into Toy Story 5 #1710.
+--   - Corrected Bullseye UPC 889698907699 into Toy Story 5 as Flocked Pop! Premium.
+--   - Corrected Mrs. Nesbit, Mr. Pricklepants, Woody on Bullseye, and
+--     Bullseye as Buzz Lightyear metadata.
+--
+-- Validation:
+-- - Touched owned rows have 0 needs_review flags after the live update.
+-- - No ownership quantities, paid values, or current values were changed.
+-- - lookup_pop parser overrides were added for corrected owned rows.
+--
+-- Intentionally not changed in this pass:
+-- - No value refresh.
+-- - No image replacement.
+-- - No full Toy Story checklist load yet; the 57-item source spans multiple
+--   sub-lines and should get its own careful pass before powering Missing/Full.

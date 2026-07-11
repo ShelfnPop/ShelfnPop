@@ -1,0 +1,44 @@
+-- Audit note: live Game of Thrones cleanup pass applied 2026-07-07.
+--
+-- Scope:
+--   * Game of Thrones reviewed set and owned catalog linkage.
+--
+-- Sources:
+--   Funko official Drogon (Iron):
+--     https://funko.com/pop-drogon-iron/56794.html
+--   Funko official Khal Drogo with Daggers:
+--     https://funko.com/pop-khal-drogo-with-daggers/56795.html
+--   Funko official Robb Stark with Sword:
+--     https://funko.com/pop-robb-stark-with-sword/56796.html
+--   Funko official Ned Stark on Throne:
+--     https://funko.com/pop-deluxe-ned-stark-on-throne/56791.html
+--   PriceCharting Arya Stark #89 cross-check:
+--     https://www.pricecharting.com/game/funko-pop-game-of-thrones/arya-stark-89
+--
+-- Live changes made:
+--   * Added five physical Iron Anniversary / From the Vault owned rows to the
+--     Game of Thrones checklist instead of linking them to unrelated NFT rows:
+--       - Drogon (Iron) #16.
+--       - Arya Stark #89.
+--       - Khal Drogo (with Daggers) #90.
+--       - Robb Stark (with Sword) #91.
+--       - Ned Stark on Throne #93, San Diego Comic-Con.
+--   * Updated Game of Thrones set total from 129 to 134.
+--   * Corrected owned display descriptions:
+--       - Tyrion Lannister #1.
+--       - Ned Stark #2.
+--       - Tormund Giantsbane #53.
+--       - Khal Drogo (with Daggers) #90.
+--       - Robb Stark (with Sword) #91.
+--       - Ned Stark on Throne #93.
+--   * Added/updated lookup_pop UPC overrides for the corrected owned rows.
+--
+-- Verification after live update:
+--   * Game of Thrones: 72 of 134 owned, 62 missing.
+--   * Catalog rows: 72.
+--   * Missing images: 0.
+--   * Review flags: 0.
+--   * Missing numbers: 2 expected boxed/multipack rows.
+--
+-- Notes:
+--   * No item values or images were intentionally changed in this pass.

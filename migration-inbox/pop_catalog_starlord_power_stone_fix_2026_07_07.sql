@@ -1,0 +1,21 @@
+-- Audit note: live Star-Lord UPC correction applied 2026-07-07.
+--
+-- User-reviewed UPC:
+--   889698736411
+--
+-- Live changes made:
+--   * Corrected UPC 889698736411 to:
+--       Star-Lord #1201
+--       Guardians of the Galaxy Vol. 3
+--       Glow in the Dark
+--       Funko exclusive.
+--   * Linked Guardians of the Galaxy Vol. 3 checklist #1201 rows as two
+--     variants:
+--       - Common UPC 889698675086.
+--       - Glow in the Dark UPC 889698736411.
+--   * UPC 889698469579 remains Star-Lord with Power Stone #611 under
+--     The Infinity Saga, Glow in the Dark Marvel Collector Corps exclusive.
+--   * Added lookup_pop UPC overrides so refreshes keep the corrected identities.
+--
+-- Notes:
+--   * No values or images were intentionally changed in this pass.

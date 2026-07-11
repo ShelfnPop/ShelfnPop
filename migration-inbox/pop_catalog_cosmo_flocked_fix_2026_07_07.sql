@@ -1,0 +1,19 @@
+-- Audit note: live Cosmo Flocked correction applied 2026-07-07.
+--
+-- User-reported issue:
+--   UPC 889698710619 showed as Mr. Clarke / Stranger Things #476, but the
+--   image and collection item are Cosmo.
+--
+-- Live changes made:
+--   * Corrected UPC 889698710619 to:
+--       Cosmo #1207
+--       Guardians of the Galaxy Vol. 3
+--       Flocked
+--       Funko exclusive.
+--   * Linked the Guardians of the Galaxy Vol. 3 checklist Flocked Cosmo #1207
+--     row to UPC 889698710619.
+--   * Left the common Cosmo #1207 checklist row unlinked/missing.
+--   * Added a lookup_pop UPC override so future refreshes keep this identity.
+--
+-- Notes:
+--   * No values or images were intentionally changed in this pass.

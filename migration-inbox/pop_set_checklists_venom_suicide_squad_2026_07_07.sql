@@ -1,0 +1,50 @@
+-- Audit note: live Venom / Suicide Squad set review applied 2026-07-07.
+--
+-- Scope:
+--   * Venom
+--   * Venom: Let There Be Carnage
+--   * Suicide Squad
+--   * The Suicide Squad
+--
+-- Sources:
+--   FigureRealm Venom checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5922
+--   FigureRealm Venom page 2 / Let There Be Carnage subseries:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5922&ns=40&series=venomfunko
+--   Funko official Venom #1141:
+--     https://funko.com/pop-venom-glow/68247.html
+--   Funko official Venom with Ooze #1469:
+--     https://funko.com/pop-venom-with-ooze-glow/84452.html
+--   FigureRealm Suicide Squad checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5263&ssid=4
+--
+-- Live changes made:
+--   * Marked Venom reviewed with 53 required checklist rows.
+--   * Marked Venom: Let There Be Carnage reviewed with 3 required checklist rows.
+--   * Marked Suicide Squad reviewed with 22 required checklist rows.
+--   * Marked The Suicide Squad reviewed with 16 required checklist rows.
+--   * Normalized several owned card identities:
+--       - Venomized Captain Marvel #599.
+--       - Venomized Doctor Strange #750 Glow in the Dark.
+--       - King Shark #1114 Metallic.
+--       - Bloodsport (Unmasked) #1118.
+--       - 2016 Suicide Squad parenthetical variants: Joker Boxer/Suit,
+--         Harley HQ Inmate/Gown, Deadshot Masked, Batman Underwater/Jokerized,
+--         Killer Croc Hooded.
+--       - Venomized Iron Man #365, Venomized Ghost Rider #369 Blue,
+--         Poison Captain America #856, Venomized Jack O' Lantern #922.
+--   * Moved Venom #234 Blue and Deadpool / Venom #667 Metallic to Marvel Universe
+--     because they are not part of the reviewed Venom set denominator.
+--   * Updated lookup_pop scanner overrides and narrowed Suicide Squad set detection:
+--       - 2021 rows route to The Suicide Squad.
+--       - generic 2016 Suicide Squad rows route to Suicide Squad.
+--
+-- Verification after live update:
+--   * Venom: 21 of 53 owned, 32 missing; no missing numbers/images/review flags.
+--   * Venom: Let There Be Carnage: 1 of 3 owned, 2 missing; no missing numbers/images/review flags.
+--   * Suicide Squad: 18 of 22 owned, 4 missing; no missing images/review flags.
+--     The one missing number is the owned FYE Metallic Joker / Harley Quinn 2-Pack.
+--   * The Suicide Squad: 10 of 16 owned, 6 missing; no missing numbers/images/review flags.
+--
+-- Notes:
+--   * No item values were intentionally changed in this pass.

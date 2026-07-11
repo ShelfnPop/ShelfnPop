@@ -1,0 +1,33 @@
+-- Audit note: live set checklist cleanup applied 2026-07-07.
+-- Scope: Stranger Things set denominator, checklist rows, and owned-row polish.
+--
+-- Sources:
+--   FunkyPriceGuide Stranger Things checklist:
+--     https://funkypriceguide.com/checklist/funko-pop-stranger-things/
+--   FunkyPriceGuide API endpoint used for structured rows:
+--     https://funkypriceguide.com/api/checklists/funko-pop-stranger-things/collectibles?ctid=1&page=1&perPage=75
+--   Figure Realm Stranger Things Funko checklist used as secondary cross-check:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5210&series=strangerthingsfunko&ssid=-1
+--
+-- Live changes made:
+--   * Created/updated pop_sets row for Stranger Things as reviewed at 0.90 confidence.
+--   * Seeded 168 required checklist rows from the FunkyPriceGuide structured checklist.
+--   * Set Stranger Things owned catalog rows to set_total 168.
+--   * Corrected UPC 889698144285 from DC/Pop! Heroes into Stranger Things/Pop! Television.
+--   * Cleaned obvious owned-row title oddities:
+--       Lucas Sinclair #1785, Lucas Sinclair #1798, Will Byers #1809,
+--       Nancy Wheeler with Shotgun character text, and Robin/Steve/Vecna 3-Pack style.
+--   * Cleared over-generous checklist links where exclusive checklist rows pointed to
+--     non-exclusive owned catalog rows.
+--
+-- Verification after full pass:
+--   Stranger Things set summary: reviewed, required_count 168, checklist_count 168.
+--   Owned coverage: 89 unique catalog rows / 91 owned quantity / 53.0% owned.
+--   Linked checklist rows: 40 checklist links / 39 distinct catalog links.
+--   Common variant cleanup: 0 Stranger Things rows still use variant = Common.
+--   Tracked set statuses: 41 reviewed, 0 draft.
+--
+-- Follow-up note:
+--   The low distinct-link count is expected after conservative matching. Many owned rows
+--   have shorter names or exclusivity wording that should be normalized in smaller
+--   focused passes rather than over-linking variants.

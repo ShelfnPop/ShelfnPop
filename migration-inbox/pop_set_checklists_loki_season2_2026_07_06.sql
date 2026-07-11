@@ -1,0 +1,28 @@
+-- Audit note: live catalog/checklist cleanup applied 2026-07-06.
+-- Scope: Loki cleanup and Loki Season 2 reviewed checklist.
+-- Sources:
+--   Loki Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=3082&ssid=-1
+--   Don Personal Watercraft Salesman official Funko cross-check:
+--     https://funko.com/pop-rides-deluxe-don-personal-watercraft-salesman/76819.html
+--
+-- Live changes made:
+--   * Seeded reviewed Loki Season 2 checklist with 10 required rows.
+--     Includes Loki Season 2 Pop! Vinyl rows, Season 2-related Deluxe/Moment/Ride rows,
+--     and Loki & Mobius (1893) Pop! Set; excludes Pins, Pocket Keychains, and Season 1 rows.
+--   * Corrected owned Loki Season 2 rows for Loki #1312 and Sylvie #1314.
+--   * Cleaned broad Loki owned rows for Mobius #896, Hunter B-15 #903,
+--     Frog of Thunder #983, Loki (with Scepter) #985, Lady Loki #1029,
+--     He Who Remains #1062, Loki & Sylvie #1065, and Frost Giant Loki #1269.
+--   * Moved Frost Giant Loki #1269 out of broad Marvel Studios and into Loki.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these identity corrections.
+--
+-- Verification after live update:
+--   Loki Season 2: 2 owned unique / 10 required = 20.0%.
+--   Loki Season 2: 2 linked checklist rows.
+--
+-- Deferred:
+--   * Broad Loki still needs its own reviewed total decision because it mixes Season 1,
+--     comics, moments, and Pop! Set rows.
+--   * If we want a strict "Figure Realm Season 2 subcategory only" total, remove
+--     God Loki #1326, Don #1327, and Snake eating it's Tail #1330 from the Season 2 checklist.

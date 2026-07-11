@@ -1,0 +1,46 @@
+-- Audit note: live catalog cleanup applied 2026-07-06.
+-- Scope: Game of Thrones owned-row cleanup and The Nightmare Before Christmas owned-row cleanup.
+-- Sources:
+--   Game of Thrones Figure Realm checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=2061&mode=1&series=gameofthronesfunko&ssid=10
+--   Game of Thrones Hero Habit checklist:
+--     https://herohabit.com/funko-game-of-thrones/
+--   The Nightmare Before Christmas Hero Habit checklist:
+--     https://herohabit.com/funko-nightmare-before-christmas-checklist/
+--   Funko Zero in Duck Cart official cross-check:
+--     https://funko.com/pop-trains-zero-in-duck-cart/50633.html
+--   Funko Jack Skellington with Flower official cross-check:
+--     https://funko.com/pop-jack-skellington-with-flower/60313.html
+--   Funko Mounted White Walker official cross-check:
+--     https://funko.com/pop-rides-mounted-white-walker/37669.html
+--
+-- Live changes made:
+--   * Cleaned 22 owned Game of Thrones catalog rows with high-confidence names,
+--     numbers, variants, exclusivities, pop_type, and pop_style corrections.
+--   * Corrected Game of Thrones convention rows so convention labels live in
+--     exclusivity rather than variant.
+--   * Corrected Game of Thrones special styles including Deluxe, Ride, Moment,
+--     Jumbo, 2-Pack, and 3-Pack rows.
+--   * Moved all owned The Nightmare Before Christmas rows into the correct
+--     franchise/set bucket.
+--   * Cleaned 5 owned The Nightmare Before Christmas rows, including Oogie
+--     Boogie with Wheel, Zero in Duck Cart, and Jack Skellington exclusives.
+--   * Added matching UPC overrides to lookup_pop so future scans preserve these
+--     identity corrections.
+--
+-- Verification after live update:
+--   Game of Thrones: 72 owned unique, 73 owned quantity.
+--   Game of Thrones styles: 2-Pack, 3-Pack, Deluxe, Jumbo, Moment, Ride, Standard.
+--   Game of Thrones common_variant_rows: 0.
+--   The Nightmare Before Christmas: 5 owned unique, 5 owned quantity.
+--   The Nightmare Before Christmas styles: Deluxe, Standard, Train.
+--   The Nightmare Before Christmas common_variant_rows: 0.
+--
+-- Deferred:
+--   * Full reviewed checklist totals were not seeded for Game of Thrones or The
+--     Nightmare Before Christmas in this pass. Both lines span several Pop styles
+--     and adjacent product categories, so the completion denominator should be
+--     reviewed separately before the app shows a percent-owned total.
+--   * Jack Skellington (with Flower) #1168 is stored with the broad 2022 Expo
+--     exclusivity label. Retail sticker details can be tightened later if the
+--     owned box photo confirms the exact sticker.

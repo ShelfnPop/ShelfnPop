@@ -1,0 +1,61 @@
+-- Audit note: live catalog cleanup applied 2026-07-07.
+-- Scope: Star Wars - The Mandalorian owned-row cleanup and set bucket normalization.
+-- Sources:
+--   Figure Realm Star Wars - Mandalorian checklist:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5091
+--   Figure Realm Mandalorian checklist page 2:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5091&ns=40&series=starwarsmandalorianfunko
+--   Figure Realm Mandalorian checklist page 3:
+--     https://www.figurerealm.com/actionfigure?action=seriesitemlist&id=5091&ns=80&series=starwarsmandalorianfunko
+--   Official Funko The Armorer with Jetpack:
+--     https://funko.com/pop-the-armorer-with-jetpack/82112.html
+--   Official Funko The Mandalorian in N-1 Starfighter with R5-D4:
+--     https://funko.com/pop-rides-super-deluxe-the-mandalorian-in-n-1-starfighter-with-r5-d4/76549.html
+--   Amazon The Mandalorian & The Child on Bantha product data:
+--     https://www.amazon.com/Funko-Pop-Deluxe-Mandalorian-Multicolor/dp/B087N9NLCC
+--   Amazon The Mandalorian with Gift product data:
+--     https://www.amazon.com/Funko-Pop-Star-Wars-Mandalorian/dp/B0B4YYZZR5
+--   PriceCharting / retail cross-checks were used for Boba Fett #478,
+--     The Mandalorian Helmet Chrome #345, and Boba Fett Red Chrome #462.
+--
+-- Live changes made:
+--   * Normalized The Mandalorian Season 3 rows into The Mandalorian.
+--   * Moved The Mandalorian Holiday #732 and Grogu Holiday #733 from Star Wars Holiday
+--     into The Mandalorian, keeping Holiday as the variant.
+--   * Moved The Mandalorian (with Gift) #585 into The Book of Boba Fett.
+--   * Cleaned names, variants, exclusivities, and styles for high-confidence owned rows,
+--     including Helmet Chrome #345, Beskar Armor #345, The Child #368, Bantha #416,
+--     Boba Fett Tatooine #478, Boba Fett Red Chrome #462, Darksaber #491,
+--     Death Watch Mandalorian #561, N-1 Starfighter #670, Din Grogu #712,
+--     Moff Gideon #713, The Armorer with Jetpack #717, and Grogu Force Barrier #719.
+--   * Added matching UPC overrides to lookup_pop and changed the Mandalorian S3 parser rule
+--     to return The Mandalorian.
+--
+-- Verification after live update:
+--   The Mandalorian: 38 catalog rows / 41 owned quantity.
+--   The Mandalorian set_total on catalog rows: 117.
+--   The Mandalorian Season 3 bucket no longer has catalog rows.
+--   Convention labels are not stored as Mandalorian variants.
+--
+-- Denominator note:
+--   Figure Realm's broad source lists 120 Mandalorian entries: 115 Pop! Vinyl rows,
+--   2 Pop! Rides rows, and 3 Pop! Pocket Keychains. The app set_total uses 117
+--   Pop/Ride rows and excludes keychains. The pop_sets row is intentionally draft
+--   until the full 117 checklist rows are extracted into pop_set_checklist_items.
+--
+-- Full-pass addendum applied 2026-07-07:
+--   * Current Figure Realm source now shows 110 Pop! Vinyl rows and 2 Pop! Rides rows.
+--   * Replaced the draft 117 total with reviewed total 112.
+--   * Seeded 112 checklist rows for The Mandalorian and marked the set reviewed at 0.90 confidence.
+--   * Excluded 3 Pop! Pocket Keychains from completion totals.
+--   * Kept FunkyPriceGuide's smaller 68-item category as a comparison source, not the completion denominator.
+--   * Moved Grogu (with Snack) #825 / UPC 889698937900 to The Mandalorian and Grogu,
+--     with Flocked variant and Target exclusivity, because Funko identifies it with the movie lineup.
+--   * Normalized checklist-only wording so "with Armor", "with Jetpack", "with Darksaber",
+--     and "Mudhorn Battle" stay in names instead of becoming variants.
+--
+-- Verification after full pass:
+--   The Mandalorian set summary: reviewed, required_count 112, checklist_count 112.
+--   Owned coverage: 37 unique catalog rows / 39 owned quantity / 33.0% owned.
+--   Linked checklist rows: 32 distinct catalog links.
+--   Tracked set statuses: 40 reviewed, 0 draft.
