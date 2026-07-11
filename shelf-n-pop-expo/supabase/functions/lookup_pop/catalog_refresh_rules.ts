@@ -7,6 +7,7 @@ export const BLOCKED_IMAGE_UPCS = new Set([
 
 export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "300 Movie": 6,
+  "Animaniacs": 8,
   "Aquaman and the Lost Kingdom": 13,
   "Aquaman And The Lost Kingdom": 13,
   "Ant-Man and the Wasp: Quantumania": 13,
@@ -21,15 +22,20 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Bullet Train": 4,
   "Caddyshack": 11,
   "Captain America: The First Avenger": 3,
+  "Captain Planet": 9,
+  "Cast Away": 2,
   "Cartoon Network": 8,
   "Chilly Willy": 4,
+  "Clerks III": 6,
   "Cocaine Bear": 2,
+  "Coca-Cola": 14,
   "Coco": 13,
   "Crash Bandicoot": 13,
   "Cuphead": 30,
   "Deadpool The Duck": 1,
   "Despicable Me 2": 10,
   "Dexter": 3,
+  "Disney 90th Anniversary": 4,
   "Disney Archives": 8,
   "Disturbed": 1,
   "Dolly Parton": 6,
@@ -38,8 +44,10 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Dumb and Dumber": 14,
   "Dumbo": 7,
   "Disneyland Resort 65th Anniversary": 20,
+  "E.T. 40th Anniversary": 10,
   "Echo": 2,
   "Elvis Presley": 18,
+  "Eternals": 23,
   "Evil Dead 40th Anniversary": 2,
   "Fantasia": 12,
   "Fantastik Plastik": 73,
@@ -49,6 +57,7 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Free Guy": 1,
   "Frozen": 26,
   "G.I. Joe": 25,
+  "Get Out": 3,
   "Grey's Anatomy": 4,
   "Guardians of the Galaxy Holiday Special": 5,
   "Gwen-Verse": 4,
@@ -79,13 +88,17 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Monsters, Inc": 18,
   "Monsters, Inc.": 18,
   "Nacho Libre": 2,
+  "Nope": 1,
   "Onward": 7,
   "Pinky and the Brain": 1,
   "Poltergeist II: The Other Side": 1,
+  "Post Malone": 3,
   "Preacher": 6,
   "Pirates Of The Caribbean Dead Men Tell No Tales": 5,
   "Psych": 1,
+  "Ren And Stimpy": 8,
   "Robocop": 5,
+  "Rocky: 45th Anniversary": 4,
   "Runaways": 6,
   "RUN-DMC": 10,
   "Saturday Night Live": 9,
@@ -97,20 +110,39 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Shazam! Fury Of The Gods": 10,
   "Sleepy Hollow (1999)": 5,
   "Sleeping Beauty 65th Anniversary": 10,
+  "Split": 2,
   "Spider-Man 2": 10,
   "Spider-Man: Far From Home": 15,
   "Spider-Man: Into The Spider-Verse": 11,
   "Spider-Man: Maximum Venom": 9,
   "Spider-Man: Miles Morales": 16,
   "Spellbound": 1,
+  "Spyro Reignited Trilogy (2018)": 5,
   "Stargate SG-1": 7,
   "Star Trek II: The Wrath of Khan": 2,
   "Star Trek The Next Generation": 5,
   "Star Trek Transporter": 3,
+  "Suits (2011)": 2,
+  "Ted 2": 3,
   "Ted Lasso": 23,
+  "The Adventures Of Jimmy Neutron Boy Genius": 4,
   "The Batman": 15,
+  "The Exorcist: Believer": 2,
   "The Flash (TV Series)": 21,
+  "The Godfather Part II": 4,
   "The Godfather: 50 Years": 3,
+  "The Good Dinosaur (2015)": 2,
+  "The Incredibles 20th Anniversary": 6,
+  "The Jungle Book": 6,
+  "The Tick": 2,
+  "Tombstone": 6,
+  "Trigun": 13,
+  "Us": 7,
+  "Wallace & Gromit: Vengeance Most Fowl": 4,
+  "Wallace And Gromit: Vengeance Most Fowl": 4,
+  "Who Framed Roger Rabbit": 1,
+  "Wondla": 3,
+  "Wolverine 50th Anniversary": 4,
 };
 
 export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
@@ -310,10 +342,209 @@ export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
   },
 };
 
+export const BATMAN_1989_REFRESH_REGRESSION_OVERRIDES = {
+  "889698477093": {
+    pop_name: "The Joker (Batman 1989)",
+    character: "The Joker",
+    franchise: "DC",
+    set_name: "Batman 1989",
+    number: "337",
+    variant: null,
+    exclusivity: null,
+    pop_type: "Pop! Heroes",
+    pop_style: "Standard",
+    vault_status: "Active",
+    description: "The Joker is a Batman 1989 Pop! Heroes release #337 with a chance of Chase.",
+    display_description: "The Joker is a Batman 1989 Pop! Heroes release #337 with a chance of Chase.",
+    estimated_value: 10,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+  "889698495776": {
+    pop_name: "The Joker (Batman 1989)",
+    character: "The Joker",
+    franchise: "DC",
+    set_name: "Batman 1989",
+    number: "337",
+    variant: "Metallic",
+    exclusivity: "GameStop",
+    pop_type: "Pop! Heroes",
+    pop_style: "Standard",
+    vault_status: "Active",
+    description: "The Joker is a Batman 1989 Pop! Heroes release #337, Metallic, GameStop exclusive.",
+    display_description: "The Joker is a Batman 1989 Pop! Heroes release #337, Metallic, GameStop exclusive.",
+    estimated_value: 15.24,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+  "889698584470": {
+    pop_name: "Batman & The Joker (2-Pack)",
+    character: "Batman & The Joker",
+    franchise: "DC",
+    set_name: "Batman 1989",
+    number: null,
+    variant: null,
+    exclusivity: "GameStop",
+    pop_type: "Pop! Heroes",
+    pop_style: "2-Pack",
+    vault_status: "Active",
+    description: "Batman & The Joker is an unnumbered Batman 1989 Pop! Heroes 2-Pack, GameStop exclusive.",
+    display_description: "Batman & The Joker is an unnumbered Batman 1989 Pop! Heroes 2-Pack, GameStop exclusive.",
+    estimated_value: 18.4,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+};
+
+export const GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES = {
+  "889698346184": {
+    pop_name: "Bran Stark",
+    character: "Bran Stark",
+    franchise: "Game of Thrones",
+    set_name: "Game of Thrones",
+    number: "67",
+    variant: "Three-Eyed Raven",
+    exclusivity: null,
+    pop_type: "Pop! Television",
+    pop_style: "Standard",
+    vault_status: "Active",
+    release_date: "2018-10-01",
+    description: "Bran Stark is a Game of Thrones Pop! Television release #67, Three-Eyed Raven variant.",
+    display_description: "Bran Stark is a Game of Thrones Pop! Television release #67, Three-Eyed Raven variant. Released in 2018.",
+    estimated_value: 5.75,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+  "889698444484": {
+    pop_name: "Jon Snow & Rhaegal",
+    character: "Jon Snow & Rhaegal",
+    franchise: "Game of Thrones",
+    set_name: "Game of Thrones",
+    number: "67",
+    variant: null,
+    exclusivity: null,
+    pop_type: "Pop! Rides",
+    pop_style: "Ride",
+    vault_status: "Active",
+    release_date: "2019-08-12",
+    description: "Jon Snow & Rhaegal is a Game of Thrones Pop! Rides release #67.",
+    display_description: "Jon Snow & Rhaegal is a Game of Thrones Pop! Rides release #67. Released in 2019.",
+    estimated_value: 44.5,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+};
+
+export const GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES = {
+  "889698285001": {
+    pop_name: "Giant Wight",
+    character: "Giant Wight",
+    franchise: "Game of Thrones",
+    set_name: "Game of Thrones",
+    number: "60",
+    variant: null,
+    exclusivity: "Emerald City Comic Con / FYE",
+    pop_type: "Pop! Television",
+    pop_style: "Jumbo",
+    vault_status: "Active",
+    release_date: "2018-01-01",
+    description: "Giant Wight is a Game of Thrones 6-inch Pop! Television release #60, Emerald City Comic Con and FYE shared exclusive.",
+    display_description: "Giant Wight is a Game of Thrones 6-inch Pop! Television release #60, Emerald City Comic Con and FYE shared exclusive. Released in 2018.",
+    estimated_value: 16.99,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+  "889698376693": {
+    pop_name: "Mounted White Walker",
+    character: "Mounted White Walker",
+    franchise: "Game of Thrones",
+    set_name: "Game of Thrones",
+    number: "60",
+    variant: "Glow in the Dark",
+    exclusivity: "Amazon",
+    pop_type: "Pop! Rides",
+    pop_style: "Ride",
+    vault_status: "Vaulted",
+    release_date: "2019-01-01",
+    description: "Mounted White Walker is a vaulted Game of Thrones Pop! Rides release #60, Glow in the Dark and Amazon exclusive.",
+    display_description: "Mounted White Walker is a vaulted Game of Thrones Pop! Rides release #60, Glow in the Dark and Amazon exclusive. Released in 2019.",
+    estimated_value: 29.99,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+};
+
+export const HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES = {
+  "889698800181": {
+    pop_name: "Harry Potter (Gingerbread)",
+    character: "Harry Potter",
+    franchise: "Wizarding World",
+    set_name: "Harry Potter",
+    number: "175",
+    variant: "Gingerbread",
+    exclusivity: null,
+    pop_type: "Pop! Movies",
+    pop_style: "Standard",
+    vault_status: "Active",
+    release_date: "2024-12-01",
+    description: "Harry Potter (Gingerbread) is a Wizarding World Pop! Movies release #175 from Harry Potter.",
+    display_description: "Harry Potter (Gingerbread) is a Wizarding World Pop! Movies release #175 from Harry Potter. Released in 2024.",
+    estimated_value: 14,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+  "889698816885": {
+    pop_name: "Undesirable No. 1 Harry Potter",
+    character: "Harry Potter",
+    franchise: "Wizarding World",
+    set_name: "Harry Potter",
+    number: "175",
+    variant: null,
+    exclusivity: "Amazon",
+    pop_type: "Pop! Movie Posters",
+    pop_style: "Movie Poster",
+    vault_status: "Active",
+    release_date: "2024-08-01",
+    description: "Undesirable No. 1 Harry Potter is a Wizarding World Pop! Movie Poster release #175 from Harry Potter, Amazon exclusive.",
+    display_description: "Undesirable No. 1 Harry Potter is a Wizarding World Pop! Movie Poster release #175 from Harry Potter, Amazon exclusive. Released in 2024.",
+    estimated_value: 15.02,
+    parse_confidence: 0.98,
+    needs_review: false,
+    warnings: [],
+  },
+};
+
+const CATALOG_REFRESH_STATIC_OVERRIDES: Record<string, Record<string, any>> = {
+  "889698829878": {
+    variant: "Silver Metallic",
+    limited_edition: true,
+    limited_count: 900,
+    edition_notes: "Production run 900",
+    estimated_value: 62.7,
+    image_url: "https://i.ebayimg.com/images/g/osoAAeSwvthpRiCH/s-l500.jpg",
+    parse_confidence: 0.95,
+    needs_review: false,
+  },
+};
+
 type CatalogRow = Record<string, any>;
 
 export function getStaticCatalogOverride(upc: string): CatalogRow | null {
-  return (STAR_WARS_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc] ?? null;
+  return (STAR_WARS_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (BATMAN_1989_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? CATALOG_REFRESH_STATIC_OVERRIDES[upc]
+    ?? null;
 }
 
 type RefreshOptions = {
@@ -344,6 +575,148 @@ export function shouldPromoteSpecificSet(existingSetName: unknown, parsedSetName
 
 export function mergeNeedsReview(existingNeedsReview: unknown, parsedNeedsReview: unknown): boolean {
   return Boolean(existingNeedsReview || parsedNeedsReview);
+}
+
+const TRUSTED_OVERRIDE_FIELDS = [
+  "pop_name",
+  "character",
+  "franchise",
+  "set_name",
+  "number",
+  "variant",
+  "exclusivity",
+  "pop_type",
+  "pop_style",
+  "description",
+  "display_description",
+  "vault_status",
+  "release_date",
+  "limited_edition",
+  "limited_count",
+  "edition_notes",
+] as const;
+
+export function buildTrustedOverrideUpdate(
+  overrideFields: CatalogRow | null | undefined,
+  parsed: CatalogRow,
+): CatalogRow {
+  if (!overrideFields) return {};
+
+  const updates: CatalogRow = {};
+  for (const field of TRUSTED_OVERRIDE_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(overrideFields, field)) {
+      updates[field] = parsed[field] ?? null;
+    }
+  }
+
+  updates.parse_reason_codes = [];
+  updates.needs_review = Boolean(overrideFields.needs_review ?? false);
+  if (parsed.parse_confidence != null) {
+    updates.parse_confidence = parsed.parse_confidence;
+  }
+
+  return updates;
+}
+
+export type ExplicitProductClassification = {
+  pop_type: string;
+  pop_style: string;
+};
+
+export function getExplicitProductClassification(sourceText: unknown): ExplicitProductClassification | null {
+  const text = String(sourceText ?? "").replace(/\s+/g, " ").trim();
+  if (/\bbitty\s+pop!?\s+arcade\b/i.test(text)) {
+    return { pop_type: "Bitty Pop! Arcade", pop_style: "Bitty Pop Arcade" };
+  }
+  if (/\b(?:pop!?\s+)?mug\b/i.test(text)) {
+    return { pop_type: "Pop! Mug", pop_style: "Mug" };
+  }
+  if (/\bpop!?\s+premium\b|\bpremium\s+pop!?\b/i.test(text)) {
+    return { pop_type: "Pop! Premium", pop_style: "Premium" };
+  }
+  if (/\bpop!?\s+(?:movie\s+)?moments?\b/i.test(text)) {
+    return { pop_type: "Pop! Moments", pop_style: "Moment" };
+  }
+  return null;
+}
+
+const OPTIONAL_NUMBER_STYLES = new Set([
+  "2-Pack",
+  "3-Pack",
+  "4-Pack",
+  "5-Pack",
+  "Bitty Pop",
+  "Bitty Pop Arcade",
+  "Deluxe",
+  "Moment",
+  "Movie Moment",
+  "Movie Moments",
+  "Mug",
+]);
+
+export function shouldWarnMissingNumber(number: unknown, popStyle: unknown): boolean {
+  return !String(number ?? "").trim() && !OPTIONAL_NUMBER_STYLES.has(String(popStyle ?? "").trim());
+}
+
+export function normalizeMultipackNumber(
+  number: string | null,
+  popStyle: unknown,
+  sourceText: unknown,
+): string | null {
+  const style = String(popStyle ?? "").trim();
+  const text = String(sourceText ?? "").replace(/\s+/g, " ").trim();
+  const isMultipack = /^\d+-Pack$/i.test(style);
+  const sourceSaysMultipack = /\b(?:two|three|four|five|\d+)[ -]?pack\b/i.test(text);
+  const hasExplicitBoxNumber = /(?:#|\bno\.?\s*)\d{1,5}\b/i.test(text);
+
+  if (isMultipack && sourceSaysMultipack && !hasExplicitBoxNumber) return null;
+  return number;
+}
+
+function normalizedCollisionPart(value: unknown): string {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function buildCatalogCollisionKey(item: CatalogRow): string | null {
+  const setName = normalizedCollisionPart(item.set_name);
+  const number = normalizedCollisionPart(item.number);
+  const popType = normalizedCollisionPart(item.pop_type);
+  const popStyle = normalizedCollisionPart(item.pop_style || "Standard");
+
+  if (!setName || !number) return null;
+  return `${setName}:${number}:${popType}:${popStyle}`;
+}
+
+const CANONICAL_SET_LABELS: Record<string, string> = {
+  "dc super heroes": "DC Super Heroes",
+  "dc superheroes": "DC Super Heroes",
+  "nightmare before christmas": "The Nightmare Before Christmas",
+  "the nightmare before christmas": "The Nightmare Before Christmas",
+  "rick and morty": "Rick and Morty",
+  "shazam fury of the gods": "Shazam! Fury of the Gods",
+  "star wars retro": "Star Wars: Retro Series",
+  "star wars retro series": "Star Wars: Retro Series",
+  "star wars retro series targer": "Star Wars: Retro Series",
+  "star wars return of the jedi 40th anniversary": "Star Wars: Return of the Jedi 40th Anniversary",
+  "what if": "What If...?",
+};
+
+function normalizedSetLabelKey(value: unknown): string {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function canonicalizeSetLabel(value: unknown): string | null {
+  const original = String(value ?? "").replace(/\s+/g, " ").trim();
+  if (!original) return null;
+  return CANONICAL_SET_LABELS[normalizedSetLabelKey(original)] ?? original;
 }
 
 export function buildCatalogRefreshUpdate(

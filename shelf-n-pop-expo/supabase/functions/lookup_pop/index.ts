@@ -1,11 +1,20 @@
 ﻿import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import {
+  BATMAN_1989_REFRESH_REGRESSION_OVERRIDES,
   BLOCKED_IMAGE_UPCS,
   buildCatalogRefreshUpdate,
+  buildTrustedOverrideUpdate,
+  canonicalizeSetLabel,
+  GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES,
+  GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES,
   getSetTotalOverride,
+  getExplicitProductClassification,
   getStaticCatalogOverride,
+  HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES,
+  normalizeMultipackNumber,
   shouldPromoteSpecificSet,
+  shouldWarnMissingNumber,
   STAR_WARS_REFRESH_REGRESSION_OVERRIDES,
 } from "./catalog_refresh_rules.ts";
 
@@ -98,6 +107,16 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     description: "Mr. Freeze (Glitter) is a Summer Convention Pop! Heroes release #342 from Batman & Robin.",
     display_description: "From Batman & Robin, Mr. Freeze is a Pop! Heroes release #342, Glitter, Summer Convention.",
     parse_confidence: 0.92,
+    needs_review: false,
+  },
+  "889698829878": {
+    variant: "Silver Metallic",
+    limited_edition: true,
+    limited_count: 900,
+    edition_notes: "Production run 900",
+    estimated_value: 62.7,
+    image_url: "https://i.ebayimg.com/images/g/osoAAeSwvthpRiCH/s-l500.jpg",
+    parse_confidence: 0.95,
     needs_review: false,
   },
   "889698477086": {
@@ -1559,20 +1578,6 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     pop_style: "Standard",
     description: "Albus Dumbledore with Wand is a Harry Potter Pop! Movies release #15.",
     display_description: "Albus Dumbledore with Wand is a Harry Potter Pop! Movies release #15.",
-    parse_confidence: 0.98,
-    needs_review: false,
-  },
-  "889698800181": {
-    pop_name: "Harry Potter (Gingerbread)",
-    character: "Harry Potter",
-    franchise: "Wizarding World",
-    set_name: "Harry Potter",
-    number: "175",
-    variant: "Gingerbread",
-    pop_type: "Pop! Movies",
-    pop_style: "Standard",
-    description: "Harry Potter (Gingerbread) is a Harry Potter Pop! Movies release #175.",
-    display_description: "Harry Potter (Gingerbread) is a Harry Potter Pop! Movies release #175.",
     parse_confidence: 0.98,
     needs_review: false,
   },
@@ -6018,35 +6023,6 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     parse_confidence: 0.98,
     needs_review: false,
   },
-  "889698285001": {
-    pop_name: "Giant Wight",
-    character: "Giant Wight",
-    franchise: "Game of Thrones",
-    set_name: "Game of Thrones",
-    number: "60",
-    exclusivity: "Emerald City Comic Con",
-    pop_type: "Pop! Television",
-    pop_style: "Jumbo",
-    description: "Giant Wight is a Game of Thrones Pop! Television 6-inch release #60, Emerald City Comic Con exclusive.",
-    display_description: "Giant Wight is a Game of Thrones Pop! Television 6-inch release #60, Emerald City Comic Con exclusive.",
-    parse_confidence: 0.98,
-    needs_review: false,
-  },
-  "889698376693": {
-    pop_name: "Mounted White Walker",
-    character: "White Walker",
-    franchise: "Game of Thrones",
-    set_name: "Game of Thrones",
-    number: "60",
-    variant: "Glow in the Dark",
-    exclusivity: "Amazon",
-    pop_type: "Pop! Rides",
-    pop_style: "Ride",
-    description: "Mounted White Walker is a Game of Thrones Pop! Rides release #60, Glow in the Dark Amazon exclusive.",
-    display_description: "Mounted White Walker is a Game of Thrones Pop! Rides release #60, Glow in the Dark Amazon exclusive.",
-    parse_confidence: 0.98,
-    needs_review: false,
-  },
   "889698291644": {
     pop_name: "Davos Seaworth",
     character: "Davos Seaworth",
@@ -6071,19 +6047,6 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     pop_style: "Standard",
     description: "Daenerys Targaryen (Dragonstone Throne) is a Game of Thrones Pop! Television release #63.",
     display_description: "Daenerys Targaryen (Dragonstone Throne) is a Game of Thrones Pop! Television release #63.",
-    parse_confidence: 0.98,
-    needs_review: false,
-  },
-  "889698444484": {
-    pop_name: "Jon Snow & Rhaegal",
-    character: "Jon Snow",
-    franchise: "Game of Thrones",
-    set_name: "Game of Thrones",
-    number: "67",
-    pop_type: "Pop! Rides",
-    pop_style: "Ride",
-    description: "Jon Snow & Rhaegal is a Game of Thrones Pop! Rides release #67.",
-    display_description: "Jon Snow & Rhaegal is a Game of Thrones Pop! Rides release #67.",
     parse_confidence: 0.98,
     needs_review: false,
   },
@@ -8394,6 +8357,10 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
 };
 
 Object.assign(CATALOG_OVERRIDES_BY_UPC, {
+  ...BATMAN_1989_REFRESH_REGRESSION_OVERRIDES,
+  ...GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES,
+  ...GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES,
+  ...HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES,
   "830395023427": {
     pop_name: "Mickey Mouse",
     character: "Mickey Mouse",
@@ -9863,21 +9830,6 @@ Object.assign(CATALOG_OVERRIDES_BY_UPC, {
     description: "Harry Potter (Expecto Patronum) is a Wizarding World Pop! Movies release #173 from Harry Potter, 2024 SDCC exclusive.",
     display_description: "Harry Potter (Expecto Patronum) is a Wizarding World Pop! Movies release #173 from Harry Potter, 2024 SDCC exclusive.",
     parse_confidence: 0.98,
-    needs_review: false,
-    warnings: [],
-  },
-  "889698816885": {
-    pop_name: "Undesirable No. 1 Harry Potter",
-    character: "Harry Potter",
-    franchise: "Wizarding World",
-    set_name: "Harry Potter",
-    number: "175",
-    exclusivity: "Amazon",
-    pop_type: "Pop! Movies",
-    pop_style: "Movie Poster",
-    description: "Undesirable No. 1 Harry Potter is a Wizarding World Pop! Movie Poster release #175 from Harry Potter, Amazon exclusive.",
-    display_description: "Undesirable No. 1 Harry Potter is a Wizarding World Pop! Movie Poster release #175 from Harry Potter, Amazon exclusive.",
-    parse_confidence: 0.95,
     needs_review: false,
     warnings: [],
   },
@@ -11480,6 +11432,8 @@ const EXCLUSIVITY_ALIASES: Array<[string, string]> = [
 ];
 
 const FRANCHISE_ALIASES: Array<[string, string]> = [
+  ["pop asia", "Pop Asia"],
+
   ["fallout tv series", "Fallout"],
   ["fallout", "Fallout"],
   ["caesar", "Fallout"],
@@ -12249,7 +12203,7 @@ function normalizeSetName(value: string | null): string | null {
     return "Jurassic World: Dominion";
   }
 
-  return cleaned;
+  return canonicalizeSetLabel(cleaned);
 }
 
 function stripUniversalNoise(title: string): string {
@@ -12349,6 +12303,8 @@ function extractVariant(product: any, cleanTitle: string): string | null {
 
 function extractPopStyle(product: any, cleanTitle: string): string {
   const haystack = `${product?.title ?? ""} ${cleanTitle} ${product?.size ?? ""}`;
+  const explicitClassification = getExplicitProductClassification(haystack);
+  if (explicitClassification) return explicitClassification.pop_style;
   return findAlias(haystack, POP_STYLE_ALIASES) ?? "Standard";
 }
 
@@ -12370,6 +12326,8 @@ function extractPopType(product: any, cleanTitle: string, franchise: string | nu
       .join(" "),
   );
   const normalizedHaystack = normalizeMatchText(haystack);
+  const explicitClassification = getExplicitProductClassification(haystack);
+  if (explicitClassification) return explicitClassification.pop_type;
   if (/\b(nft|digital\s+pop|digital\s+collectible|tokenhead|droppp)\b/i.test(haystack)) return "Pop! Digital";
   if (normalizedHaystack.includes("game of thrones")) return "Pop! Television";
   if (normalizedHaystack.includes("the suicide squad") || normalizedHaystack.includes("suicide squad")) return "Pop! Movies";
@@ -13590,7 +13548,7 @@ function scoreParse(parsed: Omit<ParsedFunko, "parse_confidence" | "parse_reason
   if (!parsed.character) warnings.push("missing_character");
   else score += 0.15;
 
-  if (!parsed.number) warnings.push("missing_number");
+  if (shouldWarnMissingNumber(parsed.number, parsed.pop_style)) warnings.push("missing_number");
   else score += 0.1;
 
   if (!parsed.estimated_value) warnings.push("estimated_value_missing");
@@ -13626,9 +13584,10 @@ function parseFunkoProduct(product: any): ParsedFunko {
   const rawTitle = normalizeWhitespace(product?.title ?? "");
   const cleanTitle = stripUniversalNoise(rawTitle);
 
-  const number = extractNumber(`${cleanTitle} ${product?.description ?? ""}`);
   const variant = extractVariant(product, cleanTitle);
   const popStyle = extractPopStyle(product, cleanTitle);
+  const numberSource = `${cleanTitle} ${product?.description ?? ""}`;
+  const number = normalizeMultipackNumber(extractNumber(numberSource), popStyle, numberSource);
   const setName = normalizeSetName(extractSetName(product, cleanTitle));
   const exclusivity = extractExclusivity(product);
   const vaultStatus = extractVaultStatus(product, cleanTitle);
@@ -13894,37 +13853,6 @@ Object.assign(CATALOG_OVERRIDES_BY_UPC, {
     display_description: "Jean-Luc Picard (Transporter) (Glitter) is a Star Trek Pop! Plus release #1687.",
     parse_confidence: 0.98,
     needs_review: false,
-    warnings: [],
-  },
-  "889698495776": {
-    pop_name: "The Joker (Batman 1989)",
-    character: "The Joker",
-    franchise: "DC",
-    set_name: "Batman 1989",
-    number: "337",
-    variant: "Metallic",
-    exclusivity: "Exclusive",
-    pop_type: "Pop! Heroes",
-    pop_style: "Standard",
-    description: "The Joker (Batman 1989) is a Pop! Heroes release #337, metallic exclusive.",
-    display_description: "The Joker (Batman 1989) is a Pop! Heroes release #337, metallic exclusive.",
-    parse_confidence: 0.98,
-    needs_review: true,
-    warnings: [],
-  },
-  "889698477093": {
-    pop_name: "The Joker (Batman 1989)",
-    character: "The Joker",
-    franchise: "DC",
-    set_name: "Batman 1989",
-    number: "337",
-    variant: "Metallic",
-    pop_type: "Pop! Heroes",
-    pop_style: "Standard",
-    description: "The Joker (Batman 1989) is a Pop! Heroes release #337.",
-    display_description: "The Joker (Batman 1989) is a Pop! Heroes release #337.",
-    parse_confidence: 0.98,
-    needs_review: true,
     warnings: [],
   },
   "889698372480": {
@@ -14505,20 +14433,41 @@ async function fetchLearnedCatalogOverride(supabase: ReturnType<typeof createCli
   return (data?.override_data ?? null) as Partial<ParsedFunko> | null;
 }
 
-async function applyCatalogOverrides(supabase: ReturnType<typeof createClient>, parsed: ParsedFunko, barcode: string): Promise<ParsedFunko> {
+type AppliedCatalogOverrides = {
+  parsed: ParsedFunko;
+  forcedFields: Partial<ParsedFunko> | null;
+};
+
+async function applyCatalogOverrides(
+  supabase: ReturnType<typeof createClient>,
+  parsed: ParsedFunko,
+  barcode: string,
+): Promise<AppliedCatalogOverrides> {
+  const staticFields = CATALOG_OVERRIDES_BY_UPC[barcode] ?? null;
   const staticOverride = applyCatalogOverride(parsed, barcode);
   const learnedOverride = await fetchLearnedCatalogOverride(supabase, barcode);
-  return applySingleCatalogOverride(staticOverride, learnedOverride ? {
+  const learnedFields = learnedOverride ? {
     ...learnedOverride,
-    parse_confidence: 0.95,
+    parse_confidence: Math.max(Number(learnedOverride.parse_confidence ?? 0), 0.95),
     needs_review: learnedOverride.needs_review ?? false,
     parse_reason_codes: [],
     warnings: [],
-  } : null);
+  } : null;
+
+  return {
+    parsed: applySingleCatalogOverride(staticOverride, learnedFields),
+    forcedFields: staticFields || learnedFields
+      ? { ...(staticFields ?? {}), ...(learnedFields ?? {}) }
+      : null,
+  };
 }
 
-function shouldUpdate(existing: any, parsed: ParsedFunko): Record<string, unknown> {
-  const updates: Record<string, unknown> = {};
+function shouldUpdate(
+  existing: any,
+  parsed: ParsedFunko,
+  forcedFields?: Partial<ParsedFunko> | null,
+): Record<string, unknown> {
+  const updates: Record<string, unknown> = buildTrustedOverrideUpdate(forcedFields, parsed);
 
   if ((!existing.raw_title || existing.raw_title === "") && parsed.raw_title) {
     updates.raw_title = parsed.raw_title;
@@ -14750,7 +14699,7 @@ async function uploadImageToStorage(
 
 
 type ExternalProductLookup = {
-  source: "go-upc" | "barcodelookup" | "pricecharting";
+  source: "go-upc" | "pricecharting";
   raw: any;
   product: any;
 };
@@ -14860,45 +14809,11 @@ async function fetchGoUpcProduct(apiKey: string, barcode: string): Promise<Exter
   }
 }
 
-async function fetchBarcodeLookupProduct(apiKey: string, barcode: string): Promise<ExternalProductLookup | null> {
-  if (!apiKey) return null;
-
-  try {
-    const apiUrl =
-      `https://api.barcodelookup.com/v3/products?barcode=${encodeURIComponent(barcode)}&formatted=y&key=${apiKey}`;
-
-    const apiResponse = await fetch(apiUrl);
-
-    if (!apiResponse.ok) {
-      console.warn(`BarcodeLookup failed for ${barcode}: ${apiResponse.status}`);
-      return null;
-    }
-
-    const raw = await apiResponse.json();
-    const product = raw?.products?.[0];
-
-    if (!product) return null;
-
-    return {
-      source: "barcodelookup",
-      raw,
-      product,
-    };
-  } catch (error) {
-    console.warn(`BarcodeLookup failed for ${barcode}:`, error);
-    return null;
-  }
-}
-
 async function fetchPrimaryProduct(
   goUpcApiKey: string,
-  barcodeLookupApiKey: string,
   barcode: string,
 ): Promise<ExternalProductLookup | null> {
-  const goUpcResult = await fetchGoUpcProduct(goUpcApiKey, barcode);
-  if (goUpcResult) return goUpcResult;
-
-  return await fetchBarcodeLookupProduct(barcodeLookupApiKey, barcode);
+  return await fetchGoUpcProduct(goUpcApiKey, barcode);
 }
 
 function centsToDollars(value: unknown): number | null {
@@ -14947,6 +14862,7 @@ function inferFranchiseFromKnownText(value: unknown): string | null {
   if (/\b(target ad icons|pop ad icons|ad icons|bullseye as|target dog|target mascot)\b/.test(text)) return "Target";
   if (/\b(back to the future|marty mcfly|marty with glasses|marty 1955|marty with hoverboard|marty in puffy vest|marty checking watch|biff tannen|doc & einstein|doc and einstein|doc brown|dr emmett brown|emmett brown)\b/.test(text)) return "Back to the Future";
   if (/\b(jurassic park|jurassic world|jurassic world dominion|jurassic world rebirth|hatching raptor|atrociraptor|therizinosaurus|giganotosaurus|aquilops|ellie sattler|blue beta|velociraptor|t rex)\b/.test(text)) return "Jurassic Park";
+  if (/\b(pop asia|asia collection|mindstyle|lucky cat)\b/.test(text)) return "Pop Asia";
   if (/\b(marvel|deadpool|adam warlock|daredevil|doctor strange|spider man|spiderman|captain america|fantastic four|thor|loki|hulk|x men|wolverine)\b/.test(text)) return "Marvel";
   if (/\b(dc|superman|batman|joker|harley quinn|aquaman|black adam|justice league|man of steel|suicide squad|doom patrol|smallville|creature commandos|doctor phosphorus|doctor phosphorous|gotham knights|arrow|titans|deathstroke|nightwing|starfire|beast boy|black canary|robotman|negative man|krypto|black lantern|red hood)\b/.test(text)) return "DC";
   if (/\b(star wars|mandalorian|grogu|obi wan|darth vader|n 1 starfighter|force ghost)\b/.test(text)) return "Star Wars";
@@ -15097,6 +15013,7 @@ function extractPriceChartingFranchise(raw: any, currentFranchise: string | null
   if (/\b(target ad icons|pop ad icons|ad icons|bullseye as|target dog|target mascot)\b/.test(combined)) return "Target";
   if (/\b(back to the future|marty mcfly|marty with glasses|marty 1955|marty with hoverboard|marty in puffy vest|marty checking watch|biff tannen|doc & einstein|doc and einstein|doc brown|dr emmett brown|emmett brown)\b/.test(combined)) return "Back to the Future";
   if (/\b(jurassic park|jurassic world|jurassic world dominion|jurassic world rebirth|hatching raptor|atrociraptor|therizinosaurus|giganotosaurus|aquilops|ellie sattler|blue beta|velociraptor|t rex)\b/.test(combined)) return "Jurassic Park";
+  if (/\b(pop asia|asia collection|mindstyle|lucky cat)\b/.test(combined)) return "Pop Asia";
   const inferred = inferFranchiseFromKnownText(combined);
   if (inferred) return inferred;
 
@@ -15173,6 +15090,7 @@ function applyPriceChartingCatalogInfo(parsed: ParsedFunko, raw: any): void {
     if (warning === "missing_number" && parsed.number) return false;
     if (warning === "missing_franchise" && parsed.franchise) return false;
     if (warning === "missing_character" && parsed.character) return false;
+    if (warning === "missing_set" && parsed.set_name) return false;
     if (warning === "weak_name_cleanup" && parsed.pop_name) return false;
     return true;
   });
@@ -15236,6 +15154,17 @@ function hasExactNumberMatch(source: string, number: string): boolean {
   return tokens.includes(cleanNumber);
 }
 
+function normalizeBarcodeForMatch(value: unknown): string {
+  const digits = String(value ?? "").replace(/\D/g, "");
+  return digits.length === 13 && digits.startsWith("0") ? digits.slice(1) : digits;
+}
+
+function hasMatchingPriceChartingUpc(raw: any, barcode: string): boolean {
+  const expected = normalizeBarcodeForMatch(barcode);
+  const received = normalizeBarcodeForMatch(raw?.upc);
+  return Boolean(expected && received && expected === received);
+}
+
 function isLikelyPriceChartingMatch(raw: any, parsed: ParsedFunko): boolean {
   const productName = normalizeMatchText(raw?.["product-name"]);
   const consoleName = normalizeMatchText(raw?.["console-name"]);
@@ -15270,7 +15199,10 @@ async function fetchPriceChartingValue(
     "Funko Pop",
   ].filter(Boolean);
 
-  const requests: Array<{ url: string; requiresMatch: boolean }> = [];
+  const requests: Array<{ url: string; requiresMatch: boolean }> = [{
+    url: `https://www.pricecharting.com/api/product?t=${encodeURIComponent(token)}&upc=${encodeURIComponent(barcode)}`,
+    requiresMatch: true,
+  }];
 
   if (queryParts.length > 1) {
     requests.push({
@@ -15278,11 +15210,6 @@ async function fetchPriceChartingValue(
       requiresMatch: true,
     });
   }
-
-  requests.push({
-    url: `https://www.pricecharting.com/api/product?t=${encodeURIComponent(token)}&upc=${encodeURIComponent(barcode)}`,
-    requiresMatch: true,
-  });
 
   for (const request of requests) {
     try {
@@ -15296,6 +15223,7 @@ async function fetchPriceChartingValue(
       const raw = await response.json();
 
       if (raw?.status !== "success") continue;
+      if (!hasMatchingPriceChartingUpc(raw, barcode)) continue;
       if (request.requiresMatch && !isLikelyPriceChartingMatch(raw, parsed)) continue;
 
       const picked = pickPriceChartingValue(raw);
@@ -15382,6 +15310,7 @@ async function fetchPriceChartingProduct(
 
     const raw = await response.json();
     if (raw?.status !== "success") return null;
+    if (!hasMatchingPriceChartingUpc(raw, barcode)) return null;
 
     return priceChartingRawToProductLookup(raw, barcode);
   } catch (error) {
@@ -15416,7 +15345,6 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const goUpcApiKey = Deno.env.get("GO_UPC_API_KEY") ?? "";
-    const barcodeLookupApiKey = Deno.env.get("BARCODE_LOOKUP_API_KEY") ?? "";
     const priceChartingToken = Deno.env.get("PRICECHARTING_API_TOKEN") ?? "";
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -15440,8 +15368,9 @@ Deno.serve(async (req) => {
       const rawProduct = existing?.raw_api_json?.products?.[0];
 
       if (rawProduct) {
-        const parsed = await applyCatalogOverrides(supabase, parseFunkoProduct(rawProduct), cleanBarcode);
-        const updates = shouldUpdate(existing, parsed);
+        const appliedOverrides = await applyCatalogOverrides(supabase, parseFunkoProduct(rawProduct), cleanBarcode);
+        const parsed = appliedOverrides.parsed;
+        const updates = shouldUpdate(existing, parsed, appliedOverrides.forcedFields);
         if (hasExclusivityOverride && (existing.exclusivity ?? null) !== exclusivityOverride) {
           updates.exclusivity = exclusivityOverride;
         }
@@ -15459,7 +15388,6 @@ Deno.serve(async (req) => {
         if (!remoteImageUrl && !imageBlocked) {
           const imageFallback = await fetchPrimaryProduct(
             goUpcApiKey,
-            barcodeLookupApiKey,
             cleanBarcode,
           );
           remoteImageUrl = firstProductImage(imageFallback?.product);
@@ -15563,7 +15491,6 @@ Deno.serve(async (req) => {
     if (!fetched?.product) {
       fetched = await fetchPrimaryProduct(
         goUpcApiKey,
-        barcodeLookupApiKey,
         cleanBarcode,
       );
     }
@@ -15573,7 +15500,7 @@ Deno.serve(async (req) => {
         JSON.stringify({
           found: false,
           source: "external_lookup",
-          message: "No product found from PriceCharting, Go-UPC, or BarcodeLookup",
+          message: "No product found from PriceCharting or Go-UPC",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -15588,7 +15515,6 @@ Deno.serve(async (req) => {
     if (!remoteImageUrl && apiSource === "pricecharting" && !imageBlocked) {
       imageLookup = await fetchPrimaryProduct(
         goUpcApiKey,
-        barcodeLookupApiKey,
         cleanBarcode,
       );
       remoteImageUrl = firstProductImage(imageLookup?.product);
@@ -15600,7 +15526,8 @@ Deno.serve(async (req) => {
       cleanBarcode,
     );
 
-    const parsed = await applyCatalogOverrides(supabase, parseFunkoProduct(product), cleanBarcode);
+    let appliedOverrides = await applyCatalogOverrides(supabase, parseFunkoProduct(product), cleanBarcode);
+    const parsed = appliedOverrides.parsed;
 
 if (variantOverride) {
   variantPriceChartingValue = await fetchPriceChartingValue(
@@ -15619,30 +15546,6 @@ let valueRaw = imageLookup && imageLookup.source !== fetched.source
   }
   : fetched.raw;
 
-if (parsed.estimated_value == null && barcodeLookupApiKey) {
-  const fallbackFetched = await fetchBarcodeLookupProduct(
-    barcodeLookupApiKey,
-    cleanBarcode,
-  );
-
-  if (fallbackFetched?.product) {
-    const fallbackParsed = await applyCatalogOverrides(
-      supabase,
-      parseFunkoProduct(fallbackFetched.product),
-      cleanBarcode,
-    );
-
-    if (fallbackParsed.estimated_value != null) {
-      parsed.estimated_value = fallbackParsed.estimated_value;
-      valueSource = "go-upc+barcodelookup_value";
-      valueRaw = {
-        primary: fetched.raw,
-        value_fallback: fallbackFetched.raw,
-      };
-    }
-  }
-}
-
 const priceChartingValue = await fetchPriceChartingValue(
   priceChartingToken,
   cleanBarcode,
@@ -15651,7 +15554,8 @@ const priceChartingValue = await fetchPriceChartingValue(
 
 if (priceChartingValue) {
   applyPriceChartingCatalogInfo(parsed, priceChartingValue.raw);
-  Object.assign(parsed, await applyCatalogOverrides(supabase, parsed, cleanBarcode));
+  appliedOverrides = await applyCatalogOverrides(supabase, parsed, cleanBarcode);
+  Object.assign(parsed, appliedOverrides.parsed);
   parsed.estimated_value = priceChartingValue.estimated_value;
   const staticOverride = getStaticCatalogOverride(cleanBarcode);
   if (typeof staticOverride?.estimated_value === "number") {
@@ -15659,8 +15563,6 @@ if (priceChartingValue) {
   }
   valueSource = valueSource === "pricecharting"
     ? "pricecharting"
-    : valueSource === "go-upc+barcodelookup_value"
-    ? "go-upc+barcodelookup_value+pricecharting"
     : `${valueSource}+pricecharting`;
   valueRaw = {
     primary: valueRaw,
