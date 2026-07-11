@@ -15,6 +15,7 @@ type CatalogRow = {
   number: string | null;
   variant: string | null;
   image_url: string | null;
+  release_date: string | null;
   estimated_value: number | string | null;
   api_source: string | null;
   raw_api_json: any;
@@ -32,8 +33,21 @@ type RefreshResult = {
   price_field?: string | null;
 };
 
+const BLOCKED_IMAGE_UPCS = new Set([
+  "889698160162",
+  "889698430210",
+  "889698217842",
+]);
+
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function extractReleaseDate(raw: any): string | null {
+  const dateText = String(raw?.["release-date"] ?? raw?.release_date ?? raw?.releaseDate ?? "").trim();
+  if (/^(19|20)\d{2}-\d{2}-\d{2}$/.test(dateText)) return dateText;
+  if (/^(19|20)\d{2}$/.test(dateText)) return `${dateText}-01-01`;
+  return null;
 }
 
 function normalizeMatchText(value: unknown): string {
@@ -253,7 +267,13 @@ function buildPriceChartingEnrichment(row: CatalogRow, raw: any): Record<string,
     updates.franchise = pcFranchise;
   }
 
-  if (pcImage && !row.image_url) {
+  if (BLOCKED_IMAGE_UPCS.has(row.upc)) {
+    if (row.image_url) {
+      updates.image_url = null;
+      updates.image_source = null;
+      updates.image_last_checked = new Date().toISOString();
+    }
+  } else if (pcImage && !row.image_url) {
     updates.image_url = pcImage;
     updates.image_source = "pricecharting";
     updates.image_last_checked = new Date().toISOString();
@@ -392,7 +412,7 @@ Deno.serve(async (req) => {
 
     const { data: rows, error } = await supabase
       .from("pop_catalog")
-      .select("id,upc,pop_name,character,franchise,set_name,number,variant,image_url,estimated_value,api_source,raw_api_json")
+      .select("id,upc,pop_name,character,franchise,set_name,number,variant,image_url,release_date,estimated_value,api_source,raw_api_json")
       .not("upc", "is", null)
       .or(`api_source.is.null,api_source.not.ilike.%pricecharting%,api_last_updated.is.null,api_last_updated.lt.${staleBefore}`)
       .order("api_last_updated", { ascending: true, nullsFirst: true })
@@ -462,14 +482,14 @@ Deno.serve(async (req) => {
             response: priceCharting.raw,
           },
         };
+        const releaseDate = extractReleaseDate(priceCharting.raw);
 
         if (!dryRun) {
-          const enrichment = buildPriceChartingEnrichment(row, priceCharting.raw);
           const { error: updateError } = await supabase
             .from("pop_catalog")
             .update({
-              ...enrichment,
               estimated_value: priceCharting.value,
+              release_date: releaseDate ?? row.release_date,
               api_source: `${row.api_source ?? "catalog"}+pricecharting`,
               api_last_updated: new Date().toISOString(),
               raw_api_json: nextRaw,

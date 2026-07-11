@@ -19,6 +19,7 @@ const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const anonKey =
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
   process.env.SUPABASE_ANON_KEY;
+const maintenanceToken = process.env.MAINTENANCE_ADMIN_TOKEN ?? "";
 
 const batchSize = Number(process.env.BATCH_SIZE ?? process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1] ?? 25);
 const delayMs = Number(process.env.DELAY_MS ?? process.argv.find((arg) => arg.startsWith("--delay="))?.split("=")[1] ?? 1250);
@@ -33,8 +34,14 @@ if (!supabaseUrl || !anonKey) {
 
 const headers = {
   apikey: anonKey,
-  Authorization: `Bearer ${anonKey}`,
   "Content-Type": "application/json",
+};
+
+const functionHeaders = {
+  ...headers,
+  ...(maintenanceToken
+    ? { "x-maintenance-token": maintenanceToken }
+    : { Authorization: `Bearer ${anonKey}` }),
 };
 
 const money = (value) => {
@@ -92,7 +99,7 @@ function isSuspicious(before, after) {
 async function refreshRow(row) {
   const response = await fetch(`${supabaseUrl}/functions/v1/lookup_pop`, {
     method: "POST",
-    headers,
+    headers: functionHeaders,
     body: JSON.stringify({
       barcode: row.upc,
       forceRefresh,
