@@ -43,6 +43,10 @@ function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 function extractReleaseDate(raw: any): string | null {
   const dateText = String(raw?.["release-date"] ?? raw?.release_date ?? raw?.releaseDate ?? "").trim();
   if (/^(19|20)\d{2}-\d{2}-\d{2}$/.test(dateText)) return dateText;
@@ -356,7 +360,7 @@ async function fetchPriceChartingValue(
   return null;
 }
 
-async function requireAdmin(req: Request, supabase: ReturnType<typeof createClient>): Promise<boolean> {
+async function requireAdmin(req: Request, supabase: any): Promise<boolean> {
   const maintenanceToken = Deno.env.get("MAINTENANCE_ADMIN_TOKEN") ?? "";
   const providedToken =
     req.headers.get("x-maintenance-token") ??
@@ -517,7 +521,7 @@ Deno.serve(async (req) => {
           old_value: oldValue,
           new_value: null,
           status: "failed",
-          message: String(error?.message ?? error),
+          message: errorMessage(error),
         });
       }
 
@@ -540,7 +544,7 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ ok: false, error: String(error?.message ?? error) }),
+      JSON.stringify({ ok: false, error: errorMessage(error) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
