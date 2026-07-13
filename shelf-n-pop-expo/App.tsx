@@ -1852,7 +1852,7 @@ function DashboardScreen({
             </View>
           </View>
 
-          {collectorMode === "reseller" ? valueSummary : null}
+          {valueSummary}
 
           <View style={styles.dashboardStatsGrid}>
             {dashboardMetrics.map((metric) => (
@@ -1890,8 +1890,6 @@ function DashboardScreen({
               </Pressable>
             ) : null}
           </View>
-
-          {collectorMode !== "reseller" ? valueSummary : null}
 
           <View style={[styles.dashboardModePanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
             <View style={styles.dashboardModePanelTop}>
@@ -2058,7 +2056,7 @@ function ShelfStatsScreen({
       ) : (
         <>
           <View style={styles.statsHero}>
-            <Text style={styles.dashboardEyebrow}>Personal shelf recap</Text>
+            <Text style={styles.dashboardEyebrow}>Set progress</Text>
             <Text style={styles.statsHeroValue}>{money(stats.totalValue)}</Text>
             <Text style={styles.dashboardSubtext}>
               {integer(stats.totalPops)} Pops, {integer(stats.uniqueItems)} unique Pops, {money(stats.gainLoss)} gain/loss.
@@ -2066,47 +2064,9 @@ function ShelfStatsScreen({
           </View>
 
           <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Avg Value" value={money(stats.averageValue)} />
-            <MetricCard label="Avg Paid" value={money(stats.averagePaid)} />
-            <MetricCard label="Return" value={stats.gainLossPercent == null ? "--" : percent(stats.gainLossPercent)} />
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Shelf Mix</Text>
-            <View style={styles.statsTwoColumn}>
-              <StatPill label="Vaulted" value={integer(stats.vaultedCount)} onPress={() => onOpenFilter({ kind: "vaulted", label: "Vaulted" })} />
-              <StatPill label="Limited" value={integer(stats.limitedCount)} onPress={() => onOpenFilter({ kind: "limited", label: "Limited" })} />
-              <StatPill label="Duplicate Pops" value={integer(stats.duplicateCopies)} onPress={() => onOpenFilter({ kind: "duplicates", label: "Duplicate Pops" })} />
-              <StatPill label="Added 30 days" value={integer(stats.recentAdds)} onPress={() => onOpenFilter({ kind: "recent", label: "Added 30 days" })} />
-            </View>
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Standout Pops</Text>
-            <TopStatRow label="Highest Value" item={stats.topValue} value={money(stats.topValue ? perPopValue(stats.topValue) : null)} onPress={stats.topValue ? () => onOpenItem(stats.topValue as CollectionItem) : undefined} />
-            <TopStatRow
-              label="Biggest Gain"
-              item={stats.biggestGain}
-              value={money(stats.biggestGain?.gain_loss)}
-              valueStyle={gainLossColorStyle(stats.biggestGain?.gain_loss)}
-              onPress={stats.biggestGain ? () => onOpenItem(stats.biggestGain as CollectionItem) : undefined}
-            />
-            <TopStatRow
-              label="Lowest Value"
-              item={stats.lowestValue}
-              value={money(stats.lowestValue ? perPopValue(stats.lowestValue) : null)}
-              onPress={stats.lowestValue ? () => onOpenItem(stats.lowestValue as CollectionItem) : undefined}
-            />
-          </View>
-
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Shelf Health</Text>
-            <View style={styles.statsTwoColumn}>
-              <StatPill label="Missing images" value={integer(stats.missingImage)} onPress={() => onOpenFilter({ kind: "missingImages", label: "Missing images" })} />
-              <StatPill label="Missing values" value={integer(stats.missingValue)} onPress={() => onOpenFilter({ kind: "missingValues", label: "Missing values" })} />
-              <StatPill label="Unknown condition" value={integer(stats.unknownCondition)} onPress={() => onOpenFilter({ kind: "unknownCondition", label: "Unknown condition" })} />
-              <StatPill label="Shelf entries" value={integer(stats.shelfEntries)} />
-            </View>
+            <MetricCard label="Pops" value={integer(stats.totalPops)} />
+            <MetricCard label="Unique" value={integer(stats.uniqueItems)} />
+            <MetricCard label="Recent Adds" value={integer(stats.recentAdds)} />
           </View>
 
           <Pressable onPress={onOpenBreakdown} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
@@ -2114,16 +2074,17 @@ function ShelfStatsScreen({
           </Pressable>
 
           <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Top Franchises</Text>
-            {stats.topFranchises.length === 0 ? (
-              <Text style={styles.mutedText}>Add Pops to your shelf to see highlights here.</Text>
+            <Text style={styles.dashboardSectionTitle}>Closest Sets</Text>
+            {stats.closestSets.length === 0 ? (
+              <Text style={styles.mutedText}>Reviewed set totals will appear here as they are added.</Text>
             ) : (
-              stats.topFranchises.map((group, index) => (
+              stats.closestSets.map((group, index) => (
                 <StatsHighlightRow
                   key={group.key}
                   rank={index + 1}
                   group={group}
-                  onPress={() => onOpenFilter({ kind: "franchise", label: group.name, value: group.name })}
+                  detail={setCompletionText(group) ?? undefined}
+                  onPress={() => onOpenFilter({ kind: "setName", label: group.name, value: group.name })}
                 />
               ))
             )}
@@ -2146,20 +2107,66 @@ function ShelfStatsScreen({
           </View>
 
           <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Closest Sets</Text>
-            {stats.closestSets.length === 0 ? (
-              <Text style={styles.mutedText}>Reviewed set totals will appear here as they are added.</Text>
+            <Text style={styles.dashboardSectionTitle}>Shelf Mix</Text>
+            <View style={styles.statsTwoColumn}>
+              <StatPill label="Vaulted" value={integer(stats.vaultedCount)} onPress={() => onOpenFilter({ kind: "vaulted", label: "Vaulted" })} />
+              <StatPill label="Limited" value={integer(stats.limitedCount)} onPress={() => onOpenFilter({ kind: "limited", label: "Limited" })} />
+              <StatPill label="Duplicate Pops" value={integer(stats.duplicateCopies)} onPress={() => onOpenFilter({ kind: "duplicates", label: "Duplicate Pops" })} />
+              <StatPill label="Added 30 days" value={integer(stats.recentAdds)} onPress={() => onOpenFilter({ kind: "recent", label: "Added 30 days" })} />
+            </View>
+          </View>
+
+          <View style={styles.dashboardInsightPanel}>
+            <Text style={styles.dashboardSectionTitle}>Shelf Health</Text>
+            <View style={styles.statsTwoColumn}>
+              <StatPill label="Missing images" value={integer(stats.missingImage)} onPress={() => onOpenFilter({ kind: "missingImages", label: "Missing images" })} />
+              <StatPill label="Missing values" value={integer(stats.missingValue)} onPress={() => onOpenFilter({ kind: "missingValues", label: "Missing values" })} />
+              <StatPill label="Unknown condition" value={integer(stats.unknownCondition)} onPress={() => onOpenFilter({ kind: "unknownCondition", label: "Unknown condition" })} />
+              <StatPill label="Shelf entries" value={integer(stats.shelfEntries)} />
+            </View>
+          </View>
+
+          <View style={styles.dashboardInsightPanel}>
+            <Text style={styles.dashboardSectionTitle}>Top Franchises</Text>
+            {stats.topFranchises.length === 0 ? (
+              <Text style={styles.mutedText}>Add Pops to your shelf to see highlights here.</Text>
             ) : (
-              stats.closestSets.map((group, index) => (
+              stats.topFranchises.map((group, index) => (
                 <StatsHighlightRow
                   key={group.key}
                   rank={index + 1}
                   group={group}
-                  detail={setCompletionText(group) ?? undefined}
-                  onPress={() => onOpenFilter({ kind: "setName", label: group.name, value: group.name })}
+                  onPress={() => onOpenFilter({ kind: "franchise", label: group.name, value: group.name })}
                 />
               ))
             )}
+          </View>
+
+          <View style={styles.dashboardInsightPanel}>
+            <Text style={styles.dashboardSectionTitle}>Value Snapshot</Text>
+            <View style={styles.dashboardStatsGrid}>
+              <MetricCard label="Avg Value" value={money(stats.averageValue)} />
+              <MetricCard label="Avg Paid" value={money(stats.averagePaid)} />
+              <MetricCard label="Return" value={stats.gainLossPercent == null ? "--" : percent(stats.gainLossPercent)} />
+            </View>
+          </View>
+
+          <View style={styles.dashboardInsightPanel}>
+            <Text style={styles.dashboardSectionTitle}>Standout Pops</Text>
+            <TopStatRow label="Highest Value" item={stats.topValue} value={money(stats.topValue ? perPopValue(stats.topValue) : null)} onPress={stats.topValue ? () => onOpenItem(stats.topValue as CollectionItem) : undefined} />
+            <TopStatRow
+              label="Biggest Gain"
+              item={stats.biggestGain}
+              value={money(stats.biggestGain?.gain_loss)}
+              valueStyle={gainLossColorStyle(stats.biggestGain?.gain_loss)}
+              onPress={stats.biggestGain ? () => onOpenItem(stats.biggestGain as CollectionItem) : undefined}
+            />
+            <TopStatRow
+              label="Lowest Value"
+              item={stats.lowestValue}
+              value={money(stats.lowestValue ? perPopValue(stats.lowestValue) : null)}
+              onPress={stats.lowestValue ? () => onOpenItem(stats.lowestValue as CollectionItem) : undefined}
+            />
           </View>
         </>
       )}
