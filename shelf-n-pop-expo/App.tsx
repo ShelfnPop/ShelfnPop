@@ -76,6 +76,7 @@ type CollectionFilter = {
 };
 type StatsGroupMode = "franchise" | "set";
 type BreakdownSortMode = "closest" | "value" | "count" | "average";
+type SetProgressDrillMode = "withinReach" | "complete" | "reviewed";
 type SetChecklistViewMode = "owned" | "missing" | "full";
 type StatsSourceItem = CollectionItem | SharedShelfCollectionItem;
 type SharedStatsMember = {
@@ -934,6 +935,22 @@ function compareSetClosest(a: StatsGroup, b: StatsGroup): number {
   return bPercent - aPercent || b.count - a.count || b.value - a.value || a.name.localeCompare(b.name);
 }
 
+function setMatchesProgressDrill(group: StatsGroup, mode: SetProgressDrillMode): boolean {
+  const total = Number(group.checklistTotal ?? 0);
+  if (total <= 0 || group.completionPercent == null) return false;
+
+  const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
+  if (mode === "complete") return owned >= total;
+  if (mode === "withinReach") return owned > 0 && owned < total;
+  return true;
+}
+
+function setProgressDrillLabel(mode: SetProgressDrillMode): string {
+  if (mode === "complete") return "Complete";
+  if (mode === "withinReach") return "Within Reach";
+  return "Reviewed";
+}
+
 function normalizedCondition(value: string | null | undefined): string {
   return String(value || "Unknown").trim().toLowerCase();
 }
@@ -1428,6 +1445,7 @@ function SignedInApp({ session }: { session: Session }) {
   const [selectedShelf, setSelectedShelf] = useState<SharedShelf | null>(null);
   const [selectedPublicProfileId, setSelectedPublicProfileId] = useState<string | null>(null);
   const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>(NO_COLLECTION_FILTER);
+  const [setProgressDrillMode, setSetProgressDrillMode] = useState<SetProgressDrillMode>("withinReach");
   const [refreshKey, setRefreshKey] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -1514,7 +1532,10 @@ function SignedInApp({ session }: { session: Session }) {
         <ShelfStatsScreen
           session={session}
           onBack={goHome}
-          onOpenBreakdown={() => setScreen("shelfBreakdown")}
+          onOpenBreakdown={(mode = "withinReach") => {
+            setSetProgressDrillMode(mode);
+            setScreen("shelfBreakdown");
+          }}
           onOpenFilter={(filter) => {
             setCollectionFilter(filter);
             setScreen("collection");
@@ -1528,6 +1549,7 @@ function SignedInApp({ session }: { session: Session }) {
       {screen === "shelfBreakdown" && (
         <ShelfBreakdownScreen
           session={session}
+          initialSetFilter={setProgressDrillMode}
           onBack={() => setScreen("shelfStats")}
           onOpenFilter={(filter) => {
             setCollectionFilter(filter);
@@ -1956,7 +1978,7 @@ function ShelfStatsScreen({
 }: {
   session: Session;
   onBack: () => void;
-  onOpenBreakdown: () => void;
+  onOpenBreakdown: (mode?: SetProgressDrillMode) => void;
   onOpenFilter: (filter: CollectionFilter) => void;
   onOpenItem: (item: CollectionItem) => void;
 }) {
@@ -2148,12 +2170,12 @@ function ShelfStatsScreen({
           </View>
 
           <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Complete" value={integer(stats.completedSetCount)} />
-            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} />
-            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} />
+            <MetricCard label="Complete" value={integer(stats.completedSetCount)} onPress={() => onOpenBreakdown("complete")} />
+            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} onPress={() => onOpenBreakdown("withinReach")} />
+            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} onPress={() => onOpenBreakdown("reviewed")} />
           </View>
 
-          <Pressable onPress={onOpenBreakdown} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
+          <Pressable onPress={() => onOpenBreakdown("withinReach")} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
             <Text style={styles.statsBreakdownButtonText}>Set & Franchise Breakdown</Text>
           </Pressable>
 
@@ -2269,10 +2291,12 @@ function ShelfStatsScreen({
 
 function ShelfBreakdownScreen({
   session,
+  initialSetFilter,
   onBack,
   onOpenFilter,
 }: {
   session: Session;
+  initialSetFilter: SetProgressDrillMode;
   onBack: () => void;
   onOpenFilter: (filter: CollectionFilter) => void;
 }) {
@@ -2286,6 +2310,7 @@ function ShelfBreakdownScreen({
   const [sharedBusy, setSharedBusy] = useState(false);
   const [groupMode, setGroupMode] = useState<StatsGroupMode>("set");
   const [sortMode, setSortMode] = useState<BreakdownSortMode>("closest");
+  const [setProgressFilter, setSetProgressFilter] = useState<SetProgressDrillMode>(initialSetFilter);
   const [searchText, setSearchText] = useState("");
   const deferredSearchText = useDeferredValue(searchText);
   const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
@@ -2320,6 +2345,10 @@ function ShelfBreakdownScreen({
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    setSetProgressFilter(initialSetFilter);
+  }, [initialSetFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -2405,7 +2434,8 @@ function ShelfBreakdownScreen({
 
   const filteredGroups = useMemo(() => {
     const term = deferredSearchText.trim().toLowerCase();
-    const visible = term ? groups.filter((group) => group.name.toLowerCase().includes(term)) : groups;
+    const setFilteredGroups = groupMode === "set" ? groups.filter((group) => setMatchesProgressDrill(group, setProgressFilter)) : groups;
+    const visible = term ? setFilteredGroups.filter((group) => group.name.toLowerCase().includes(term)) : setFilteredGroups;
     return [...visible].sort((a, b) => {
       if (sortMode === "closest" && groupMode === "set") {
         return compareSetClosest(a, b);
@@ -2418,21 +2448,32 @@ function ShelfBreakdownScreen({
       }
       return b.value - a.value || b.count - a.count || a.name.localeCompare(b.name);
     });
-  }, [groups, deferredSearchText, groupMode, sortMode]);
+  }, [groups, deferredSearchText, groupMode, setProgressFilter, sortMode]);
 
   const summary = useMemo(() => {
     const totalPops = breakdownItems.reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
     const uniquePops = new Set(breakdownItems.map(duplicateShelfKey)).size;
     const totalValue = breakdownItems.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
     const strongestGroup = [...groups].sort((a, b) => b.value - a.value)[0] ?? null;
-    const closestSet = [...groups].filter((group) => setMissingCount(group)).sort(compareSetClosest)[0] ?? null;
-    const completeSetCount = groups.filter((group) => {
-      const total = Number(group.checklistTotal ?? 0);
-      const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
-      return total > 0 && group.completionPercent != null && owned >= total;
-    }).length;
-    return { totalPops, uniquePops, totalValue, strongestGroup, closestSet, completeSetCount };
-  }, [breakdownItems, groups]);
+    const reviewedSetGroups = groups.filter((group) => setMatchesProgressDrill(group, "reviewed"));
+    const withinReachSetGroups = groups.filter((group) => setMatchesProgressDrill(group, "withinReach"));
+    const completeSetGroups = groups.filter((group) => setMatchesProgressDrill(group, "complete"));
+    const selectedSetGroups =
+      setProgressFilter === "complete" ? completeSetGroups : setProgressFilter === "reviewed" ? reviewedSetGroups : withinReachSetGroups;
+    const selectedSetHighlight =
+      setProgressFilter === "withinReach"
+        ? [...selectedSetGroups].sort(compareSetClosest)[0] ?? null
+        : [...selectedSetGroups].sort((a, b) => b.value - a.value || b.count - a.count || a.name.localeCompare(b.name))[0] ?? null;
+    return {
+      totalPops,
+      uniquePops,
+      totalValue,
+      strongestGroup,
+      selectedSetHighlight,
+      completeSetCount: completeSetGroups.length,
+      reviewedSetCount: reviewedSetGroups.length,
+    };
+  }, [breakdownItems, groups, setProgressFilter]);
 
   const maxValue = Math.max(1, ...filteredGroups.map((group) => group.value));
   const filterKind = groupMode === "franchise" ? "franchise" : "setName";
@@ -2450,12 +2491,15 @@ function ShelfBreakdownScreen({
       ? `${integer(summary.totalPops)} Pops across ${integer(memberCount)} members, ${money(summary.totalValue)} total value.`
       : `${integer(summary.totalPops)} Pops from ${selectedMember?.name ?? "this member"}, ${money(summary.totalValue)} total value.`
     : `${integer(summary.totalPops)} Pops, ${integer(summary.uniquePops)} unique. Open a set to review owned and missing checklist Pops.`;
-  const heroPrimaryGroup = groupMode === "set" ? summary.closestSet ?? summary.strongestGroup : summary.strongestGroup;
-  const heroPrimaryLabel = groupMode === "set" ? (summary.closestSet ? "Closest set" : "Top set") : "Top by value";
-  const heroSecondaryLabel = groupMode === "set" ? "Missing next" : "Avg pop";
+  const heroPrimaryGroup = groupMode === "set" ? summary.selectedSetHighlight ?? summary.strongestGroup : summary.strongestGroup;
+  const heroPrimaryLabel =
+    groupMode === "set" ? (setProgressFilter === "withinReach" ? "Closest set" : `${setProgressDrillLabel(setProgressFilter)} set`) : "Top by value";
+  const heroSecondaryLabel = groupMode === "set" ? (setProgressFilter === "withinReach" ? "Missing next" : "Set value") : "Avg pop";
   const heroSecondaryValue =
-    groupMode === "set" && summary.closestSet
-      ? integer(setMissingCount(summary.closestSet) ?? 0)
+    groupMode === "set" && heroPrimaryGroup
+      ? setProgressFilter === "withinReach"
+        ? integer(setMissingCount(heroPrimaryGroup) ?? 0)
+        : money(heroPrimaryGroup.value)
       : summary.strongestGroup
         ? money(summary.strongestGroup.averageValue)
         : "--";
@@ -2559,6 +2603,26 @@ function ShelfBreakdownScreen({
               ))}
             </View>
 
+            {groupMode === "set" ? (
+              <View style={styles.breakdownSortRow}>
+                {(["withinReach", "complete", "reviewed"] as const).map((mode) => (
+                  <Pressable
+                    key={mode}
+                    onPress={() => {
+                      setSetProgressFilter(mode);
+                      setExpandedGroupKey(null);
+                      setShowAllBreakdownRowsKey(null);
+                    }}
+                    style={[styles.breakdownSortChip, setProgressFilter === mode && styles.breakdownSortChipActive]}
+                  >
+                    <Text style={[styles.breakdownSortText, setProgressFilter === mode && styles.breakdownSortTextActive]}>
+                      {setProgressDrillLabel(mode)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : null}
+
             <NativeTextInput
               value={searchText}
               onChangeText={setSearchText}
@@ -2592,7 +2656,9 @@ function ShelfBreakdownScreen({
           </View>
 
           <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>{groupMode === "set" ? "Set Progress" : `${title} Breakdown`}</Text>
+            <Text style={styles.dashboardSectionTitle}>
+              {groupMode === "set" ? `${setProgressDrillLabel(setProgressFilter)} Sets` : `${title} Breakdown`}
+            </Text>
             <Text style={styles.mutedSmall}>
               {groupMode === "set"
                 ? "Open a set to compare owned Pops with the reviewed checklist."
@@ -2604,7 +2670,11 @@ function ShelfBreakdownScreen({
             {sharedBusy ? (
               <ActivityIndicator color="#7e67f4" />
             ) : filteredGroups.length === 0 ? (
-              <Text style={styles.mutedText}>No matching groups found.</Text>
+              <Text style={styles.mutedText}>
+                {groupMode === "set"
+                  ? `No ${setProgressDrillLabel(setProgressFilter).toLowerCase()} sets found yet.`
+                  : "No matching groups found."}
+              </Text>
             ) : (
               filteredGroups.map((group) => {
                 const valueBarPercent = Math.max(4, Math.min(100, (group.value / maxValue) * 100));
