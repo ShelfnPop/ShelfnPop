@@ -132,6 +132,12 @@ type SetPremiumDisplay = {
   text: string;
   isActive: boolean;
 };
+type SetRecommendation = {
+  key: string;
+  setName: string;
+  completionLine: string | null;
+  row: ChecklistDisplayRow;
+};
 type SetProgressSummary = {
   ownedUnique: number;
   checklistTotal: number;
@@ -1937,6 +1943,7 @@ function ShelfStatsScreen({
 }) {
   const [items, setItems] = useState<CollectionItem[]>([]);
   const [setChecklists, setSetChecklists] = useState<Record<string, SetChecklistSummary>>({});
+  const [setRecommendations, setSetRecommendations] = useState<SetRecommendation[]>([]);
   const [busy, setBusy] = useState(true);
 
   const load = useCallback(async () => {
@@ -2009,8 +2016,12 @@ function ShelfStatsScreen({
     const setGroups = addSetCompletion(buildStatsGroups(items, "set"), setChecklists);
     const topFranchises = [...franchiseGroups].sort((a, b) => b.value - a.value || b.count - a.count || a.name.localeCompare(b.name)).slice(0, 5);
     const topSets = [...setGroups].sort((a, b) => b.value - a.value || b.count - a.count || a.name.localeCompare(b.name)).slice(0, 5);
-    const closestSets = [...setGroups]
-      .filter((group) => group.checklistTotal && group.completionPercent != null)
+    const inProgressSets = [...setGroups].filter((group) => {
+        const total = Number(group.checklistTotal ?? 0);
+        const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
+        return total > 0 && group.completionPercent != null && owned > 0 && owned < total;
+      });
+    const closestSets = [...inProgressSets]
       .sort((a, b) => {
         const aMissing = Number(a.checklistTotal ?? 0) - Number(a.completionOwnedCount ?? a.uniqueCount);
         const bMissing = Number(b.checklistTotal ?? 0) - Number(b.completionOwnedCount ?? b.uniqueCount);
@@ -2045,9 +2056,55 @@ function ShelfStatsScreen({
       setGroups,
       topFranchises,
       topSets,
+      inProgressSetCount: inProgressSets.length,
       closestSets,
     };
   }, [items, setChecklists]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadRecommendations = async () => {
+      const closeGroups = stats.closestSets.slice(0, 4);
+      if (closeGroups.length === 0) {
+        setSetRecommendations([]);
+        return;
+      }
+
+      const nextRecommendations: SetRecommendation[] = [];
+      for (const group of closeGroups) {
+        const checklist = setChecklists[group.name.toLowerCase()];
+        if (!checklist?.set_id) continue;
+
+        try {
+          const checklistRows = await fetchSetChecklistItems(checklist.set_id);
+          const missingRows = buildChecklistDisplayRows(checklistRows, group.items, group.name).filter((row) => !row.owned);
+          for (const row of missingRows.slice(0, 2)) {
+            nextRecommendations.push({
+              key: `${group.key}:${row.id}`,
+              setName: group.name,
+              completionLine: setCompletionText(group),
+              row,
+            });
+            if (nextRecommendations.length >= 6) break;
+          }
+          if (nextRecommendations.length >= 6) break;
+        } catch {
+          // Recommendations are helpful, but the rest of the stats page should still render if a checklist load fails.
+        }
+      }
+
+      if (!cancelled) {
+        setSetRecommendations(nextRecommendations);
+      }
+    };
+
+    void loadRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setChecklists, stats.closestSets]);
 
   return (
     <ScreenFrame title="Shelf Stats" onBack={onBack}>
@@ -2057,10 +2114,8 @@ function ShelfStatsScreen({
         <>
           <View style={styles.statsHero}>
             <Text style={styles.dashboardEyebrow}>Set progress</Text>
-            <Text style={styles.statsHeroValue}>{money(stats.totalValue)}</Text>
-            <Text style={styles.dashboardSubtext}>
-              {integer(stats.totalPops)} Pops, {integer(stats.uniqueItems)} unique Pops, {money(stats.gainLoss)} gain/loss.
-            </Text>
+            <Text style={styles.statsHeroValue}>{integer(stats.inProgressSetCount)} Sets</Text>
+            <Text style={styles.dashboardSubtext}>Reviewed sets with missing Pops appear first so you can decide what to hunt next.</Text>
           </View>
 
           <View style={styles.dashboardStatsGrid}>
@@ -2074,9 +2129,9 @@ function ShelfStatsScreen({
           </Pressable>
 
           <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Closest Sets</Text>
+            <Text style={styles.dashboardSectionTitle}>Sets Within Reach</Text>
             {stats.closestSets.length === 0 ? (
-              <Text style={styles.mutedText}>Reviewed set totals will appear here as they are added.</Text>
+              <Text style={styles.mutedText}>No incomplete reviewed sets are close yet. Add a few more Pops to unlock completion suggestions.</Text>
             ) : (
               stats.closestSets.map((group, index) => (
                 <StatsHighlightRow
@@ -2087,6 +2142,15 @@ function ShelfStatsScreen({
                   onPress={() => onOpenFilter({ kind: "setName", label: group.name, value: group.name })}
                 />
               ))
+            )}
+          </View>
+
+          <View style={styles.dashboardInsightPanel}>
+            <Text style={styles.dashboardSectionTitle}>Pops to Find Next</Text>
+            {setRecommendations.length === 0 ? (
+              <Text style={styles.mutedText}>Missing Pops from close reviewed sets will appear here.</Text>
+            ) : (
+              setRecommendations.map((recommendation) => <SetRecommendationRow key={recommendation.key} recommendation={recommendation} />)
             )}
           </View>
 
@@ -6218,6 +6282,40 @@ function StatsHighlightRow({
     <Pressable onPress={onPress} style={({ pressed }) => [styles.statsListRow, styles.pressableStatRow, pressed && styles.pressed]}>
       {content}
     </Pressable>
+  );
+}
+
+function SetRecommendationRow({ recommendation }: { recommendation: SetRecommendation }) {
+  const row = recommendation.row;
+  const metaLine = [recommendation.setName, row.number ? `#${row.number}` : null, isMeaningfulVariant(row.variant) ? row.variant : null, row.exclusivity]
+    .filter(Boolean)
+    .join("  ");
+
+  return (
+    <View style={styles.statsListRow}>
+      <View style={styles.statsRankBadge}>
+        <Text style={styles.statsRankText}>+</Text>
+      </View>
+      <View style={styles.flex}>
+        <Text style={styles.dashboardInsightLabel} numberOfLines={1}>
+          {recommendation.setName}
+        </Text>
+        <Text style={styles.statsListTitle} numberOfLines={1}>
+          {checklistRowName(row)}
+        </Text>
+        <Text style={styles.mutedSmall} numberOfLines={1}>
+          {metaLine || recommendation.completionLine || "Reviewed checklist item"}
+        </Text>
+      </View>
+      <View style={styles.alignEnd}>
+        <Text style={styles.checklistMissingBadge}>Missing</Text>
+        {recommendation.completionLine ? (
+          <Text style={styles.mutedSmall} numberOfLines={1}>
+            {recommendation.completionLine.replace(" owned - ", "/")}
+          </Text>
+        ) : null}
+      </View>
+    </View>
   );
 }
 
