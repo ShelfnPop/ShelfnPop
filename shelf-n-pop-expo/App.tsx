@@ -1758,26 +1758,6 @@ function DashboardScreen({
             </View>
           </View>
 
-          <View style={styles.dashboardModePanel}>
-            <View style={styles.dashboardModePanelTop}>
-              <View style={styles.flex}>
-                <Text style={styles.dashboardEyebrow}>Mode focus</Text>
-                <Text style={styles.dashboardModeTitle}>{dashboardCopy.focusTitle}</Text>
-              </View>
-              <Pressable onPress={onProfile} style={styles.dashboardModeChangeButton}>
-                <Text style={styles.dashboardModeChangeText}>Change</Text>
-              </Pressable>
-            </View>
-            <Text style={styles.dashboardSubtext}>{dashboardCopy.focusBody}</Text>
-            <View style={styles.dashboardModeFocusRow}>
-              <ModeFocusPill label={dashboardCopy.primaryFocus} />
-              <ModeFocusPill label={dashboardCopy.secondaryFocus} />
-              <ModeFocusPill label={dashboardCopy.tertiaryFocus} />
-            </View>
-          </View>
-
-          {collectorMode === "reseller" ? valueSummary : null}
-
           <View style={styles.dashboardStatsGrid}>
             <MetricCard label="Pops" value={integer(dashboard?.total_pops)} />
             <MetricCard label="Unique Pops" value={integer(dashboard?.unique_items)} />
@@ -1785,7 +1765,7 @@ function DashboardScreen({
           </View>
 
           {valueSnapshot}
-          {collectorMode !== "reseller" ? valueSummary : null}
+          {valueSummary}
 
           <View style={styles.dashboardActionPanel}>
             <Text style={styles.dashboardSectionTitle}>Quick Actions</Text>
@@ -1811,6 +1791,24 @@ function DashboardScreen({
                 <Text style={styles.dashboardProfileText}>Admin Console</Text>
               </Pressable>
             ) : null}
+          </View>
+
+          <View style={styles.dashboardModePanel}>
+            <View style={styles.dashboardModePanelTop}>
+              <View style={styles.flex}>
+                <Text style={styles.dashboardEyebrow}>Current mode</Text>
+                <Text style={styles.dashboardModeTitle}>{dashboardCopy.focusTitle}</Text>
+              </View>
+              <Pressable onPress={onProfile} style={styles.dashboardModeChangeButton}>
+                <Text style={styles.dashboardModeChangeText}>Change</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.dashboardSubtext}>{dashboardCopy.focusBody}</Text>
+            <View style={styles.dashboardModeFocusRow}>
+              <ModeFocusPill label={dashboardCopy.primaryFocus} />
+              <ModeFocusPill label={dashboardCopy.secondaryFocus} />
+              <ModeFocusPill label={dashboardCopy.tertiaryFocus} />
+            </View>
           </View>
         </>
       )}
