@@ -75,7 +75,7 @@ type CollectionFilter = {
   value?: string;
 };
 type StatsGroupMode = "franchise" | "set";
-type BreakdownSortMode = "value" | "count" | "average";
+type BreakdownSortMode = "closest" | "value" | "count" | "average";
 type SetChecklistViewMode = "owned" | "missing" | "full";
 type StatsSourceItem = CollectionItem | SharedShelfCollectionItem;
 type SharedStatsMember = {
@@ -913,6 +913,25 @@ function setCompletionText(group: StatsGroup): string | null {
   if (!group.checklistTotal || group.completionPercent == null) return null;
   const ownedCount = group.completionOwnedCount ?? group.uniqueCount;
   return `${integer(ownedCount)} of ${integer(group.checklistTotal)} owned - ${percent(group.completionPercent)} complete`;
+}
+
+function setMissingCount(group: StatsGroup): number | null {
+  if (!group.checklistTotal) return null;
+  return Math.max(0, group.checklistTotal - (group.completionOwnedCount ?? group.uniqueCount));
+}
+
+function compareSetClosest(a: StatsGroup, b: StatsGroup): number {
+  const aMissing = setMissingCount(a);
+  const bMissing = setMissingCount(b);
+  const aIncomplete = aMissing != null && aMissing > 0;
+  const bIncomplete = bMissing != null && bMissing > 0;
+
+  if (aIncomplete !== bIncomplete) return aIncomplete ? -1 : 1;
+  if (aIncomplete && bIncomplete && aMissing !== bMissing) return Number(aMissing) - Number(bMissing);
+
+  const aPercent = a.completionPercent ?? -1;
+  const bPercent = b.completionPercent ?? -1;
+  return bPercent - aPercent || b.count - a.count || b.value - a.value || a.name.localeCompare(b.name);
 }
 
 function normalizedCondition(value: string | null | undefined): string {
@@ -2255,8 +2274,8 @@ function ShelfBreakdownScreen({
   const [selectedMemberId, setSelectedMemberId] = useState("all");
   const [busy, setBusy] = useState(true);
   const [sharedBusy, setSharedBusy] = useState(false);
-  const [groupMode, setGroupMode] = useState<StatsGroupMode>("franchise");
-  const [sortMode, setSortMode] = useState<BreakdownSortMode>("value");
+  const [groupMode, setGroupMode] = useState<StatsGroupMode>("set");
+  const [sortMode, setSortMode] = useState<BreakdownSortMode>("closest");
   const [searchText, setSearchText] = useState("");
   const deferredSearchText = useDeferredValue(searchText);
   const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
@@ -2378,6 +2397,9 @@ function ShelfBreakdownScreen({
     const term = deferredSearchText.trim().toLowerCase();
     const visible = term ? groups.filter((group) => group.name.toLowerCase().includes(term)) : groups;
     return [...visible].sort((a, b) => {
+      if (sortMode === "closest" && groupMode === "set") {
+        return compareSetClosest(a, b);
+      }
       if (sortMode === "count") {
         return b.count - a.count || b.value - a.value || a.name.localeCompare(b.name);
       }
@@ -2386,14 +2408,15 @@ function ShelfBreakdownScreen({
       }
       return b.value - a.value || b.count - a.count || a.name.localeCompare(b.name);
     });
-  }, [groups, deferredSearchText, sortMode]);
+  }, [groups, deferredSearchText, groupMode, sortMode]);
 
   const summary = useMemo(() => {
     const totalPops = breakdownItems.reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
     const uniquePops = new Set(breakdownItems.map(duplicateShelfKey)).size;
     const totalValue = breakdownItems.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
     const strongestGroup = [...groups].sort((a, b) => b.value - a.value)[0] ?? null;
-    return { totalPops, uniquePops, totalValue, strongestGroup };
+    const closestSet = [...groups].filter((group) => setMissingCount(group)).sort(compareSetClosest)[0] ?? null;
+    return { totalPops, uniquePops, totalValue, strongestGroup, closestSet };
   }, [breakdownItems, groups]);
 
   const maxValue = Math.max(1, ...filteredGroups.map((group) => group.value));
@@ -2411,7 +2434,16 @@ function ShelfBreakdownScreen({
     ? selectedMemberId === "all"
       ? `${integer(summary.totalPops)} Pops across ${integer(memberCount)} members, ${money(summary.totalValue)} total value.`
       : `${integer(summary.totalPops)} Pops from ${selectedMember?.name ?? "this member"}, ${money(summary.totalValue)} total value.`
-    : `${integer(summary.totalPops)} Pops, ${integer(summary.uniquePops)} unique, ${money(summary.totalValue)} total value.`;
+    : `${integer(summary.totalPops)} Pops, ${integer(summary.uniquePops)} unique. Open a set to review owned and missing checklist Pops.`;
+  const heroPrimaryGroup = groupMode === "set" ? summary.closestSet : summary.strongestGroup;
+  const heroPrimaryLabel = groupMode === "set" ? "Closest set" : "Top by value";
+  const heroSecondaryLabel = groupMode === "set" ? "Missing next" : "Avg pop";
+  const heroSecondaryValue =
+    groupMode === "set" && summary.closestSet
+      ? integer(setMissingCount(summary.closestSet) ?? 0)
+      : summary.strongestGroup
+        ? money(summary.strongestGroup.averageValue)
+        : "--";
 
   return (
     <ScreenFrame title="Shelf Breakdown" onBack={onBack}>
@@ -2420,20 +2452,20 @@ function ShelfBreakdownScreen({
       ) : (
         <>
           <View style={styles.breakdownHero}>
-            <Text style={styles.dashboardEyebrow}>{activeShelf ? "Shared shelf map" : "Shelf organizer"}</Text>
+            <Text style={styles.dashboardEyebrow}>{activeShelf ? "Shared shelf map" : groupMode === "set" ? "Set organizer" : "Shelf organizer"}</Text>
             <Text style={styles.dashboardSectionTitle}>{scopeName}</Text>
             <Text style={styles.dashboardSubtext}>{scopeCopy}</Text>
-            {summary.strongestGroup ? (
+            {heroPrimaryGroup ? (
               <View style={styles.breakdownHeroMetaRow}>
                 <View style={styles.breakdownHeroTile}>
-                  <Text style={styles.breakdownHeroLabel}>Top by value</Text>
+                  <Text style={styles.breakdownHeroLabel}>{heroPrimaryLabel}</Text>
                   <Text style={styles.breakdownHeroValue} numberOfLines={1}>
-                    {summary.strongestGroup.name}
+                    {heroPrimaryGroup.name}
                   </Text>
                 </View>
                 <View style={styles.breakdownHeroTile}>
-                  <Text style={styles.breakdownHeroLabel}>Avg pop</Text>
-                  <Text style={styles.breakdownHeroValue}>{money(summary.strongestGroup.averageValue)}</Text>
+                  <Text style={styles.breakdownHeroLabel}>{heroSecondaryLabel}</Text>
+                  <Text style={styles.breakdownHeroValue}>{heroSecondaryValue}</Text>
                 </View>
               </View>
             ) : null}
@@ -2488,11 +2520,12 @@ function ShelfBreakdownScreen({
 
           <View style={styles.breakdownControls}>
             <View style={styles.segmentedControl}>
-              {(["franchise", "set"] as const).map((mode) => (
+              {(["set", "franchise"] as const).map((mode) => (
                 <Pressable
                   key={mode}
                   onPress={() => {
                     setGroupMode(mode);
+                    setSortMode(mode === "set" ? "closest" : "value");
                     setExpandedGroupKey(null);
                     setShowAllBreakdownRowsKey(null);
                   }}
@@ -2514,11 +2547,18 @@ function ShelfBreakdownScreen({
             />
 
             <View style={styles.breakdownSortRow}>
-              {([
-                ["value", "Value"],
-                ["count", "Pops"],
-                ["average", "Avg"],
-              ] as const).map(([mode, label]) => (
+              {(groupMode === "set"
+                ? ([
+                    ["closest", "Closest"],
+                    ["count", "Pops"],
+                    ["value", "Value"],
+                  ] as const)
+                : ([
+                    ["value", "Value"],
+                    ["count", "Pops"],
+                    ["average", "Avg"],
+                  ] as const)
+              ).map(([mode, label]) => (
                 <Pressable
                   key={mode}
                   onPress={() => setSortMode(mode)}
@@ -2531,9 +2571,13 @@ function ShelfBreakdownScreen({
           </View>
 
           <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>{title} Breakdown</Text>
+            <Text style={styles.dashboardSectionTitle}>{groupMode === "set" ? "Set Progress" : `${title} Breakdown`}</Text>
             <Text style={styles.mutedSmall}>
-              {activeShelf ? "Tap a row to see the Pops inside it." : "Tap a row to open the matching shelf view."}
+              {groupMode === "set"
+                ? "Open a set to compare owned Pops with the reviewed checklist."
+                : activeShelf
+                  ? "Tap a row to see the Pops inside it."
+                  : "Tap a row to open the matching shelf view."}
             </Text>
 
             {sharedBusy ? (
@@ -2606,21 +2650,23 @@ function ShelfBreakdownScreen({
                         </View>
                         <View style={styles.breakdownMetricRow}>
                           <View style={styles.breakdownMetricTile}>
-                            <Text style={styles.breakdownMetricLabel}>Pops</Text>
+                            <Text style={styles.breakdownMetricLabel}>{groupMode === "set" ? "Owned" : "Pops"}</Text>
                             <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                              {integer(group.count)}
+                              {groupMode === "set" && hasCompletion ? integer(displayCompletionOwnedCount) : integer(group.count)}
                             </Text>
                           </View>
                           <View style={styles.breakdownMetricTile}>
-                            <Text style={styles.breakdownMetricLabel}>Value</Text>
+                            <Text style={styles.breakdownMetricLabel}>{groupMode === "set" ? "Missing" : "Value"}</Text>
                             <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                              {money(group.value)}
+                              {groupMode === "set" && hasCompletion ? integer(displayMissingCount) : money(group.value)}
                             </Text>
                           </View>
                           <View style={styles.breakdownMetricTile}>
-                            <Text style={styles.breakdownMetricLabel}>Avg</Text>
+                            <Text style={styles.breakdownMetricLabel}>{groupMode === "set" ? "Complete" : "Avg"}</Text>
                             <Text style={styles.breakdownMetricValue} numberOfLines={1}>
-                              {money(group.averageValue)}
+                              {groupMode === "set" && hasCompletion && displayCompletionPercent != null
+                                ? percent(displayCompletionPercent)
+                                : money(group.averageValue)}
                             </Text>
                           </View>
                         </View>
