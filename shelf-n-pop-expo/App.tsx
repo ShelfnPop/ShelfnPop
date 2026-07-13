@@ -1985,14 +1985,20 @@ function ShelfStatsScreen({
   const [items, setItems] = useState<CollectionItem[]>([]);
   const [setChecklists, setSetChecklists] = useState<Record<string, SetChecklistSummary>>({});
   const [setRecommendations, setSetRecommendations] = useState<SetRecommendation[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [busy, setBusy] = useState(true);
 
   const load = useCallback(async () => {
     setBusy(true);
     try {
-      const [rows, checklistRows] = await Promise.all([fetchUserCollectionItems(session.user.id), fetchSetChecklistSummaries()]);
+      const [rows, checklistRows, profileResult] = await Promise.all([
+        fetchUserCollectionItems(session.user.id),
+        fetchSetChecklistSummaries(),
+        supabase.from("profiles").select("*").eq("id", session.user.id).maybeSingle(),
+      ]);
       setItems(rows);
       setSetChecklists(checklistRows);
+      setProfile(profileResult.error ? null : (profileResult.data as Profile | null));
     } catch (error) {
       Alert.alert("Shelf Stats error", error instanceof Error ? error.message : "Unable to load your shelf stats.");
     } finally {
@@ -2003,6 +2009,10 @@ function ShelfStatsScreen({
   useEffect(() => {
     load();
   }, [load]);
+
+  const collectorMode = normalizeCollectorMode(profile?.collector_mode);
+  const dashboardTheme = collectorModeDashboardTheme(collectorMode);
+  const themedPanelStyle = { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg };
 
   const stats = useMemo(() => {
     let totalPops = 0;
@@ -2161,8 +2171,8 @@ function ShelfStatsScreen({
         <ActivityIndicator color="#7e67f4" />
       ) : (
         <>
-          <View style={styles.statsHero}>
-            <Text style={styles.dashboardEyebrow}>Set progress</Text>
+          <View style={[styles.statsHero, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}>
+            <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>Set progress</Text>
             <Text style={styles.statsHeroValue}>{integer(stats.completedSetCount)} Complete Sets</Text>
             <Text style={styles.dashboardSubtext}>
               {integer(stats.inProgressSetCount)} reviewed sets are still in progress, with the closest ones shown first.
@@ -2170,16 +2180,28 @@ function ShelfStatsScreen({
           </View>
 
           <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Complete" value={integer(stats.completedSetCount)} onPress={() => onOpenBreakdown("complete")} />
-            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} onPress={() => onOpenBreakdown("withinReach")} />
-            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} onPress={() => onOpenBreakdown("reviewed")} />
+            <MetricCard label="Complete" value={integer(stats.completedSetCount)} onPress={() => onOpenBreakdown("complete")} theme={dashboardTheme} />
+            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} onPress={() => onOpenBreakdown("withinReach")} theme={dashboardTheme} />
+            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} onPress={() => onOpenBreakdown("reviewed")} theme={dashboardTheme} />
           </View>
 
-          <Pressable onPress={() => onOpenBreakdown("withinReach")} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
-            <Text style={styles.statsBreakdownButtonText}>Set & Franchise Breakdown</Text>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
+            <Text style={styles.dashboardSectionTitle}>Shelf Recap</Text>
+            <View style={styles.dashboardStatsGrid}>
+              <MetricCard label="Pops" value={integer(stats.totalPops)} theme={dashboardTheme} />
+              <MetricCard label="Unique" value={integer(stats.uniqueItems)} theme={dashboardTheme} />
+              <MetricCard label="Recent Adds" value={integer(stats.recentAdds)} theme={dashboardTheme} />
+            </View>
+          </View>
+
+          <Pressable
+            onPress={() => onOpenBreakdown("withinReach")}
+            style={({ pressed }) => [styles.statsBreakdownButton, { backgroundColor: dashboardTheme.accent }, pressed && styles.pressed]}
+          >
+            <Text style={styles.statsBreakdownButtonText}>Open Set Organizer</Text>
           </Pressable>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Sets Within Reach</Text>
             {stats.closestSets.length === 0 ? (
               <Text style={styles.mutedText}>No incomplete reviewed sets are close yet. Add a few more Pops to unlock completion suggestions.</Text>
@@ -2196,7 +2218,7 @@ function ShelfStatsScreen({
             )}
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Pops to Find Next</Text>
             {setRecommendations.length === 0 ? (
               <Text style={styles.mutedText}>Missing Pops from close reviewed sets will appear here.</Text>
@@ -2205,7 +2227,7 @@ function ShelfStatsScreen({
             )}
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Top Sets</Text>
             {stats.topSets.length === 0 ? (
               <Text style={styles.mutedText}>Add Pops to your shelf to see set highlights here.</Text>
@@ -2221,7 +2243,7 @@ function ShelfStatsScreen({
             )}
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Shelf Mix</Text>
             <View style={styles.statsTwoColumn}>
               <StatPill label="Vaulted" value={integer(stats.vaultedCount)} onPress={() => onOpenFilter({ kind: "vaulted", label: "Vaulted" })} />
@@ -2231,7 +2253,7 @@ function ShelfStatsScreen({
             </View>
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Shelf Health</Text>
             <View style={styles.statsTwoColumn}>
               <StatPill label="Missing images" value={integer(stats.missingImage)} onPress={() => onOpenFilter({ kind: "missingImages", label: "Missing images" })} />
@@ -2241,7 +2263,7 @@ function ShelfStatsScreen({
             </View>
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Top Franchises</Text>
             {stats.topFranchises.length === 0 ? (
               <Text style={styles.mutedText}>Add Pops to your shelf to see highlights here.</Text>
@@ -2257,16 +2279,16 @@ function ShelfStatsScreen({
             )}
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Value Snapshot</Text>
             <View style={styles.dashboardStatsGrid}>
-              <MetricCard label="Avg Value" value={money(stats.averageValue)} />
-              <MetricCard label="Avg Paid" value={money(stats.averagePaid)} />
-              <MetricCard label="Return" value={stats.gainLossPercent == null ? "--" : percent(stats.gainLossPercent)} />
+              <MetricCard label="Avg Value" value={money(stats.averageValue)} theme={dashboardTheme} />
+              <MetricCard label="Avg Paid" value={money(stats.averagePaid)} theme={dashboardTheme} />
+              <MetricCard label="Return" value={stats.gainLossPercent == null ? "--" : percent(stats.gainLossPercent)} theme={dashboardTheme} />
             </View>
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
+          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
             <Text style={styles.dashboardSectionTitle}>Standout Pops</Text>
             <TopStatRow label="Highest Value" item={stats.topValue} value={money(stats.topValue ? perPopValue(stats.topValue) : null)} onPress={stats.topValue ? () => onOpenItem(stats.topValue as CollectionItem) : undefined} />
             <TopStatRow
