@@ -2040,6 +2040,12 @@ function ShelfStatsScreen({
         const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
         return total > 0 && group.completionPercent != null && owned > 0 && owned < total;
       });
+    const completedSets = [...setGroups].filter((group) => {
+      const total = Number(group.checklistTotal ?? 0);
+      const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
+      return total > 0 && group.completionPercent != null && owned >= total;
+    });
+    const reviewedSets = [...setGroups].filter((group) => Number(group.checklistTotal ?? 0) > 0);
     const closestSets = [...inProgressSets]
       .sort((a, b) => {
         const aMissing = Number(a.checklistTotal ?? 0) - Number(a.completionOwnedCount ?? a.uniqueCount);
@@ -2076,6 +2082,8 @@ function ShelfStatsScreen({
       topFranchises,
       topSets,
       inProgressSetCount: inProgressSets.length,
+      completedSetCount: completedSets.length,
+      reviewedSetCount: reviewedSets.length,
       closestSets,
     };
   }, [items, setChecklists]);
@@ -2133,14 +2141,16 @@ function ShelfStatsScreen({
         <>
           <View style={styles.statsHero}>
             <Text style={styles.dashboardEyebrow}>Set progress</Text>
-            <Text style={styles.statsHeroValue}>{integer(stats.inProgressSetCount)} Sets</Text>
-            <Text style={styles.dashboardSubtext}>Reviewed sets with missing Pops appear first so you can decide what to hunt next.</Text>
+            <Text style={styles.statsHeroValue}>{integer(stats.completedSetCount)} Complete Sets</Text>
+            <Text style={styles.dashboardSubtext}>
+              {integer(stats.inProgressSetCount)} reviewed sets are still in progress, with the closest ones shown first.
+            </Text>
           </View>
 
           <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Pops" value={integer(stats.totalPops)} />
-            <MetricCard label="Unique" value={integer(stats.uniqueItems)} />
-            <MetricCard label="Recent Adds" value={integer(stats.recentAdds)} />
+            <MetricCard label="Complete" value={integer(stats.completedSetCount)} />
+            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} />
+            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} />
           </View>
 
           <Pressable onPress={onOpenBreakdown} style={({ pressed }) => [styles.statsBreakdownButton, pressed && styles.pressed]}>
@@ -2416,7 +2426,12 @@ function ShelfBreakdownScreen({
     const totalValue = breakdownItems.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
     const strongestGroup = [...groups].sort((a, b) => b.value - a.value)[0] ?? null;
     const closestSet = [...groups].filter((group) => setMissingCount(group)).sort(compareSetClosest)[0] ?? null;
-    return { totalPops, uniquePops, totalValue, strongestGroup, closestSet };
+    const completeSetCount = groups.filter((group) => {
+      const total = Number(group.checklistTotal ?? 0);
+      const owned = Number(group.completionOwnedCount ?? group.uniqueCount);
+      return total > 0 && group.completionPercent != null && owned >= total;
+    }).length;
+    return { totalPops, uniquePops, totalValue, strongestGroup, closestSet, completeSetCount };
   }, [breakdownItems, groups]);
 
   const maxValue = Math.max(1, ...filteredGroups.map((group) => group.value));
@@ -2435,8 +2450,8 @@ function ShelfBreakdownScreen({
       ? `${integer(summary.totalPops)} Pops across ${integer(memberCount)} members, ${money(summary.totalValue)} total value.`
       : `${integer(summary.totalPops)} Pops from ${selectedMember?.name ?? "this member"}, ${money(summary.totalValue)} total value.`
     : `${integer(summary.totalPops)} Pops, ${integer(summary.uniquePops)} unique. Open a set to review owned and missing checklist Pops.`;
-  const heroPrimaryGroup = groupMode === "set" ? summary.closestSet : summary.strongestGroup;
-  const heroPrimaryLabel = groupMode === "set" ? "Closest set" : "Top by value";
+  const heroPrimaryGroup = groupMode === "set" ? summary.closestSet ?? summary.strongestGroup : summary.strongestGroup;
+  const heroPrimaryLabel = groupMode === "set" ? (summary.closestSet ? "Closest set" : "Top set") : "Top by value";
   const heroSecondaryLabel = groupMode === "set" ? "Missing next" : "Avg pop";
   const heroSecondaryValue =
     groupMode === "set" && summary.closestSet
@@ -2467,6 +2482,12 @@ function ShelfBreakdownScreen({
                   <Text style={styles.breakdownHeroLabel}>{heroSecondaryLabel}</Text>
                   <Text style={styles.breakdownHeroValue}>{heroSecondaryValue}</Text>
                 </View>
+                {groupMode === "set" ? (
+                  <View style={styles.breakdownHeroTile}>
+                    <Text style={styles.breakdownHeroLabel}>Complete sets</Text>
+                    <Text style={styles.breakdownHeroValue}>{integer(summary.completeSetCount)}</Text>
+                  </View>
+                ) : null}
               </View>
             ) : null}
           </View>
