@@ -685,6 +685,37 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
   };
 }
 
+function dashboardMetricsForMode(mode: CollectorMode, dashboard: DashboardHome | null): Array<{ label: string; value: string }> {
+  if (mode === "avid") {
+    return [
+      { label: "Tracked Pops", value: integer(dashboard?.total_pops) },
+      { label: "Unique Pops", value: integer(dashboard?.unique_items) },
+      { label: "Recent Adds", value: integer(dashboard?.pops_added_this_month) },
+    ];
+  }
+
+  if (mode === "reseller") {
+    return [
+      { label: "Total Pops", value: integer(dashboard?.total_pops) },
+      { label: "Unique Items", value: integer(dashboard?.unique_items) },
+      { label: "Added Month", value: integer(dashboard?.pops_added_this_month) },
+    ];
+  }
+
+  return [
+    { label: "On Shelf", value: integer(dashboard?.total_pops) },
+    { label: "Different Pops", value: integer(dashboard?.unique_items) },
+    { label: "New This Month", value: integer(dashboard?.pops_added_this_month) },
+  ];
+}
+
+function dashboardPrimaryHighlightValue(mode: CollectorMode, item: CollectionItem | null): string {
+  if (!item) return "--";
+  if (mode === "reseller") return money(perPopValue(item));
+  if (mode === "avid") return item.number ? `#${item.number}` : "View";
+  return "View";
+}
+
 function shortDate(value: string | null | undefined): string {
   if (!value) return "";
   const date = new Date(`${value}T00:00:00`);
@@ -1674,6 +1705,7 @@ function DashboardScreen({
 
   const collectorMode = normalizeCollectorMode(profile?.collector_mode);
   const dashboardCopy = collectorModeDashboardCopy(collectorMode);
+  const dashboardMetrics = dashboardMetricsForMode(collectorMode, dashboard);
   const valueSummary = (
     <View style={styles.dashboardValueCard}>
       <Text style={styles.dashboardValueLabel}>{dashboardCopy.valueTitle}</Text>
@@ -1720,13 +1752,13 @@ function DashboardScreen({
         </View>
       ) : null}
       <TopStatRow
-        label={collectorMode === "reseller" ? "Highest Valued Pop" : "Shelf Standout"}
+        label={collectorMode === "reseller" ? "Highest Valued Pop" : collectorMode === "avid" ? "Set Standout" : "Shelf Standout"}
         item={highestValuePop}
-        value={money(highestValuePop ? perPopValue(highestValuePop) : null)}
+        value={dashboardPrimaryHighlightValue(collectorMode, highestValuePop)}
         onPress={highestValuePop ? () => onOpenItem(highestValuePop) : undefined}
       />
       <TopStatRow
-        label={collectorMode === "avid" ? "Earliest Release" : "Oldest Pop"}
+        label={collectorMode === "avid" ? "Earliest Release" : collectorMode === "reseller" ? "Oldest Release" : "Oldest Pop"}
         item={oldestPop}
         value={oldestPop ? releaseDateText(oldestPop) ?? "--" : "--"}
         onPress={oldestPop ? () => onOpenItem(oldestPop) : undefined}
@@ -1754,18 +1786,19 @@ function DashboardScreen({
             </View>
             <Text style={styles.dashboardSubtext}>{dashboardActivityText(dashboard)}</Text>
             <View style={styles.dashboardModeBadge}>
-              <Text style={styles.dashboardModeBadgeText}>{collectorModeLabel(collectorMode)}</Text>
+              <Text style={styles.dashboardModeBadgeText}>{collectorModeLabel(collectorMode)} Dashboard</Text>
             </View>
           </View>
 
+          {collectorMode === "reseller" ? valueSummary : null}
+
           <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Pops" value={integer(dashboard?.total_pops)} />
-            <MetricCard label="Unique Pops" value={integer(dashboard?.unique_items)} />
-            <MetricCard label="Added This Month" value={integer(dashboard?.pops_added_this_month)} />
+            {dashboardMetrics.map((metric) => (
+              <MetricCard key={metric.label} label={metric.label} value={metric.value} />
+            ))}
           </View>
 
           {valueSnapshot}
-          {valueSummary}
 
           <View style={styles.dashboardActionPanel}>
             <Text style={styles.dashboardSectionTitle}>Quick Actions</Text>
@@ -1792,6 +1825,8 @@ function DashboardScreen({
               </Pressable>
             ) : null}
           </View>
+
+          {collectorMode !== "reseller" ? valueSummary : null}
 
           <View style={styles.dashboardModePanel}>
             <View style={styles.dashboardModePanelTop}>
