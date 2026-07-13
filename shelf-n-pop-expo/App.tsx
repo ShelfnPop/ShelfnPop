@@ -138,6 +138,19 @@ type SetProgressSummary = {
   completionPercent: number;
 };
 type CollectorMode = "casual" | "avid" | "reseller";
+type DashboardTheme = {
+  accent: string;
+  accentText: string;
+  accentSoft: string;
+  border: string;
+  heroBg: string;
+  panelBg: string;
+  cardBg: string;
+  logoBg: string;
+  primaryActionBg: string;
+  secondaryActionBg: string;
+  valueBorder: string;
+};
 const CONDITIONS = ["Unknown", "Mint", "Near Mint", "Good", "Fair", "Damaged", "Out of Box"] as const;
 const VARIANTS = [
   "Common",
@@ -682,6 +695,54 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
     primaryFocus: "Recent adds",
     secondaryFocus: "Shelf browsing",
     tertiaryFocus: "Shared fun",
+  };
+}
+
+function collectorModeDashboardTheme(mode: CollectorMode): DashboardTheme {
+  if (mode === "avid") {
+    return {
+      accent: "#f6c95f",
+      accentText: "#fff2c2",
+      accentSoft: "#2a2416",
+      border: "#514225",
+      heroBg: "#191812",
+      panelBg: "#171a1d",
+      cardBg: "#111417",
+      logoBg: "#2a1f13",
+      primaryActionBg: "#7c63e8",
+      secondaryActionBg: "#252218",
+      valueBorder: "#524936",
+    };
+  }
+
+  if (mode === "reseller") {
+    return {
+      accent: "#86d49e",
+      accentText: "#d9ffe5",
+      accentSoft: "#17251b",
+      border: "#31543c",
+      heroBg: "#121b15",
+      panelBg: "#141b17",
+      cardBg: "#0f1512",
+      logoBg: "#102415",
+      primaryActionBg: "#2f8c62",
+      secondaryActionBg: "#17251e",
+      valueBorder: "#86d49e",
+    };
+  }
+
+  return {
+    accent: "#9bd8cb",
+    accentText: "#ddfff8",
+    accentSoft: "#172624",
+    border: "#315a54",
+    heroBg: "#131d1e",
+    panelBg: "#151d1f",
+    cardBg: "#101618",
+    logoBg: "#0f2426",
+    primaryActionBg: "#5f6fd9",
+    secondaryActionBg: "#172827",
+    valueBorder: "#3f5e61",
   };
 }
 
@@ -1705,15 +1766,16 @@ function DashboardScreen({
 
   const collectorMode = normalizeCollectorMode(profile?.collector_mode);
   const dashboardCopy = collectorModeDashboardCopy(collectorMode);
+  const dashboardTheme = collectorModeDashboardTheme(collectorMode);
   const dashboardMetrics = dashboardMetricsForMode(collectorMode, dashboard);
   const valueSummary = (
-    <View style={styles.dashboardValueCard}>
+    <View style={[styles.dashboardValueCard, { borderColor: dashboardTheme.valueBorder, backgroundColor: dashboardTheme.panelBg }]}>
       <Text style={styles.dashboardValueLabel}>{dashboardCopy.valueTitle}</Text>
       <View style={styles.dashboardValueBody}>
         <Text style={styles.dashboardValue} adjustsFontSizeToFit numberOfLines={1}>
           {money(dashboard?.total_collection_value)}
         </Text>
-        <View style={styles.dashboardValueSide}>
+        <View style={[styles.dashboardValueSide, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.cardBg }]}>
           <Text style={styles.dashboardSideLabel}>Avg Value</Text>
           <Text style={styles.dashboardSideValue}>{money(dashboard?.average_value_per_pop)}</Text>
           <Text style={styles.dashboardSideLabel}>Avg Paid</Text>
@@ -1727,23 +1789,23 @@ function DashboardScreen({
     </View>
   );
   const valueSnapshot = (
-    <View style={styles.dashboardInsightPanel}>
+    <View style={[styles.dashboardInsightPanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
       <Text style={styles.dashboardSectionTitle}>{dashboardCopy.insightTitle}</Text>
       {collectorMode === "reseller" ? (
         <View style={styles.dashboardInsightGrid}>
-          <View style={styles.dashboardInsightTile}>
+          <View style={[styles.dashboardInsightTile, { backgroundColor: dashboardTheme.cardBg }]}>
             <Text style={styles.dashboardInsightLabel}>Total Paid</Text>
             <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
               {money(dashboard?.total_paid)}
             </Text>
           </View>
-          <View style={styles.dashboardInsightTile}>
+          <View style={[styles.dashboardInsightTile, { backgroundColor: dashboardTheme.cardBg }]}>
             <Text style={styles.dashboardInsightLabel}>Avg Paid</Text>
             <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
               {money(dashboard?.average_paid_per_pop)}
             </Text>
           </View>
-          <View style={styles.dashboardInsightTile}>
+          <View style={[styles.dashboardInsightTile, { backgroundColor: dashboardTheme.cardBg }]}>
             <Text style={styles.dashboardInsightLabel}>Avg Value</Text>
             <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
               {money(dashboard?.average_value_per_pop)}
@@ -1772,21 +1834,21 @@ function DashboardScreen({
         <ActivityIndicator color="#7e67f4" />
       ) : (
         <>
-          <View style={styles.dashboardHero}>
+          <View style={[styles.dashboardHero, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}>
             <View style={styles.dashboardHeroTop}>
-              <View style={styles.dashboardLogoShell}>
+              <View style={[styles.dashboardLogoShell, { backgroundColor: dashboardTheme.logoBg }]}>
                 <ProfileAvatar avatarKey={resolveAvatarKey(profile?.avatar_url)} size={46} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.dashboardEyebrow}>{dashboardCopy.eyebrow}</Text>
+                <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>{dashboardCopy.eyebrow}</Text>
                 <Text style={styles.dashboardGreeting} adjustsFontSizeToFit numberOfLines={1}>
                   {dashboard?.greeting_text ?? "Welcome back, Collector"}
                 </Text>
               </View>
             </View>
             <Text style={styles.dashboardSubtext}>{dashboardActivityText(dashboard)}</Text>
-            <View style={styles.dashboardModeBadge}>
-              <Text style={styles.dashboardModeBadgeText}>{collectorModeLabel(collectorMode)} Dashboard</Text>
+            <View style={[styles.dashboardModeBadge, { borderColor: dashboardTheme.accent, backgroundColor: dashboardTheme.accentSoft }]}>
+              <Text style={[styles.dashboardModeBadgeText, { color: dashboardTheme.accentText }]}>{collectorModeLabel(collectorMode)} Dashboard</Text>
             </View>
           </View>
 
@@ -1794,20 +1856,23 @@ function DashboardScreen({
 
           <View style={styles.dashboardStatsGrid}>
             {dashboardMetrics.map((metric) => (
-              <MetricCard key={metric.label} label={metric.label} value={metric.value} />
+              <MetricCard key={metric.label} label={metric.label} value={metric.value} theme={dashboardTheme} />
             ))}
           </View>
 
           {valueSnapshot}
 
-          <View style={styles.dashboardActionPanel}>
+          <View style={[styles.dashboardActionPanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
             <Text style={styles.dashboardSectionTitle}>Quick Actions</Text>
             <View style={styles.dashboardActionGrid}>
-              <Pressable onPress={onScan} style={styles.dashboardPrimaryAction}>
+              <Pressable onPress={onScan} style={[styles.dashboardPrimaryAction, { backgroundColor: dashboardTheme.primaryActionBg }]}>
                 <Text style={styles.dashboardActionLabel}>Scan Pop</Text>
                 <Text style={styles.dashboardActionSub}>Add or update an item</Text>
               </Pressable>
-              <Pressable onPress={onShelfStats} style={styles.dashboardStatsQuickAction}>
+              <Pressable
+                onPress={onShelfStats}
+                style={[styles.dashboardStatsQuickAction, { borderColor: dashboardTheme.accent, backgroundColor: dashboardTheme.secondaryActionBg }]}
+              >
                 <Text style={styles.dashboardActionLabel}>{dashboardCopy.statsActionLabel}</Text>
                 <Text style={styles.dashboardActionSub}>{dashboardCopy.statsActionSub}</Text>
               </Pressable>
@@ -1828,21 +1893,21 @@ function DashboardScreen({
 
           {collectorMode !== "reseller" ? valueSummary : null}
 
-          <View style={styles.dashboardModePanel}>
+          <View style={[styles.dashboardModePanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
             <View style={styles.dashboardModePanelTop}>
               <View style={styles.flex}>
-                <Text style={styles.dashboardEyebrow}>Current mode</Text>
+                <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>Current mode</Text>
                 <Text style={styles.dashboardModeTitle}>{dashboardCopy.focusTitle}</Text>
               </View>
-              <Pressable onPress={onProfile} style={styles.dashboardModeChangeButton}>
+              <Pressable onPress={onProfile} style={[styles.dashboardModeChangeButton, { backgroundColor: dashboardTheme.accent }]}>
                 <Text style={styles.dashboardModeChangeText}>Change</Text>
               </Pressable>
             </View>
             <Text style={styles.dashboardSubtext}>{dashboardCopy.focusBody}</Text>
             <View style={styles.dashboardModeFocusRow}>
-              <ModeFocusPill label={dashboardCopy.primaryFocus} />
-              <ModeFocusPill label={dashboardCopy.secondaryFocus} />
-              <ModeFocusPill label={dashboardCopy.tertiaryFocus} />
+              <ModeFocusPill label={dashboardCopy.primaryFocus} theme={dashboardTheme} />
+              <ModeFocusPill label={dashboardCopy.secondaryFocus} theme={dashboardTheme} />
+              <ModeFocusPill label={dashboardCopy.tertiaryFocus} theme={dashboardTheme} />
             </View>
           </View>
         </>
@@ -1851,10 +1916,10 @@ function DashboardScreen({
   );
 }
 
-function ModeFocusPill({ label }: { label: string }) {
+function ModeFocusPill({ label, theme }: { label: string; theme: DashboardTheme }) {
   return (
-    <View style={styles.dashboardModeFocusPill}>
-      <Text style={styles.dashboardModeFocusText}>{label}</Text>
+    <View style={[styles.dashboardModeFocusPill, { borderColor: theme.border, backgroundColor: theme.cardBg }]}>
+      <Text style={[styles.dashboardModeFocusText, { color: theme.accentText }]}>{label}</Text>
     </View>
   );
 }
@@ -6047,10 +6112,23 @@ function EmptyDisplayBox({ style }: { style: StyleProp<ViewStyle> }) {
   );
 }
 
-function MetricCard({ label, value, onPress, active }: { label: string; value: string; onPress?: () => void; active?: boolean }) {
+function MetricCard({
+  label,
+  value,
+  onPress,
+  active,
+  theme,
+}: {
+  label: string;
+  value: string;
+  onPress?: () => void;
+  active?: boolean;
+  theme?: DashboardTheme;
+}) {
+  const cardStyle = theme ? { borderColor: theme.border, backgroundColor: theme.cardBg } : null;
   const content = (
     <>
-      <Text style={styles.cardLabel} adjustsFontSizeToFit numberOfLines={1}>
+      <Text style={[styles.cardLabel, theme ? { color: theme.accentText } : null]} adjustsFontSizeToFit numberOfLines={1}>
         {label}
       </Text>
       <Text style={styles.metricValue} adjustsFontSizeToFit numberOfLines={1}>
@@ -6060,11 +6138,14 @@ function MetricCard({ label, value, onPress, active }: { label: string; value: s
   );
 
   if (!onPress) {
-    return <View style={[styles.metricCard, active && styles.metricCardActive]}>{content}</View>;
+    return <View style={[styles.metricCard, cardStyle, active && styles.metricCardActive]}>{content}</View>;
   }
 
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.metricCard, styles.metricCardPressable, active && styles.metricCardActive, pressed && styles.pressed]}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.metricCard, cardStyle, styles.metricCardPressable, active && styles.metricCardActive, pressed && styles.pressed]}
+    >
       {content}
     </Pressable>
   );
@@ -6507,9 +6588,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   dashboardHero: {
-    gap: 10,
-    padding: 14,
-    borderRadius: 10,
+    gap: 11,
+    padding: 15,
+    borderRadius: 12,
     backgroundColor: "#151a1f",
     borderWidth: 1,
     borderColor: "#26313d",
@@ -6565,7 +6646,7 @@ const styles = StyleSheet.create({
   dashboardModePanel: {
     gap: 10,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#3d4653",
     backgroundColor: "#181f27",
@@ -6682,8 +6763,8 @@ const styles = StyleSheet.create({
   },
   dashboardInsightPanel: {
     gap: 10,
-    padding: 13,
-    borderRadius: 10,
+    padding: 14,
+    borderRadius: 12,
     backgroundColor: "#151a1f",
     borderWidth: 1,
     borderColor: "#26313d",
@@ -7218,8 +7299,8 @@ const styles = StyleSheet.create({
   },
   dashboardActionPanel: {
     gap: 12,
-    padding: 13,
-    borderRadius: 10,
+    padding: 14,
+    borderRadius: 12,
     backgroundColor: "#151a1f",
     borderWidth: 1,
     borderColor: "#26313d",
@@ -7234,7 +7315,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 4,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 9,
     backgroundColor: "#7e67f4",
   },
   dashboardStatsQuickAction: {
@@ -7243,7 +7324,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 4,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: "#7bd1c3",
     backgroundColor: "#1b2f31",
