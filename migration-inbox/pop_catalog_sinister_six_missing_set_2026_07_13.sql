@@ -140,7 +140,7 @@ updated_catalog as (
     display_description = r.override_data->>'display_description',
     parse_confidence = (r.override_data->>'parse_confidence')::numeric,
     needs_review = (r.override_data->>'needs_review')::boolean,
-    parse_reason_codes = '[]'::jsonb,
+    parse_reason_codes = '{}'::text[],
     api_last_updated = now()
   from reviewed r
   where pc.upc = r.upc
