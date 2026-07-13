@@ -1,10 +1,13 @@
 ﻿import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import {
+  APPROVED_CATALOG_CLEANUP_OVERRIDES,
+  AVENGERS_REFRESH_REGRESSION_OVERRIDES,
   BATMAN_1989_REFRESH_REGRESSION_OVERRIDES,
   BLOCKED_IMAGE_UPCS,
   buildCatalogRefreshUpdate,
   buildTrustedOverrideUpdate,
+  canonicalizeFranchiseLabel,
   canonicalizeSetLabel,
   GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES,
   GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES,
@@ -12,10 +15,17 @@ import {
   getExplicitProductClassification,
   getStaticCatalogOverride,
   HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES,
+  MIXED_CATALOG_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
   normalizeMultipackNumber,
+  POKEMON_REFRESH_REGRESSION_OVERRIDES,
+  RECENT_SCAN_DATA_QUALITY_OVERRIDES,
+  resolveLookupEstimatedValues,
+  shouldFlagNeedsReview,
   shouldPromoteSpecificSet,
   shouldWarnMissingNumber,
   STAR_WARS_REFRESH_REGRESSION_OVERRIDES,
+  VENOM_REFRESH_REGRESSION_OVERRIDES,
+  WHAT_IF_REFRESH_REGRESSION_OVERRIDES,
 } from "./catalog_refresh_rules.ts";
 
 const corsHeaders = {
@@ -36,6 +46,7 @@ type ParseWarning =
   | "estimated_value_missing";
 
 type ParsedFunko = {
+  image_url?: string | null;
   raw_title: string | null;
   clean_title: string | null;
   pop_name: string | null;
@@ -63,6 +74,11 @@ type ParsedFunko = {
 
 const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
   ...STAR_WARS_REFRESH_REGRESSION_OVERRIDES,
+  ...WHAT_IF_REFRESH_REGRESSION_OVERRIDES,
+  ...POKEMON_REFRESH_REGRESSION_OVERRIDES,
+  ...VENOM_REFRESH_REGRESSION_OVERRIDES,
+  ...MIXED_CATALOG_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
+  ...RECENT_SCAN_DATA_QUALITY_OVERRIDES,
   "889698613491": {
     pop_name: "Karre",
     character: "Karre",
@@ -256,18 +272,18 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     needs_review: false,
   },
   "849803055790": {
-    pop_name: "Hulk (Savage)",
+    pop_name: "Hulk",
     character: "Hulk",
     franchise: "Marvel",
     set_name: "Avengers: Age of Ultron",
     number: "68",
-    variant: "Savage",
-    exclusivity: "Exclusive",
+    variant: null,
+    exclusivity: null,
     pop_type: "Pop! Marvel",
     pop_style: "Standard",
     release_date: "2015-01-01",
-    description: "Hulk (Savage) is a Pop! Marvel release #68 from Avengers: Age of Ultron.",
-    display_description: "From Avengers: Age of Ultron, Hulk is a Pop! Marvel release #68, Savage.",
+    description: "Hulk is a Pop! Marvel release #68 from Avengers: Age of Ultron. This UPC is shared by multiple legitimate variants.",
+    display_description: "From Avengers: Age of Ultron, Hulk is a Pop! Marvel release #68. Variant identity is stored on each owned collection item.",
     parse_confidence: 0.94,
     needs_review: false,
   },
@@ -1048,20 +1064,6 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
     pop_style: "Standard",
     description: "Iron Man Mark 43 is a Marvel Pop! Marvel release #66 from Avengers: Age of Ultron.",
     display_description: "Iron Man Mark 43 is a Marvel Pop! Marvel release #66 from Avengers: Age of Ultron.",
-    parse_confidence: 0.95,
-    needs_review: false,
-  },
-  "849803055790": {
-    pop_name: "Savage Hulk",
-    character: "Hulk",
-    franchise: "Marvel",
-    set_name: "Avengers: Age of Ultron",
-    number: "68",
-    exclusivity: "Exclusive",
-    pop_type: "Pop! Marvel",
-    pop_style: "Standard",
-    description: "Savage Hulk is a Marvel Pop! Marvel release #68 from Avengers: Age of Ultron, exclusive.",
-    display_description: "Savage Hulk is a Marvel Pop! Marvel release #68 from Avengers: Age of Ultron, exclusive.",
     parse_confidence: 0.95,
     needs_review: false,
   },
@@ -11523,6 +11525,11 @@ const FRANCHISE_ALIASES: Array<[string, string]> = [
   ["boba fett", "Star Wars"],
   ["skeleton crew", "Star Wars"],
 
+  ["los padrinos mágicos", "The Fairly OddParents"],
+  ["los padrinos magicos", "The Fairly OddParents"],
+  ["fairly oddparents", "The Fairly OddParents"],
+  ["fairly odd parents", "The Fairly OddParents"],
+
   ["batman", "DC"],
   ["arkham", "DC"],
   ["dc", "DC"],
@@ -11836,6 +11843,7 @@ function cleanDescription(value: string | null | undefined): string | null {
   if (!cleaned) return null;
   if (/^no description found\.?$/i.test(cleaned)) return null;
   if (/^n\/a$/i.test(cleaned)) return null;
+  if (/^pop!\s+another line of collectible figures based on movies,\s*tv series,\s*video games and other pop culture themes/i.test(cleaned)) return null;
 
   // Keep normal Funko/product blurbs. Only reject strong foreign-store or price-comparison text.
   const rejectPatterns = [
@@ -11850,6 +11858,7 @@ function cleanDescription(value: string | null | undefined): string | null {
     /\bpersonaje\b/i,
     /\bproducto\b/i,
     /\bdistribuidor autorizado\b/i,
+    /\bnuestros productos son adquiridos\b/i,
     /\benv[iÃ­]os\b/i,
     /\bpulgadas\b/i,
     /\bhecho de\b/i,
@@ -11955,6 +11964,7 @@ function buildDisplayDescription(parsed: {
     /window box packaging/i,
     /stylized collectable stands/i,
     /^product details\b/i,
+    /^pop!\s+another line of collectible figures based on movies,\s*tv series,\s*video games and other pop culture themes/i,
     /as a stylized pop vinyl/i,
     /as a stylized pop\b/i,
     /figure stands\s+\d/i,
@@ -12048,6 +12058,7 @@ function isWeakDisplayDescription(value: unknown): boolean {
 
   return [
     /^no description found\.?$/i,
+    /^pop!\s+another line of collectible figures based on movies,\s*tv series,\s*video games and other pop culture themes/i,
     /\balgunas de las\b/i,
     /\bpr[oÃƒÂ³]xima serie de televisi[oÃƒÂ³]n\b/i,
     /\bcadena abc\b/i,
@@ -13575,7 +13586,7 @@ function scoreParse(parsed: Omit<ParsedFunko, "parse_confidence" | "parse_reason
 
   return {
     parse_confidence: score,
-    needs_review: score < 0.7,
+    needs_review: shouldFlagNeedsReview(score, warnings),
     warnings,
   };
 }
@@ -14397,6 +14408,12 @@ Object.assign(CATALOG_OVERRIDES_BY_UPC, {
   },
 });
 
+Object.assign(
+  CATALOG_OVERRIDES_BY_UPC,
+  AVENGERS_REFRESH_REGRESSION_OVERRIDES,
+  APPROVED_CATALOG_CLEANUP_OVERRIDES,
+);
+
 function applySingleCatalogOverride(parsed: ParsedFunko, override?: Partial<ParsedFunko> | null): ParsedFunko {
   if (!override) return parsed;
 
@@ -14417,7 +14434,7 @@ function applySingleCatalogOverride(parsed: ParsedFunko, override?: Partial<Pars
   return next;
 }
 
-async function fetchLearnedCatalogOverride(supabase: ReturnType<typeof createClient>, barcode: string): Promise<Partial<ParsedFunko> | null> {
+async function fetchLearnedCatalogOverride(supabase: any, barcode: string): Promise<Partial<ParsedFunko> | null> {
   const { data, error } = await supabase
     .from("catalog_parser_overrides")
     .select("override_data")
@@ -14439,7 +14456,7 @@ type AppliedCatalogOverrides = {
 };
 
 async function applyCatalogOverrides(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   parsed: ParsedFunko,
   barcode: string,
 ): Promise<AppliedCatalogOverrides> {
@@ -14699,7 +14716,7 @@ async function uploadImageToStorage(
 
 
 type ExternalProductLookup = {
-  source: "go-upc" | "pricecharting";
+  source: "go-upc" | "barcodelookup" | "pricecharting";
   raw: any;
   product: any;
 };
@@ -14809,11 +14826,45 @@ async function fetchGoUpcProduct(apiKey: string, barcode: string): Promise<Exter
   }
 }
 
+async function fetchBarcodeLookupProduct(apiKey: string, barcode: string): Promise<ExternalProductLookup | null> {
+  if (!apiKey) return null;
+
+  try {
+    const apiUrl =
+      `https://api.barcodelookup.com/v3/products?barcode=${encodeURIComponent(barcode)}&formatted=y&key=${apiKey}`;
+
+    const apiResponse = await fetch(apiUrl);
+
+    if (!apiResponse.ok) {
+      console.warn(`BarcodeLookup failed for ${barcode}: ${apiResponse.status}`);
+      return null;
+    }
+
+    const raw = await apiResponse.json();
+    const product = raw?.products?.[0];
+
+    if (!product) return null;
+
+    return {
+      source: "barcodelookup",
+      raw,
+      product,
+    };
+  } catch (error) {
+    console.warn(`BarcodeLookup failed for ${barcode}:`, error);
+    return null;
+  }
+}
+
 async function fetchPrimaryProduct(
   goUpcApiKey: string,
+  barcodeLookupApiKey: string,
   barcode: string,
 ): Promise<ExternalProductLookup | null> {
-  return await fetchGoUpcProduct(goUpcApiKey, barcode);
+  const goUpcResult = await fetchGoUpcProduct(goUpcApiKey, barcode);
+  if (goUpcResult) return goUpcResult;
+
+  return await fetchBarcodeLookupProduct(barcodeLookupApiKey, barcode);
 }
 
 function centsToDollars(value: unknown): number | null {
@@ -14964,6 +15015,7 @@ function extractPriceChartingVariant(raw: any): string | null {
   if (bracketValue === "diy" || haystack.includes(" diy")) return "DIY";
   if (bracketValue === "wood" || haystack.includes(" wood")) return "Wood Deco";
   if (bracketValue === "metallic" || haystack.includes("metallic")) return "Metallic";
+  if (bracketValue === "collectible card" || bracketValue === "collector card" || haystack.includes("collectible card") || haystack.includes("collector card")) return "Collectible Card";
   if (bracketValue === "flocked" || haystack.includes("flocked")) return "Flocked";
   if (bracketValue === "glitter" || haystack.includes("glitter version") || haystack.includes(" glitter")) return "Glitter";
   if (bracketValue === "chase" || /\bchase\b/i.test(productName)) return "Chase";
@@ -15094,6 +15146,7 @@ function applyPriceChartingCatalogInfo(parsed: ParsedFunko, raw: any): void {
     if (warning === "weak_name_cleanup" && parsed.pop_name) return false;
     return true;
   });
+  parsed.needs_review = shouldFlagNeedsReview(parsed.parse_confidence, parsed.warnings);
 }
 
 function normalizeMatchText(value: unknown): string {
@@ -15345,6 +15398,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const goUpcApiKey = Deno.env.get("GO_UPC_API_KEY") ?? "";
+    const barcodeLookupApiKey = Deno.env.get("BARCODE_LOOKUP_API_KEY") ?? "";
     const priceChartingToken = Deno.env.get("PRICECHARTING_API_TOKEN") ?? "";
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -15365,6 +15419,9 @@ Deno.serve(async (req) => {
     if (existingError) throw existingError;
 
     if (existing && !forceRefresh) {
+      const normalLookupVariantValue = variantOverride
+        ? await fetchPriceChartingValue(priceChartingToken, cleanBarcode, existing as ParsedFunko, variantOverride)
+        : null;
       const rawProduct = existing?.raw_api_json?.products?.[0];
 
       if (rawProduct) {
@@ -15388,6 +15445,7 @@ Deno.serve(async (req) => {
         if (!remoteImageUrl && !imageBlocked) {
           const imageFallback = await fetchPrimaryProduct(
             goUpcApiKey,
+            barcodeLookupApiKey,
             cleanBarcode,
           );
           remoteImageUrl = firstProductImage(imageFallback?.product);
@@ -15406,11 +15464,11 @@ Deno.serve(async (req) => {
         }
 
         if (!String(existing.api_source ?? "").includes("pricecharting")) {
-  const priceChartingValue = await fetchPriceChartingValue(
-  priceChartingToken,
-  cleanBarcode,
-  parsed,
-);
+          const priceChartingValue = await fetchPriceChartingValue(
+            priceChartingToken,
+            cleanBarcode,
+            parsed,
+          );
 
           if (priceChartingValue) {
             updates.estimated_value = priceChartingValue.estimated_value;
@@ -15423,6 +15481,33 @@ Deno.serve(async (req) => {
                 response: priceChartingValue.raw,
               },
             };
+          }
+        }
+
+        const existingMissingValue = existing.estimated_value == null || Number(existing.estimated_value) === 0;
+        const stillMissingValue = updates.estimated_value == null || Number(updates.estimated_value) === 0;
+        if (existingMissingValue && stillMissingValue && barcodeLookupApiKey) {
+          const valueFallback = await fetchBarcodeLookupProduct(
+            barcodeLookupApiKey,
+            cleanBarcode,
+          );
+
+          if (valueFallback?.product) {
+            const fallbackParsed = await applyCatalogOverrides(
+              supabase,
+              parseFunkoProduct(valueFallback.product),
+              cleanBarcode,
+            );
+
+            if (fallbackParsed.parsed.estimated_value != null) {
+              updates.estimated_value = fallbackParsed.parsed.estimated_value;
+              updates.api_source = `${existing.api_source ?? "catalog"}+barcodelookup_value`;
+              updates.api_last_updated = new Date().toISOString();
+              updates.raw_api_json = {
+                primary: existing.raw_api_json,
+                value_fallback: valueFallback.raw,
+              };
+            }
           }
         }
 
@@ -15440,12 +15525,21 @@ Deno.serve(async (req) => {
             JSON.stringify({
               found: true,
               source: "catalog_updated",
-              pop: updated,
+              pop: normalLookupVariantValue
+                ? { ...updated, estimated_value: normalLookupVariantValue.estimated_value }
+                : updated,
               parse: {
                 confidence: parsed.parse_confidence,
                 needs_review: parsed.needs_review,
                 warnings: parsed.warnings,
                 updates,
+                variant_value: normalLookupVariantValue
+                  ? {
+                    variant: variantOverride,
+                    estimated_value: normalLookupVariantValue.estimated_value,
+                    price_field: normalLookupVariantValue.price_field,
+                  }
+                  : null,
               },
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -15467,7 +15561,18 @@ Deno.serve(async (req) => {
           JSON.stringify({
             found: true,
             source: "catalog_updated",
-            pop: updated,
+            pop: normalLookupVariantValue
+              ? { ...updated, estimated_value: normalLookupVariantValue.estimated_value }
+              : updated,
+            parse: {
+              variant_value: normalLookupVariantValue
+                ? {
+                  variant: variantOverride,
+                  estimated_value: normalLookupVariantValue.estimated_value,
+                  price_field: normalLookupVariantValue.price_field,
+                }
+                : null,
+            },
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
@@ -15477,7 +15582,18 @@ Deno.serve(async (req) => {
         JSON.stringify({
           found: true,
           source: "catalog",
-          pop: existing,
+          pop: normalLookupVariantValue
+            ? { ...existing, estimated_value: normalLookupVariantValue.estimated_value }
+            : existing,
+          parse: {
+            variant_value: normalLookupVariantValue
+              ? {
+                variant: variantOverride,
+                estimated_value: normalLookupVariantValue.estimated_value,
+                price_field: normalLookupVariantValue.price_field,
+              }
+              : null,
+          },
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -15491,6 +15607,7 @@ Deno.serve(async (req) => {
     if (!fetched?.product) {
       fetched = await fetchPrimaryProduct(
         goUpcApiKey,
+        barcodeLookupApiKey,
         cleanBarcode,
       );
     }
@@ -15500,7 +15617,7 @@ Deno.serve(async (req) => {
         JSON.stringify({
           found: false,
           source: "external_lookup",
-          message: "No product found from PriceCharting or Go-UPC",
+          message: "No product found from PriceCharting, Go-UPC, or BarcodeLookup",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -15515,6 +15632,7 @@ Deno.serve(async (req) => {
     if (!remoteImageUrl && apiSource === "pricecharting" && !imageBlocked) {
       imageLookup = await fetchPrimaryProduct(
         goUpcApiKey,
+        barcodeLookupApiKey,
         cleanBarcode,
       );
       remoteImageUrl = firstProductImage(imageLookup?.product);
@@ -15538,13 +15656,37 @@ if (variantOverride) {
   );
 }
 
-let valueSource = fetched.source;
+let valueSource: string = fetched.source;
 let valueRaw = imageLookup && imageLookup.source !== fetched.source
   ? {
     primary: fetched.raw,
     image_fallback: imageLookup.raw,
   }
   : fetched.raw;
+
+if (parsed.estimated_value == null && barcodeLookupApiKey) {
+  const fallbackFetched = await fetchBarcodeLookupProduct(
+    barcodeLookupApiKey,
+    cleanBarcode,
+  );
+
+  if (fallbackFetched?.product) {
+    const fallbackParsed = await applyCatalogOverrides(
+      supabase,
+      parseFunkoProduct(fallbackFetched.product),
+      cleanBarcode,
+    );
+
+    if (fallbackParsed.parsed.estimated_value != null) {
+      parsed.estimated_value = fallbackParsed.parsed.estimated_value;
+      valueSource = "go-upc+barcodelookup_value";
+      valueRaw = {
+        primary: fetched.raw,
+        value_fallback: fallbackFetched.raw,
+      };
+    }
+  }
+}
 
 const priceChartingValue = await fetchPriceChartingValue(
   priceChartingToken,
@@ -15563,6 +15705,8 @@ if (priceChartingValue) {
   }
   valueSource = valueSource === "pricecharting"
     ? "pricecharting"
+    : valueSource === "go-upc+barcodelookup_value"
+    ? "go-upc+barcodelookup_value+pricecharting"
     : `${valueSource}+pricecharting`;
   valueRaw = {
     primary: valueRaw,
@@ -15573,8 +15717,14 @@ if (priceChartingValue) {
   };
 }
 
-const variantValueEstimate = variantPriceChartingValue?.estimated_value;
-const resolvedEstimatedValue = variantValueEstimate != null ? variantValueEstimate : parsed.estimated_value;
+const resolvedLookupValues = resolveLookupEstimatedValues(
+  existing?.estimated_value,
+  parsed.estimated_value,
+  variantPriceChartingValue?.estimated_value,
+);
+const catalogEstimatedValue = resolvedLookupValues.catalogEstimatedValue;
+parsed.franchise = canonicalizeFranchiseLabel(parsed.franchise);
+parsed.set_name = canonicalizeSetLabel(parsed.set_name);
 const resolvedSetTotal = getSetTotalOverride(parsed.set_name);
 
 const newPop = {
@@ -15595,7 +15745,7 @@ const newPop = {
   limited_edition: parsed.limited_edition,
   limited_count: parsed.limited_count,
   edition_notes: parsed.edition_notes,
-  estimated_value: resolvedEstimatedValue,
+  estimated_value: catalogEstimatedValue,
   description: parsed.description ?? existing?.description ?? null,
   display_description: parsed.display_description ?? existing?.display_description ?? null,
   api_source: valueSource,
@@ -15609,7 +15759,7 @@ const newPop = {
 };
 
     if (existing) {
-      const resolvedRefreshEstimatedValue = resolvedEstimatedValue ?? existing?.estimated_value ?? null;
+      const resolvedRefreshEstimatedValue = catalogEstimatedValue ?? existing?.estimated_value ?? null;
 
       const refreshedPop = buildCatalogRefreshUpdate(existing, newPop, {
         forceRefresh,
@@ -15617,6 +15767,7 @@ const newPop = {
         exclusivityOverride,
         imageBlocked,
         resolvedRefreshEstimatedValue,
+        forcedFields: appliedOverrides.forcedFields,
       });
 
       const { data: refreshed, error: refreshError } = await supabase
@@ -15632,7 +15783,9 @@ const newPop = {
         JSON.stringify({
           found: true,
           source: "api_refreshed",
-          pop: variantPriceChartingValue ? { ...refreshed, estimated_value: variantPriceChartingValue.estimated_value } : refreshed,
+          pop: variantPriceChartingValue
+            ? { ...refreshed, estimated_value: resolvedLookupValues.lookupEstimatedValue }
+            : refreshed,
           parse: {
             confidence: parsed.parse_confidence,
             needs_review: parsed.needs_review,
@@ -15663,11 +15816,20 @@ const newPop = {
       JSON.stringify({
         found: true,
         source: "api",
-        pop: inserted,
+        pop: variantPriceChartingValue
+          ? { ...inserted, estimated_value: resolvedLookupValues.lookupEstimatedValue }
+          : inserted,
         parse: {
           confidence: parsed.parse_confidence,
           needs_review: parsed.needs_review,
           warnings: parsed.warnings,
+          variant_value: variantPriceChartingValue
+            ? {
+              variant: variantOverride,
+              estimated_value: variantPriceChartingValue.estimated_value,
+              price_field: variantPriceChartingValue.price_field,
+            }
+            : null,
         },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -15676,7 +15838,7 @@ const newPop = {
     return new Response(
       JSON.stringify({
         found: false,
-        error: String(error?.message ?? error),
+        error: String(error instanceof Error ? error.message : error),
       }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
