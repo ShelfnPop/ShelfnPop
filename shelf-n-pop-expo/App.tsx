@@ -137,6 +137,7 @@ type SetProgressSummary = {
   checklistTotal: number;
   completionPercent: number;
 };
+type CollectorMode = "casual" | "avid" | "reseller";
 const CONDITIONS = ["Unknown", "Mint", "Near Mint", "Good", "Fair", "Damaged", "Out of Box"] as const;
 const VARIANTS = [
   "Common",
@@ -247,6 +248,31 @@ const ISSUE_TYPES = [
   { key: "other", label: "Other" },
 ] as const;
 type IssueType = (typeof ISSUE_TYPES)[number]["key"];
+const COLLECTOR_MODE_OPTIONS: Array<{
+  key: CollectorMode;
+  label: string;
+  shortLabel: string;
+  description: string;
+}> = [
+  {
+    key: "casual",
+    label: "Casual Collector",
+    shortLabel: "Casual",
+    description: "A softer shelf view with recent adds, favorites, and simple progress.",
+  },
+  {
+    key: "avid",
+    label: "Avid Fan",
+    shortLabel: "Avid",
+    description: "More set progress, variants, exclusives, and missing Pops.",
+  },
+  {
+    key: "reseller",
+    label: "Value Tracker",
+    shortLabel: "Value",
+    description: "Keeps values, paid price, duplicates, and sale details closer at hand.",
+  },
+];
 const AVATAR_OPTIONS = [
   { key: "logo", label: "Shelf", image: APP_LOGO, accent: "#ff8a00" },
   { key: "midnight", label: "Beanie", image: AVATAR_BEANIE, accent: "#7e67f4" },
@@ -589,6 +615,54 @@ function dashboardActivityText(dashboard: DashboardHome | null): string {
   }
 
   return "Scan your first Pop to start building your shelf.";
+}
+
+function normalizeCollectorMode(value: string | null | undefined): CollectorMode {
+  return value === "avid" || value === "reseller" ? value : "casual";
+}
+
+function collectorModeLabel(mode: CollectorMode): string {
+  return COLLECTOR_MODE_OPTIONS.find((option) => option.key === mode)?.label ?? "Casual Collector";
+}
+
+function collectorModeDescription(mode: CollectorMode): string {
+  return COLLECTOR_MODE_OPTIONS.find((option) => option.key === mode)?.description ?? COLLECTOR_MODE_OPTIONS[0].description;
+}
+
+function collectorModeDashboardCopy(mode: CollectorMode): {
+  eyebrow: string;
+  valueTitle: string;
+  insightTitle: string;
+  statsActionLabel: string;
+  statsActionSub: string;
+} {
+  if (mode === "avid") {
+    return {
+      eyebrow: "Set builder view",
+      valueTitle: "Shelf Value",
+      insightTitle: "Collector Highlights",
+      statsActionLabel: "Set Progress",
+      statsActionSub: "Sets, variants, and gaps",
+    };
+  }
+
+  if (mode === "reseller") {
+    return {
+      eyebrow: "Value tracker view",
+      valueTitle: "Total Collection Value",
+      insightTitle: "Value Snapshot",
+      statsActionLabel: "Shelf Stats",
+      statsActionSub: "Values, costs, and gaps",
+    };
+  }
+
+  return {
+    eyebrow: "Shelf view",
+    valueTitle: "Shelf Value",
+    insightTitle: "Shelf Highlights",
+    statsActionLabel: "Shelf Highlights",
+    statsActionSub: "Sets, favorites, and finds",
+  };
 }
 
 function shortDate(value: string | null | undefined): string {
@@ -1578,6 +1652,68 @@ function DashboardScreen({
     load();
   }, [load, refreshKey]);
 
+  const collectorMode = normalizeCollectorMode(profile?.collector_mode);
+  const dashboardCopy = collectorModeDashboardCopy(collectorMode);
+  const valueSummary = (
+    <View style={styles.dashboardValueCard}>
+      <Text style={styles.dashboardValueLabel}>{dashboardCopy.valueTitle}</Text>
+      <View style={styles.dashboardValueBody}>
+        <Text style={styles.dashboardValue} adjustsFontSizeToFit numberOfLines={1}>
+          {money(dashboard?.total_collection_value)}
+        </Text>
+        <View style={styles.dashboardValueSide}>
+          <Text style={styles.dashboardSideLabel}>Avg Value</Text>
+          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_value_per_pop)}</Text>
+          <Text style={styles.dashboardSideLabel}>Avg Paid</Text>
+          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_paid_per_pop)}</Text>
+        </View>
+      </View>
+      <View style={styles.dashboardGainRow}>
+        <Text style={styles.dashboardGainLabel}>{collectorMode === "reseller" ? "Net Gain" : "Shelf Change"}</Text>
+        <Text style={[styles.dashboardGainValue, gainLossColorStyle(dashboard?.gain_loss)]}>{money(dashboard?.gain_loss)}</Text>
+      </View>
+    </View>
+  );
+  const valueSnapshot = (
+    <View style={styles.dashboardInsightPanel}>
+      <Text style={styles.dashboardSectionTitle}>{dashboardCopy.insightTitle}</Text>
+      {collectorMode === "reseller" ? (
+        <View style={styles.dashboardInsightGrid}>
+          <View style={styles.dashboardInsightTile}>
+            <Text style={styles.dashboardInsightLabel}>Total Paid</Text>
+            <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
+              {money(dashboard?.total_paid)}
+            </Text>
+          </View>
+          <View style={styles.dashboardInsightTile}>
+            <Text style={styles.dashboardInsightLabel}>Avg Paid</Text>
+            <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
+              {money(dashboard?.average_paid_per_pop)}
+            </Text>
+          </View>
+          <View style={styles.dashboardInsightTile}>
+            <Text style={styles.dashboardInsightLabel}>Avg Value</Text>
+            <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
+              {money(dashboard?.average_value_per_pop)}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+      <TopStatRow
+        label={collectorMode === "reseller" ? "Highest Valued Pop" : "Shelf Standout"}
+        item={highestValuePop}
+        value={money(highestValuePop ? perPopValue(highestValuePop) : null)}
+        onPress={highestValuePop ? () => onOpenItem(highestValuePop) : undefined}
+      />
+      <TopStatRow
+        label={collectorMode === "avid" ? "Earliest Release" : "Oldest Pop"}
+        item={oldestPop}
+        value={oldestPop ? releaseDateText(oldestPop) ?? "--" : "--"}
+        onPress={oldestPop ? () => onOpenItem(oldestPop) : undefined}
+      />
+    </View>
+  );
+
   return (
     <ScreenFrame title="Shelf-n-Pop" rightLabel="Sign out" onRight={() => supabase.auth.signOut()}>
       {busy ? (
@@ -1590,33 +1726,19 @@ function DashboardScreen({
                 <ProfileAvatar avatarKey={resolveAvatarKey(profile?.avatar_url)} size={46} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.dashboardEyebrow}>Your shelf today</Text>
+                <Text style={styles.dashboardEyebrow}>{dashboardCopy.eyebrow}</Text>
                 <Text style={styles.dashboardGreeting} adjustsFontSizeToFit numberOfLines={1}>
                   {dashboard?.greeting_text ?? "Welcome back, Collector"}
                 </Text>
               </View>
             </View>
             <Text style={styles.dashboardSubtext}>{dashboardActivityText(dashboard)}</Text>
+            <View style={styles.dashboardModeBadge}>
+              <Text style={styles.dashboardModeBadgeText}>{collectorModeLabel(collectorMode)}</Text>
+            </View>
           </View>
 
-          <View style={styles.dashboardValueCard}>
-            <Text style={styles.dashboardValueLabel}>Total Collection Value</Text>
-            <View style={styles.dashboardValueBody}>
-              <Text style={styles.dashboardValue} adjustsFontSizeToFit numberOfLines={1}>
-                {money(dashboard?.total_collection_value)}
-              </Text>
-              <View style={styles.dashboardValueSide}>
-                <Text style={styles.dashboardSideLabel}>Avg Value</Text>
-                <Text style={styles.dashboardSideValue}>{money(dashboard?.average_value_per_pop)}</Text>
-                <Text style={styles.dashboardSideLabel}>Avg Paid</Text>
-                <Text style={styles.dashboardSideValue}>{money(dashboard?.average_paid_per_pop)}</Text>
-              </View>
-            </View>
-            <View style={styles.dashboardGainRow}>
-              <Text style={styles.dashboardGainLabel}>Net Gain</Text>
-              <Text style={[styles.dashboardGainValue, gainLossColorStyle(dashboard?.gain_loss)]}>{money(dashboard?.gain_loss)}</Text>
-            </View>
-          </View>
+          {collectorMode === "reseller" ? valueSummary : null}
 
           <View style={styles.dashboardStatsGrid}>
             <MetricCard label="Pops" value={integer(dashboard?.total_pops)} />
@@ -1624,41 +1746,8 @@ function DashboardScreen({
             <MetricCard label="Added This Month" value={integer(dashboard?.pops_added_this_month)} />
           </View>
 
-          <View style={styles.dashboardInsightPanel}>
-            <Text style={styles.dashboardSectionTitle}>Value Snapshot</Text>
-            <View style={styles.dashboardInsightGrid}>
-              <View style={styles.dashboardInsightTile}>
-                <Text style={styles.dashboardInsightLabel}>Total Paid</Text>
-                <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
-                  {money(dashboard?.total_paid)}
-                </Text>
-              </View>
-              <View style={styles.dashboardInsightTile}>
-                <Text style={styles.dashboardInsightLabel}>Avg Paid</Text>
-                <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
-                  {money(dashboard?.average_paid_per_pop)}
-                </Text>
-              </View>
-              <View style={styles.dashboardInsightTile}>
-                <Text style={styles.dashboardInsightLabel}>Avg Value</Text>
-                <Text style={styles.dashboardInsightValue} adjustsFontSizeToFit numberOfLines={1}>
-                  {money(dashboard?.average_value_per_pop)}
-                </Text>
-              </View>
-            </View>
-            <TopStatRow
-              label="Highest Valued Pop"
-              item={highestValuePop}
-              value={money(highestValuePop ? perPopValue(highestValuePop) : null)}
-              onPress={highestValuePop ? () => onOpenItem(highestValuePop) : undefined}
-            />
-            <TopStatRow
-              label="Oldest Pop"
-              item={oldestPop}
-              value={oldestPop ? releaseDateText(oldestPop) ?? "--" : "--"}
-              onPress={oldestPop ? () => onOpenItem(oldestPop) : undefined}
-            />
-          </View>
+          {valueSnapshot}
+          {collectorMode !== "reseller" ? valueSummary : null}
 
           <View style={styles.dashboardActionPanel}>
             <Text style={styles.dashboardSectionTitle}>Quick Actions</Text>
@@ -1668,8 +1757,8 @@ function DashboardScreen({
                 <Text style={styles.dashboardActionSub}>Add or update an item</Text>
               </Pressable>
               <Pressable onPress={onShelfStats} style={styles.dashboardStatsQuickAction}>
-                <Text style={styles.dashboardActionLabel}>Shelf Stats</Text>
-                <Text style={styles.dashboardActionSub}>Sets, values, and gaps</Text>
+                <Text style={styles.dashboardActionLabel}>{dashboardCopy.statsActionLabel}</Text>
+                <Text style={styles.dashboardActionSub}>{dashboardCopy.statsActionSub}</Text>
               </Pressable>
             </View>
             <View style={styles.dashboardBottomActions}>
@@ -2245,9 +2334,13 @@ function ShelfBreakdownScreen({
                 const checklistLoading = Boolean(checklist?.set_id && checklistLoadingSetId === checklist.set_id);
                 const checklistDisplayRows = checklistRows.length > 0 ? buildChecklistDisplayRows(checklistRows, group.items, group.name) : [];
                 const matchedChecklistCount = checklistDisplayRows.filter((row) => row.owned).length;
-                const displayCompletionOwnedCount =
-                  checklistDisplayRows.length > 0 ? matchedChecklistCount : group.completionOwnedCount ?? group.uniqueCount;
-                const displayCompletionTotal = Number(checklist?.required_count ?? group.checklistTotal ?? 0);
+                const stableOwnedCount = group.completionOwnedCount ?? group.uniqueCount;
+                const displayCompletionOwnedCount = Math.max(stableOwnedCount, matchedChecklistCount);
+                const displayCompletionTotal = Math.max(
+                  Number(checklist?.required_count ?? group.checklistTotal ?? 0),
+                  checklistRows.length,
+                  displayCompletionOwnedCount,
+                );
                 const displayCompletionPercent =
                   displayCompletionTotal > 0 ? Math.min(100, (displayCompletionOwnedCount / displayCompletionTotal) * 100) : null;
                 const hasCompletion = Boolean(displayCompletionTotal && displayCompletionPercent != null);
@@ -5362,6 +5455,7 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
   const [bio, setBio] = useState("");
   const [avatarKey, setAvatarKey] = useState<AvatarKey>("logo");
   const [isPublic, setIsPublic] = useState(true);
+  const [collectorMode, setCollectorMode] = useState<CollectorMode>("casual");
   const [busy, setBusy] = useState(true);
   const [securityBusy, setSecurityBusy] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -5386,6 +5480,7 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
         setBio(next?.bio ?? "");
         setAvatarKey(resolveAvatarKey(next?.avatar_url));
         setIsPublic(next?.is_public ?? true);
+        setCollectorMode(normalizeCollectorMode(next?.collector_mode));
       });
   }, [session.user.email, session.user.id]);
 
@@ -5398,6 +5493,7 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
       avatar_url: avatarKey,
       bio,
       is_public: isPublic,
+      collector_mode: collectorMode,
     };
     const { data, error } = await supabase.from("profiles").upsert(payload).select("*").single();
     setBusy(false);
@@ -5506,6 +5602,27 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
           placeholderTextColor="#8c95a3"
           style={[styles.input, styles.notes]}
         />
+      </View>
+
+      <View style={styles.settingsSection}>
+        <View>
+          <Text style={styles.dashboardSectionTitle}>Collector Mode</Text>
+          <Text style={styles.mutedSmall}>{collectorModeDescription(collectorMode)}</Text>
+        </View>
+        <View style={styles.collectorModeGrid}>
+          {COLLECTOR_MODE_OPTIONS.map((mode) => (
+            <Pressable
+              key={mode.key}
+              onPress={() => setCollectorMode(mode.key)}
+              style={[styles.collectorModeOption, collectorMode === mode.key && styles.collectorModeOptionActive]}
+            >
+              <Text style={[styles.collectorModeTitle, collectorMode === mode.key && styles.collectorModeTitleActive]}>
+                {mode.label}
+              </Text>
+              <Text style={styles.collectorModeText}>{mode.description}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       <View style={styles.settingsSection}>
@@ -6351,6 +6468,20 @@ const styles = StyleSheet.create({
     color: "#b8c0cc",
     fontSize: 14,
     lineHeight: 19,
+  },
+  dashboardModeBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#7bd1c3",
+    backgroundColor: "#1b2f31",
+  },
+  dashboardModeBadgeText: {
+    color: "#d9fff8",
+    fontSize: 11,
+    fontWeight: "900",
   },
   dashboardValueCard: {
     gap: 8,
@@ -7247,6 +7378,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#26313d",
     backgroundColor: "#151a1f",
+  },
+  collectorModeGrid: {
+    gap: 10,
+  },
+  collectorModeOption: {
+    gap: 5,
+    minHeight: 74,
+    justifyContent: "center",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
+  },
+  collectorModeOptionActive: {
+    borderColor: "#7bd1c3",
+    backgroundColor: "#1b2f31",
+  },
+  collectorModeTitle: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  collectorModeTitleActive: {
+    color: "#d9fff8",
+  },
+  collectorModeText: {
+    color: "#b8c0cc",
+    fontSize: 12,
+    lineHeight: 16,
   },
   publicProfileHero: {
     flexDirection: "row",

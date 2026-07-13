@@ -170,6 +170,7 @@ export type Profile = {
   avatar_url: string | null;
   bio: string | null;
   is_public: boolean | null;
+  collector_mode?: "casual" | "avid" | "reseller" | null;
 };
 
 export type PublicWishlistItem = {
