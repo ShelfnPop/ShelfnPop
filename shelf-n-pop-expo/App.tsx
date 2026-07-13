@@ -220,7 +220,7 @@ const EXCLUSIVITIES = [
 const SIGNATURE_AUTHENTICATIONS = ["None", "Unknown", "JSA", "Beckett", "PSA", "Funko Event", "Convention COA", "Other"] as const;
 const SIGNATURE_LOCATIONS = ["Box", "Window", "Insert", "Protector", "Figure", "Base", "Other"] as const;
 const APP_LOGO = require("./assets/shelf-n-pop-logo.png");
-const APP_VERSION = "0.1.4";
+const APP_VERSION = "0.2.0";
 const AVATAR_BEANIE = require("./assets/avatars/avatar-beanie.png");
 const AVATAR_GLASSES = require("./assets/avatars/avatar-glasses.png");
 const AVATAR_CAP = require("./assets/avatars/avatar-cap.png");
@@ -635,6 +635,11 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
   insightTitle: string;
   statsActionLabel: string;
   statsActionSub: string;
+  focusTitle: string;
+  focusBody: string;
+  primaryFocus: string;
+  secondaryFocus: string;
+  tertiaryFocus: string;
 } {
   if (mode === "avid") {
     return {
@@ -643,6 +648,11 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
       insightTitle: "Collector Highlights",
       statsActionLabel: "Set Progress",
       statsActionSub: "Sets, variants, and gaps",
+      focusTitle: "Build the set",
+      focusBody: "Avid mode brings reviewed sets, variants, exclusives, and missing Pops closer to the front.",
+      primaryFocus: "Closest sets",
+      secondaryFocus: "Missing Pops",
+      tertiaryFocus: "Variant checks",
     };
   }
 
@@ -653,6 +663,11 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
       insightTitle: "Value Snapshot",
       statsActionLabel: "Shelf Stats",
       statsActionSub: "Values, costs, and gaps",
+      focusTitle: "Track the value",
+      focusBody: "Value Tracker mode keeps cost, condition, duplicates, and sale context easier to reach.",
+      primaryFocus: "Portfolio value",
+      secondaryFocus: "Gain/loss",
+      tertiaryFocus: "Sale flags",
     };
   }
 
@@ -662,6 +677,11 @@ function collectorModeDashboardCopy(mode: CollectorMode): {
     insightTitle: "Shelf Highlights",
     statsActionLabel: "Shelf Highlights",
     statsActionSub: "Sets, favorites, and finds",
+    focusTitle: "Enjoy the shelf",
+    focusBody: "Casual mode keeps the experience visual and relaxed, with values available but not driving every screen.",
+    primaryFocus: "Recent adds",
+    secondaryFocus: "Shelf browsing",
+    tertiaryFocus: "Shared fun",
   };
 }
 
@@ -1738,6 +1758,24 @@ function DashboardScreen({
             </View>
           </View>
 
+          <View style={styles.dashboardModePanel}>
+            <View style={styles.dashboardModePanelTop}>
+              <View style={styles.flex}>
+                <Text style={styles.dashboardEyebrow}>Mode focus</Text>
+                <Text style={styles.dashboardModeTitle}>{dashboardCopy.focusTitle}</Text>
+              </View>
+              <Pressable onPress={onProfile} style={styles.dashboardModeChangeButton}>
+                <Text style={styles.dashboardModeChangeText}>Change</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.dashboardSubtext}>{dashboardCopy.focusBody}</Text>
+            <View style={styles.dashboardModeFocusRow}>
+              <ModeFocusPill label={dashboardCopy.primaryFocus} />
+              <ModeFocusPill label={dashboardCopy.secondaryFocus} />
+              <ModeFocusPill label={dashboardCopy.tertiaryFocus} />
+            </View>
+          </View>
+
           {collectorMode === "reseller" ? valueSummary : null}
 
           <View style={styles.dashboardStatsGrid}>
@@ -1777,6 +1815,14 @@ function DashboardScreen({
         </>
       )}
     </ScreenFrame>
+  );
+}
+
+function ModeFocusPill({ label }: { label: string }) {
+  return (
+    <View style={styles.dashboardModeFocusPill}>
+      <Text style={styles.dashboardModeFocusText}>{label}</Text>
+    </View>
   );
 }
 
@@ -6481,6 +6527,55 @@ const styles = StyleSheet.create({
   dashboardModeBadgeText: {
     color: "#d9fff8",
     fontSize: 11,
+    fontWeight: "900",
+  },
+  dashboardModePanel: {
+    gap: 10,
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#3d4653",
+    backgroundColor: "#181f27",
+  },
+  dashboardModePanelTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  dashboardModeTitle: {
+    color: "#ffffff",
+    fontSize: 20,
+    fontWeight: "900",
+  },
+  dashboardModeChangeButton: {
+    minHeight: 34,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: "#7bd1c3",
+  },
+  dashboardModeChangeText: {
+    color: "#101318",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  dashboardModeFocusRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  dashboardModeFocusPill: {
+    minHeight: 30,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    backgroundColor: "#101318",
+    borderWidth: 1,
+    borderColor: "#26313d",
+  },
+  dashboardModeFocusText: {
+    color: "#ffffff",
+    fontSize: 12,
     fontWeight: "900",
   },
   dashboardValueCard: {
