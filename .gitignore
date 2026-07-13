@@ -5,5 +5,14 @@
 dist/
 build/
 *.log
+tmp_*.txt
 .env
 .env.*
+.codex/
+.codex-eas/
+.codex-tools/
+supabase/.temp/
+shelf-n-pop-expo/supabase/.temp/
+shelf-n-pop-expo/supabase/.temp.backup-*/
+shelf-n-pop-expo/supabase/supabase/
+shelf-n-pop-expo/-
