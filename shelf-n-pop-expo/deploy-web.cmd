@@ -22,7 +22,7 @@ call .\node_modules\.bin\eas.cmd deploy --prod
 if errorlevel 1 goto deploy_failed
 
 echo.
-echo Done. Open https://shelf-n-pop.expo.app and look for Shelf-n-Pop v0.1.4.
+echo Done. Open https://shelf-n-pop.expo.app and look for Shelf-n-Pop v0.3.26.
 pause
 exit /b 0
 
