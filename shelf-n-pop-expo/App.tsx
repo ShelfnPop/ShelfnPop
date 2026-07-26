@@ -4859,7 +4859,7 @@ function ShelfStatsScreen({
               onPress={() => onOpenBreakdown("withinReach")}
               style={({ pressed }) => [styles.statsPrimaryAction, { backgroundColor: dashboardTheme.accent }, pressed && styles.pressed]}
             >
-              <DashboardIconLabel icon={DASHBOARD_ICON_OPEN_SET_ORGANIZER} label="Open Set Organizer" labelStyle={styles.statsBreakdownButtonText} size={32} />
+              <Text style={styles.statsBreakdownButtonText}>Open Set Organizer</Text>
             </Pressable>
           </View>
 
