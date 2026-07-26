@@ -8062,6 +8062,14 @@ function TradeSellScreen({
   const soldProfit = sales.reduce((sum, sale) => sum + saleProfit(sale), 0);
   const filteredItems = filter === "for_sale" ? saleItems : filter === "for_trade" ? tradeItems : filter === "sold" ? [] : activeItems;
   const marketTheme = collectorModeDashboardTheme("reseller");
+  const marketNextMove =
+    activeItems.length === 0
+      ? "Pick a Pop from your shelf and mark it for sale or trade."
+      : saleItems.length > 0
+        ? "Review asking prices and log sales when Pops leave your shelf."
+        : tradeItems.length > 0
+          ? "Keep trade notes current so offers are easier to compare."
+          : "Add a sale price or trade note to make this market shelf useful.";
 
   return (
     <ScreenFrame title="💰 Trade & Sell" onBack={onBack} rightLabel="Refresh" onRight={load}>
@@ -8073,6 +8081,10 @@ function TradeSellScreen({
             <Text style={styles.dashboardEyebrow}>Value tracker</Text>
             <Text style={styles.dashboardModeTitle}>Move Pops with intent</Text>
             <Text style={styles.dashboardSubtext}>Keep sale, trade, and sold history in one place without turning your shelf into a spreadsheet.</Text>
+            <View style={styles.marketFlowCard}>
+              <Text style={styles.marketFlowLabel}>Next best move</Text>
+              <Text style={styles.marketFlowText}>{marketNextMove}</Text>
+            </View>
             <View style={styles.marketHeroActions}>
               <Pressable onPress={onChooseShelf} style={styles.marketHeroPrimaryAction}>
                 <Text style={styles.marketHeroPrimaryText}>🏠 Choose from My Shelf</Text>
@@ -8080,6 +8092,24 @@ function TradeSellScreen({
               <Pressable onPress={onScan} style={styles.marketHeroSecondaryAction}>
                 <Text style={styles.marketHeroSecondaryText}>📷 Scan Pop</Text>
               </Pressable>
+            </View>
+          </View>
+
+          <View style={styles.marketGuideGrid}>
+            <View style={styles.marketGuideTile}>
+              <Text style={styles.marketGuideStep}>1</Text>
+              <Text style={styles.marketGuideTitle}>Choose</Text>
+              <Text style={styles.marketGuideCopy}>Start from a shelf item you already own.</Text>
+            </View>
+            <View style={styles.marketGuideTile}>
+              <Text style={styles.marketGuideStep}>2</Text>
+              <Text style={styles.marketGuideTitle}>Price</Text>
+              <Text style={styles.marketGuideCopy}>Set asking price, trade status, and notes.</Text>
+            </View>
+            <View style={styles.marketGuideTile}>
+              <Text style={styles.marketGuideStep}>3</Text>
+              <Text style={styles.marketGuideTitle}>Close</Text>
+              <Text style={styles.marketGuideCopy}>Log the sale and keep history clean.</Text>
             </View>
           </View>
 
@@ -9768,6 +9798,9 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
     Alert.alert("Reset email sent", "Check your inbox for the password reset link.");
   };
 
+  const activeModeOption = COLLECTOR_MODE_OPTIONS.find((mode) => mode.key === collectorMode) ?? COLLECTOR_MODE_OPTIONS[0];
+  const profileTheme = collectorModeDashboardTheme(collectorMode);
+
   return (
     <ScreenFrame title="⚙️ Profile & Settings" onBack={onBack}>
       <View style={styles.profileHero}>
@@ -9780,6 +9813,17 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
           <Text style={styles.profileHeroMeta} numberOfLines={1}>
             {username || session.user.email}
           </Text>
+        </View>
+      </View>
+
+      <View style={[styles.profileModeSummary, { borderColor: profileTheme.border, backgroundColor: profileTheme.heroBg }]}>
+        <View style={styles.flex}>
+          <Text style={[styles.dashboardEyebrow, { color: profileTheme.accentText }]}>Current collector mode</Text>
+          <Text style={styles.profileModeTitle}>{activeModeOption.label}</Text>
+          <Text style={styles.profileModeCopy}>{collectorModeDescription(collectorMode)}</Text>
+        </View>
+        <View style={[styles.profileModeBadge, { backgroundColor: profileTheme.accent }]}>
+          <Text style={styles.profileModeBadgeText}>{activeModeOption.shortLabel}</Text>
         </View>
       </View>
 
@@ -11192,6 +11236,26 @@ const styles = StyleSheet.create({
     borderColor: "#5b4725",
     backgroundColor: "#171611",
   },
+  marketFlowCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#5b4725",
+    backgroundColor: "#211c14",
+  },
+  marketFlowLabel: {
+    color: "#d4a953",
+    fontSize: 11,
+    fontWeight: "900",
+    textTransform: "uppercase",
+  },
+  marketFlowText: {
+    color: "#fff7df",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "800",
+  },
   marketHeroActions: {
     flexDirection: "row",
     gap: 10,
@@ -11230,6 +11294,44 @@ const styles = StyleSheet.create({
     color: "#ffe8ad",
     fontSize: 13,
     fontWeight: "900",
+  },
+  marketGuideGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  marketGuideTile: {
+    flex: 1,
+    minHeight: 88,
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    backgroundColor: "#121820",
+  },
+  marketGuideStep: {
+    width: 24,
+    height: 24,
+    overflow: "hidden",
+    borderRadius: 999,
+    backgroundColor: "#d4a953",
+    color: "#14110a",
+    fontSize: 12,
+    lineHeight: 24,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  marketGuideTitle: {
+    color: "#ffffff",
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900",
+  },
+  marketGuideCopy: {
+    color: "#b8c0cc",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "700",
   },
   marketFilterRow: {
     flexDirection: "row",
@@ -14071,6 +14173,40 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#26313d",
     backgroundColor: "#151a1f",
+  },
+  profileModeSummary: {
+    minHeight: 92,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  profileModeTitle: {
+    color: "#fff",
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: "900",
+  },
+  profileModeCopy: {
+    color: "#d4dbe7",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "700",
+  },
+  profileModeBadge: {
+    minWidth: 58,
+    minHeight: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderRadius: 999,
+  },
+  profileModeBadgeText: {
+    color: "#101318",
+    fontSize: 12,
+    fontWeight: "900",
   },
   profileHeroLogo: {
     width: 58,
