@@ -6878,6 +6878,28 @@ function ScanScreen({
                   <LimitedBadge item={lookup} />
                 </View>
               </View>
+              <View style={[styles.scanResultRecapPanel, { borderColor: scanTheme.border, backgroundColor: scanTheme.cardBg }]}>
+                <Text style={[styles.dashboardEyebrow, { color: scanTheme.accent }]}>Before you add</Text>
+                <View style={styles.scanResultRecapGrid}>
+                  <View style={styles.scanResultRecapTile}>
+                    <Text style={styles.dashboardInsightLabel}>Variant</Text>
+                    <Text style={styles.scanResultRecapValue} numberOfLines={1}>{ownedVariant || lookup.variant || "Common"}</Text>
+                  </View>
+                  <View style={styles.scanResultRecapTile}>
+                    <Text style={styles.dashboardInsightLabel}>Condition</Text>
+                    <Text style={styles.scanResultRecapValue} numberOfLines={1}>{ownedCondition || "Unknown"}</Text>
+                  </View>
+                  <View style={styles.scanResultRecapTile}>
+                    <Text style={styles.dashboardInsightLabel}>Shared shelf</Text>
+                    <Text style={styles.scanResultRecapValue} numberOfLines={1}>
+                      {sharedShelfBusy ? "Checking" : sharedShelfOwners.length > 0 ? `${integer(sharedShelfOwners.length)} match` : "Open"}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.scanResultRecapCopy}>
+                  Confirm the copy details below. Use Parser Assist only when the photo read and catalog row disagree.
+                </Text>
+              </View>
               {hasParserAssist ? (
                 <View style={[styles.parserAssistBox, { borderColor: scanTheme.border, backgroundColor: scanTheme.cardBg }]}>
                   <Pressable onPress={() => setParserAssistOpen(!parserAssistOpen)} style={styles.parserAssistHeader}>
@@ -7133,6 +7155,31 @@ function ManualAddScreen({ onBack, onAdded }: { onBack: () => void; onAdded: (it
 
   return (
     <ScreenFrame title="➕ Add Loose Pop" onBack={onBack}>
+      <View style={styles.manualAddHero}>
+        <Text style={styles.dashboardEyebrow}>Out-of-box helper</Text>
+        <Text style={styles.dashboardModeTitle}>Add the figure, keep the shelf clean</Text>
+        <Text style={styles.dashboardSubtext}>
+          Search the catalog first so franchise, set, number, image, and value stay consistent. Create manually only when there is no good match.
+        </Text>
+        <View style={styles.manualAddGuideGrid}>
+          <View style={styles.manualAddGuideTile}>
+            <Text style={styles.manualAddGuideStep}>1</Text>
+            <Text style={styles.manualAddGuideTitle}>Search</Text>
+            <Text style={styles.manualAddGuideCopy}>Use name, set, franchise, or box number.</Text>
+          </View>
+          <View style={styles.manualAddGuideTile}>
+            <Text style={styles.manualAddGuideStep}>2</Text>
+            <Text style={styles.manualAddGuideTitle}>Match</Text>
+            <Text style={styles.manualAddGuideCopy}>Pick the closest catalog record and variant.</Text>
+          </View>
+          <View style={styles.manualAddGuideTile}>
+            <Text style={styles.manualAddGuideStep}>3</Text>
+            <Text style={styles.manualAddGuideTitle}>Save</Text>
+            <Text style={styles.manualAddGuideCopy}>It lands as Out of Box on your shelf.</Text>
+          </View>
+        </View>
+      </View>
+
       <View style={styles.panel}>
         <Text style={styles.sectionTitle}>Search catalog first</Text>
         <Text style={styles.mutedText}>Best for out-of-box Pops when you know the character, set, franchise, or box number.</Text>
@@ -7172,6 +7219,14 @@ function ManualAddScreen({ onBack, onAdded }: { onBack: () => void; onAdded: (it
           ))}
           {selectedCatalog ? (
             <>
+              <View style={styles.manualSelectedCard}>
+                <Text style={styles.dashboardEyebrow}>Selected match</Text>
+                <Text style={styles.statsListTitle} numberOfLines={1}>{displayPopName(selectedCatalog, variant)}</Text>
+                <Text style={styles.mutedSmall} numberOfLines={2}>
+                  {[selectedCatalog.franchise, selectedCatalog.set_name, selectedCatalog.number ? `#${selectedCatalog.number}` : null].filter(Boolean).join("  ") || "Catalog row"}
+                </Text>
+                <Text style={styles.manualSelectedCopy}>This will add one owned copy with condition set to Out of Box.</Text>
+              </View>
               <Label>Variant</Label>
               <VariantPicker value={variant} onChange={setVariant} />
               <Label>Notes</Label>
@@ -7185,6 +7240,12 @@ function ManualAddScreen({ onBack, onAdded }: { onBack: () => void; onAdded: (it
       <View style={styles.panel}>
         <Text style={styles.sectionTitle}>Create manual loose Pop</Text>
         <Text style={styles.mutedSmall}>Use this only when the catalog search does not find a match.</Text>
+        <View style={styles.manualAddWarning}>
+          <Text style={styles.dashboardInsightLabel}>Catalog note</Text>
+          <Text style={styles.manualAddWarningText}>
+            Manual records are useful for one-off loose figures, but matched catalog rows give better set progress, shared shelf, and value reporting.
+          </Text>
+        </View>
         <Label>Pop name</Label>
         <TextInput value={popName} onChangeText={setPopName} placeholder="Character or product name" placeholderTextColor="#8c95a3" style={styles.input} />
         <View style={styles.detailTwoColumn}>
@@ -12479,6 +12540,39 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     marginTop: 3,
   },
+  scanResultRecapPanel: {
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#293341",
+    backgroundColor: "#101318",
+  },
+  scanResultRecapGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  scanResultRecapTile: {
+    flex: 1,
+    minHeight: 60,
+    justifyContent: "center",
+    gap: 4,
+    padding: 9,
+    borderRadius: 10,
+    backgroundColor: "#0f141a",
+  },
+  scanResultRecapValue: {
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  scanResultRecapCopy: {
+    color: "#c7ced8",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+  },
   breakdownHero: {
     gap: 8,
     padding: 16,
@@ -15254,6 +15348,80 @@ const styles = StyleSheet.create({
     backgroundColor: "#151a1f",
     borderWidth: 1,
     borderColor: "#202832",
+  },
+  manualAddHero: {
+    gap: 12,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  manualAddGuideGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  manualAddGuideTile: {
+    flex: 1,
+    minHeight: 82,
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#27353d",
+    backgroundColor: "#101318",
+  },
+  manualAddGuideStep: {
+    width: 24,
+    height: 24,
+    overflow: "hidden",
+    borderRadius: 999,
+    color: "#071014",
+    backgroundColor: "#9bd8cb",
+    fontSize: 12,
+    lineHeight: 24,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  manualAddGuideTitle: {
+    color: "#ffffff",
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900",
+  },
+  manualAddGuideCopy: {
+    color: "#c3ccd8",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "700",
+  },
+  manualSelectedCard: {
+    gap: 5,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3d716b",
+    backgroundColor: "#142825",
+  },
+  manualSelectedCopy: {
+    color: "#d8fff7",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "800",
+  },
+  manualAddWarning: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#5a4a29",
+    backgroundColor: "#191713",
+  },
+  manualAddWarningText: {
+    color: "#fff1cf",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "800",
   },
   catalogPanel: {
     gap: 6,
