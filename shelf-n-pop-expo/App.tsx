@@ -3488,6 +3488,19 @@ function HuntHubScreen({
   const selectedStop = selectedStopId ? displayedStops.find((stop) => stop.id === selectedStopId) ?? null : null;
   const selectedStopFinds = selectedStop ? huntFinds.filter((find) => find.stop_id === selectedStop.id) : [];
   const selectedStopPhotos = selectedStop ? huntPhotos.filter((photo) => photo.stop_id === selectedStop.id) : [];
+  const selectedStopMemoryScore = selectedStopFinds.length + selectedStopPhotos.length + (selectedStop?.visit_note?.trim() ? 1 : 0);
+  const selectedStopNextMove =
+    !selectedStop
+      ? ""
+      : selectedStop.visit_status === "planned"
+        ? "Mark this stop when you visit, then add a quick note before moving on."
+        : selectedStopFinds.length === 0 && selectedStop.visit_status === "found"
+          ? "Add the Pop found here so this stop shows up in the trip recap."
+          : selectedStopPhotos.length === 0
+            ? "Take one shelf or family photo while the stop is still fresh."
+            : selectedStop.visit_note.trim()
+              ? "This stop has the core story saved. Add more finds only if something else stood out."
+              : "Add one memory note so this stop feels personal later.";
   const isHuntOwner = Boolean(hunt && hunt.user_id === session.user.id);
   const activeHunts = visibleHunts.filter((candidate) => candidate.status !== "completed");
   const completedHunts = visibleHunts.filter((candidate) => candidate.status === "completed");
@@ -3558,6 +3571,28 @@ function HuntHubScreen({
               <Text style={styles.huntMetaLabel}>Status</Text>
               <Text style={styles.huntMetaValue}>{HUNT_STOP_STATUSES.find((status) => status.value === selectedStop.visit_status)?.label ?? "Planned"}</Text>
             </View>
+          </View>
+        </View>
+
+        <View style={styles.stopDetailRecapPanel}>
+          <Text style={styles.huntEyebrow}>Stop recap</Text>
+          <View style={styles.stopDetailRecapGrid}>
+            <View style={styles.stopDetailRecapTile}>
+              <Text style={styles.huntMetaLabel}>Finds</Text>
+              <Text style={styles.stopDetailRecapValue}>{integer(selectedStopFinds.length)}</Text>
+            </View>
+            <View style={styles.stopDetailRecapTile}>
+              <Text style={styles.huntMetaLabel}>Photos</Text>
+              <Text style={styles.stopDetailRecapValue}>{integer(selectedStopPhotos.length)}</Text>
+            </View>
+            <View style={styles.stopDetailRecapTile}>
+              <Text style={styles.huntMetaLabel}>Memory</Text>
+              <Text style={styles.stopDetailRecapValue}>{selectedStopMemoryScore > 0 ? "Saved" : "Open"}</Text>
+            </View>
+          </View>
+          <View style={styles.stopDetailNextCard}>
+            <Text style={styles.huntMetaLabel}>Next best move</Text>
+            <Text style={styles.stopDetailNextText}>{selectedStopNextMove}</Text>
           </View>
         </View>
 
@@ -3845,6 +3880,47 @@ function HuntHubScreen({
           <Text style={styles.huntActionSubtext}>Plan with your group</Text>
         </Pressable>
       </View>
+      ) : null}
+
+      {huntView === "memory" && hunt ? (
+        <View style={styles.memoryRecapPanel}>
+          <View style={styles.huntPanelTop}>
+            <View>
+              <Text style={styles.huntEyebrow}>Saved trip recap</Text>
+              <Text style={styles.dashboardSectionTitle}>{hunt.title || "Completed Pop Hunt"}</Text>
+              <Text style={styles.mutedSmall}>{hunt.favorite_memory || hunt.recap || "A saved hunt from the Memory Lane vault."}</Text>
+            </View>
+            <View style={styles.huntStatusBadge}>
+              <Text style={styles.huntStatusText}>{displayHuntDate(hunt.hunt_month)}</Text>
+            </View>
+          </View>
+          <View style={styles.memoryRecapGrid}>
+            <View style={styles.memoryRecapTile}>
+              <Text style={styles.huntMetaLabel}>Stops</Text>
+              <Text style={styles.memoryRecapValue}>{integer(routeStopCount)}</Text>
+            </View>
+            <View style={styles.memoryRecapTile}>
+              <Text style={styles.huntMetaLabel}>Finds</Text>
+              <Text style={styles.memoryRecapValue}>{integer(huntFindCount)}</Text>
+            </View>
+            <View style={styles.memoryRecapTile}>
+              <Text style={styles.huntMetaLabel}>Photos</Text>
+              <Text style={styles.memoryRecapValue}>{integer(huntPhotos.length)}</Text>
+            </View>
+            <View style={styles.memoryRecapTile}>
+              <Text style={styles.huntMetaLabel}>Notes</Text>
+              <Text style={styles.memoryRecapValue}>{integer(huntMemories.length)}</Text>
+            </View>
+          </View>
+          <View style={styles.memoryRecapStoryCard}>
+            <Text style={styles.huntMetaLabel}>Best saved moment</Text>
+            <Text style={styles.memoryRecapStoryText}>
+              {bestFind
+                ? `${bestFind.pop_name || "A hunt find"} from ${bestFind.stop_id ? stopNameById[bestFind.stop_id] || "the route" : "the hunt"}`
+                : huntMemories[0]?.body || hunt.recap || "Add a favorite memory or best find to make this trip easier to revisit."}
+            </Text>
+          </View>
+        </View>
       ) : null}
 
       {huntView === "current" && activeHunts.length > 0 ? (
@@ -14007,6 +14083,49 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "900",
   },
+  stopDetailRecapPanel: {
+    gap: 10,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#3a527d",
+    backgroundColor: "#111a29",
+  },
+  stopDetailRecapGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  stopDetailRecapTile: {
+    flex: 1,
+    minHeight: 62,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#2e3a4b",
+    backgroundColor: "#10151c",
+  },
+  stopDetailRecapValue: {
+    color: "#ffffff",
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: "900",
+  },
+  stopDetailNextCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3d716b",
+    backgroundColor: "#142825",
+  },
+  stopDetailNextText: {
+    color: "#d8fff7",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "800",
+  },
   huntStopStatusRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -14361,6 +14480,51 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     backgroundColor: "#10151c",
+  },
+  memoryRecapPanel: {
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#5a4a29",
+    backgroundColor: "#191713",
+  },
+  memoryRecapGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  memoryRecapTile: {
+    flex: 1,
+    minWidth: 90,
+    minHeight: 62,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    backgroundColor: "#121820",
+  },
+  memoryRecapValue: {
+    color: "#ffffff",
+    fontSize: 17,
+    lineHeight: 21,
+    fontWeight: "900",
+  },
+  memoryRecapStoryCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#5a4a29",
+    backgroundColor: "#211c14",
+  },
+  memoryRecapStoryText: {
+    color: "#fff1cf",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "800",
   },
   huntMemoryLabel: {
     color: "#9fbaff",
