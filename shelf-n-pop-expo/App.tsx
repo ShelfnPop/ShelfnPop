@@ -10954,7 +10954,15 @@ function ChoicePicker({
       <Modal transparent visible={open} animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={[styles.modalBackdrop, styles.pickerBackdrop]} onPress={() => setOpen(false)}>
           <Pressable style={[styles.optionSheet, styles.pickerOptionSheet]} onPress={(event) => event.stopPropagation()}>
-            <Text style={[styles.optionTitle, styles.pickerOptionTitle]}>{title}</Text>
+            <View style={styles.pickerOptionHeader}>
+              <View style={styles.flex}>
+                <Text style={[styles.optionTitle, styles.pickerOptionTitle]}>{title}</Text>
+                <Text style={styles.pickerOptionSubtitle}>Current: {value}</Text>
+              </View>
+              <Pressable onPress={() => setOpen(false)} style={styles.pickerDoneButton}>
+                <Text style={styles.pickerDoneText}>Done</Text>
+              </Pressable>
+            </View>
             <ScrollView style={styles.optionScroll} contentContainerStyle={styles.optionScrollContent}>
               {options.map((option) => (
                 <Pressable
@@ -10965,7 +10973,8 @@ function ChoicePicker({
                     setOpen(false);
                   }}
                 >
-                  <Text style={styles.optionText}>{option}</Text>
+                  <Text style={[styles.optionText, option === value && styles.optionTextActive]}>{option}</Text>
+                  {option === value ? <Text style={styles.optionSelectedMark}>Selected</Text> : null}
                 </Pressable>
               ))}
             </ScrollView>
@@ -16017,8 +16026,8 @@ const styles = StyleSheet.create({
   pickerOptionSheet: {
     width: "100%",
     maxWidth: 430,
-    maxHeight: "68%" as any,
-    gap: 8,
+    maxHeight: "62%" as any,
+    gap: 10,
     padding: 12,
     paddingBottom: 12,
     borderRadius: 14,
@@ -16026,11 +16035,36 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 14,
     backgroundColor: "#151a1f",
   },
+  pickerOptionHeader: {
+    minHeight: 42,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  pickerOptionSubtitle: {
+    color: "#9ca7b5",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "800",
+  },
+  pickerDoneButton: {
+    minHeight: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: "#7bd1c3",
+  },
+  pickerDoneText: {
+    color: "#101318",
+    fontSize: 12,
+    fontWeight: "900",
+  },
   optionScroll: {
-    maxHeight: 340,
+    maxHeight: 300,
   },
   optionScrollContent: {
-    gap: 5,
+    gap: 4,
     paddingBottom: 2,
   },
   optionTitle: {
@@ -16044,21 +16078,37 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   optionRow: {
-    minHeight: 40,
-    justifyContent: "center",
+    minHeight: 36,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
     paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: "#202832",
+    borderWidth: 1,
+    borderColor: "#27313c",
+    backgroundColor: "#101318",
   },
   optionRowActive: {
-    backgroundColor: "#7e67f4",
+    borderColor: "#7bd1c3",
+    backgroundColor: "#142825",
   },
   optionText: {
     color: "#fff",
     fontSize: 13,
     lineHeight: 17,
     fontWeight: "800",
+  },
+  optionTextActive: {
+    color: "#d9fff8",
+  },
+  optionSelectedMark: {
+    color: "#7bd1c3",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
+    textTransform: "uppercase",
   },
   label: {
     color: "#fff",

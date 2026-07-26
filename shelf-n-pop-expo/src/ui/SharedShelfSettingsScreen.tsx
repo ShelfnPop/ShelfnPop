@@ -76,6 +76,17 @@ export function SharedShelfSettingsScreen({
   const currentMember = members.find((member) => member.user_id === session.user.id);
   const isShelfOwner = currentShelf.created_by === session.user.id || currentMember?.role === "owner";
   const memberStats = useMemo(() => buildSharedStatsMembers(memberItems).filter((member) => member.id !== "all"), [memberItems]);
+  const shelfTotals = useMemo(
+    () =>
+      memberItems.reduce(
+        (summary, item) => ({
+          pops: summary.pops + Number(item.quantity ?? 0),
+          value: summary.value + Number(item.total_value ?? 0),
+        }),
+        { pops: 0, value: 0 },
+      ),
+    [memberItems],
+  );
 
   const applyShelfUpdate = (data: SharedShelfUpdate) => {
     const updatedShelf = {
@@ -150,14 +161,14 @@ export function SharedShelfSettingsScreen({
   };
 
   const regenerateInviteCode = () => {
-    confirmAction("Regenerate invite code?", "The old invite code will stop working for new members.", () => {
+    confirmAction("Refresh invite code?", "The old invite code will stop working for new members, but current shelf members stay connected.", () => {
       void updateInviteCode();
     });
   };
 
   const removeMember = (member: SharedShelfMember) => {
     const memberName = sharedShelfMemberName(member);
-    confirmAction("Unlink collector?", `${memberName} will no longer be able to view this shared shelf. Their personal shelf will not be changed.`, async () => {
+    confirmAction("Remove shelf access?", `${memberName} will leave this shared shelf view. Their personal shelf and Pops will not be changed.`, async () => {
       setSaving(true);
       const { data, error } = await supabase
         .from("shared_shelf_members")
@@ -207,7 +218,24 @@ export function SharedShelfSettingsScreen({
       <View style={styles.sharedSettingsPanel}>
         <View style={styles.sharedSettingsBlock}>
           <Text style={styles.dashboardSectionTitle}>{currentShelf.name}</Text>
-          <Text style={styles.mutedSmall}>{isShelfOwner ? "Manage access and invites." : "View members or leave this shelf."}</Text>
+          <Text style={styles.mutedSmall}>
+            {isShelfOwner ? "Tune the shelf name, invite code, and who can see the shared view." : "Review who is connected or step off this shared shelf."}
+          </Text>
+        </View>
+
+        <View style={styles.sharedSettingsRecapGrid}>
+          <View style={styles.sharedSettingsRecapTile}>
+            <Text style={styles.sharedSettingsRecapLabel}>Members</Text>
+            <Text style={styles.sharedSettingsRecapValue}>{integer(members.length)}</Text>
+          </View>
+          <View style={styles.sharedSettingsRecapTile}>
+            <Text style={styles.sharedSettingsRecapLabel}>Shared Pops</Text>
+            <Text style={styles.sharedSettingsRecapValue}>{integer(shelfTotals.pops)}</Text>
+          </View>
+          <View style={styles.sharedSettingsRecapTile}>
+            <Text style={styles.sharedSettingsRecapLabel}>Shelf Value</Text>
+            <Text style={styles.sharedSettingsRecapValue}>{money(shelfTotals.value)}</Text>
+          </View>
         </View>
 
         <View style={styles.sharedSettingsBlock}>
@@ -242,10 +270,11 @@ export function SharedShelfSettingsScreen({
             </Pressable>
             {isShelfOwner ? (
               <Pressable onPress={regenerateInviteCode} disabled={saving} style={[styles.sharedSettingsSmallButtonMuted, saving && styles.disabled]}>
-                <Text style={styles.sharedSettingsSmallButtonMutedText}>New</Text>
+                <Text style={styles.sharedSettingsSmallButtonMutedText}>Refresh</Text>
               </Pressable>
             ) : null}
           </View>
+          <Text style={styles.mutedSmall}>Share this code with people you want in the shelf circle.</Text>
         </View>
       </View>
 
@@ -278,7 +307,7 @@ export function SharedShelfSettingsScreen({
               </View>
               {isShelfOwner && !isCurrentUser && !isOwnerMember ? (
                 <Pressable onPress={() => removeMember(member)} disabled={saving} style={[styles.sharedMemberRemoveButton, saving && styles.disabled]}>
-                  <Text style={styles.sharedMemberRemoveText}>Unlink</Text>
+                  <Text style={styles.sharedMemberRemoveText}>Remove Access</Text>
                 </Pressable>
               ) : null}
             </View>
@@ -289,6 +318,11 @@ export function SharedShelfSettingsScreen({
           <Pressable onPress={leaveShelf} disabled={saving} style={[styles.sharedMemberLeaveButton, saving && styles.disabled]}>
             <Text style={styles.sharedMemberRemoveText}>Step Off Shelf</Text>
           </Pressable>
+        ) : isShelfOwner ? (
+          <View style={styles.sharedOwnerNote}>
+            <Text style={styles.sharedSettingsRecapLabel}>Owner note</Text>
+            <Text style={styles.mutedSmall}>Owners keep the shelf anchored. Remove other members above, or rename and refresh the invite code when the shelf changes.</Text>
+          </View>
         ) : null}
       </View>
     </ScreenFrame>
@@ -306,6 +340,34 @@ const styles = StyleSheet.create({
   },
   sharedSettingsBlock: {
     gap: 8,
+  },
+  sharedSettingsRecapGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  sharedSettingsRecapTile: {
+    flex: 1,
+    minHeight: 68,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#27353d",
+    backgroundColor: "#101318",
+  },
+  sharedSettingsRecapLabel: {
+    color: "#9bd5c9",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
+    textTransform: "uppercase",
+  },
+  sharedSettingsRecapValue: {
+    color: "#ffffff",
+    fontSize: 15,
+    lineHeight: 19,
+    fontWeight: "900",
   },
   sharedSettingsNameRow: {
     flexDirection: "row",
@@ -415,6 +477,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#f07178",
     backgroundColor: "#221519",
+  },
+  sharedOwnerNote: {
+    gap: 5,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
   },
   sharedMemberRemoveText: {
     color: "#f07178",
