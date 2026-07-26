@@ -4850,6 +4850,9 @@ function ShelfStatsScreen({
     };
   }, [setChecklists, stats.closestSets]);
 
+  const recommendationSetCount = new Set(setRecommendations.map((recommendation) => recommendation.setName)).size;
+  const recommendationEstimatedValue = setRecommendations.reduce((sum, recommendation) => sum + Number(recommendation.estimatedValue ?? 0), 0);
+
   return (
     <ScreenFrame title="Set Progress" onBack={onBack}>
       {busy ? (
@@ -4903,10 +4906,30 @@ function ShelfStatsScreen({
           <View style={[styles.dashboardInsightPanel, styles.statsPriorityPanel, themedPanelStyle]}>
             <DashboardSectionTitle icon={DASHBOARD_ICON_POPS_TO_FIND_NEXT} title="Pops to Find Next" />
             <Text style={styles.statsSectionCopy}>Use this like a short hunt list. Values are estimates when the catalog has one.</Text>
+            <View style={styles.findNextSummaryGrid}>
+              <View style={[styles.findNextSummaryTile, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.cardBg }]}>
+                <Text style={[styles.dashboardInsightLabel, { color: dashboardTheme.accentText }]}>Suggested Pops</Text>
+                <Text style={styles.findNextSummaryValue}>{integer(setRecommendations.length)}</Text>
+              </View>
+              <View style={[styles.findNextSummaryTile, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.cardBg }]}>
+                <Text style={[styles.dashboardInsightLabel, { color: dashboardTheme.accentText }]}>Sets touched</Text>
+                <Text style={styles.findNextSummaryValue}>{integer(recommendationSetCount)}</Text>
+              </View>
+              <View style={[styles.findNextSummaryTile, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.cardBg }]}>
+                <Text style={[styles.dashboardInsightLabel, { color: dashboardTheme.accentText }]}>Est. list</Text>
+                <Text style={styles.findNextSummaryValue}>{recommendationEstimatedValue > 0 ? money(recommendationEstimatedValue) : "--"}</Text>
+              </View>
+            </View>
             {setRecommendations.length === 0 ? (
               <Text style={styles.mutedText}>Missing Pops from close reviewed sets will appear here.</Text>
             ) : (
-              setRecommendations.map((recommendation) => <SetRecommendationRow key={recommendation.key} recommendation={recommendation} />)
+              setRecommendations.map((recommendation) => (
+                <SetRecommendationRow
+                  key={recommendation.key}
+                  recommendation={recommendation}
+                  onPress={() => onOpenSetBreakdown(recommendation.setName, "withinReach")}
+                />
+              ))
             )}
           </View>
 
@@ -9954,6 +9977,24 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
 
   const activeModeOption = COLLECTOR_MODE_OPTIONS.find((mode) => mode.key === collectorMode) ?? COLLECTOR_MODE_OPTIONS[0];
   const profileTheme = collectorModeDashboardTheme(collectorMode);
+  const modeImpactRows =
+    collectorMode === "reseller"
+      ? [
+          ["Dashboard", "Value, gain/loss, and Trade & Sell stay closer to the top."],
+          ["Shelf views", "Costs, duplicates, listing status, and sold history get more weight."],
+          ["Best for", "Collectors who want pricing discipline without a separate spreadsheet."],
+        ]
+      : collectorMode === "avid"
+        ? [
+            ["Dashboard", "Close sets, missing Pops, variants, and reviewed set progress move forward."],
+            ["Shelf views", "Set completion, checklist gaps, and franchise organization get more emphasis."],
+            ["Best for", "Collectors who want the app to help decide what to hunt next."],
+          ]
+        : [
+            ["Dashboard", "Recent adds, simple shelf totals, and shared fun stay relaxed."],
+            ["Shelf views", "Values remain available, but they do not drive every screen."],
+            ["Best for", "Collectors who want a lighter place to enjoy the shelf."],
+          ];
 
   return (
     <ScreenFrame title="⚙️ Profile & Settings" onBack={onBack}>
@@ -9981,6 +10022,16 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
         </View>
       </View>
 
+      <View style={[styles.profileModeImpactPanel, { borderColor: profileTheme.border, backgroundColor: profileTheme.panelBg }]}>
+        <Text style={[styles.dashboardEyebrow, { color: profileTheme.accentText }]}>What this changes</Text>
+        {modeImpactRows.map(([label, copy]) => (
+          <View key={label} style={styles.profileModeImpactRow}>
+            <Text style={styles.profileModeImpactLabel}>{label}</Text>
+            <Text style={styles.profileModeImpactCopy}>{copy}</Text>
+          </View>
+        ))}
+      </View>
+
       <View style={styles.settingsSection}>
         <View>
           <Text style={styles.dashboardSectionTitle}>Avatar</Text>
@@ -9997,6 +10048,12 @@ function ProfileScreen({ session, onBack }: { session: Session; onBack: () => vo
               <Text style={styles.avatarOptionLabel}>{avatar.label}</Text>
             </Pressable>
           ))}
+        </View>
+        <View style={[styles.profileModeSaveHint, { borderColor: profileTheme.border, backgroundColor: profileTheme.cardBg }]}>
+          <Text style={[styles.dashboardInsightLabel, { color: profileTheme.accentText }]}>Mode preview</Text>
+          <Text style={styles.profileModeImpactCopy}>
+            Save your profile to make {activeModeOption.label} the default experience across Dashboard, Set Progress, Shelf views, and Trade & Sell.
+          </Text>
         </View>
       </View>
 
@@ -10489,17 +10546,16 @@ function StatsHighlightRow({
   );
 }
 
-function SetRecommendationRow({ recommendation }: { recommendation: SetRecommendation }) {
+function SetRecommendationRow({ recommendation, onPress }: { recommendation: SetRecommendation; onPress?: () => void }) {
   const row = recommendation.row;
   const metaLine = [recommendation.setName, row.number ? `#${row.number}` : null, isMeaningfulVariant(row.variant) ? row.variant : null, row.exclusivity]
     .filter(Boolean)
     .join("  ");
   const hasEstimatedValue = Number(recommendation.estimatedValue ?? 0) > 0;
-
-  return (
-    <View style={styles.statsListRow}>
-      <View style={styles.statsRankBadge}>
-        <Text style={styles.statsRankText}>+</Text>
+  const content = (
+    <>
+      <View style={styles.findNextAddBadge}>
+        <Text style={styles.findNextAddBadgeText}>+</Text>
       </View>
       <View style={styles.flex}>
         <Text style={styles.dashboardInsightLabel} numberOfLines={1}>
@@ -10511,19 +10567,26 @@ function SetRecommendationRow({ recommendation }: { recommendation: SetRecommend
         <Text style={styles.mutedSmall} numberOfLines={1}>
           {metaLine || recommendation.completionLine || "Reviewed checklist item"}
         </Text>
+        {recommendation.completionLine ? (
+          <Text style={styles.findNextProgressText} numberOfLines={1}>
+            {recommendation.completionLine}
+          </Text>
+        ) : null}
       </View>
       <View style={styles.alignEnd}>
         <Text style={styles.checklistMissingBadge}>Missing</Text>
         <Text style={hasEstimatedValue ? styles.recommendationValue : styles.mutedSmall} numberOfLines={1}>
           {hasEstimatedValue ? money(recommendation.estimatedValue) : "Value TBD"}
         </Text>
-        {recommendation.completionLine ? (
-          <Text style={styles.mutedSmall} numberOfLines={1}>
-            {recommendation.completionLine.replace(" owned - ", "/")}
-          </Text>
-        ) : null}
+        <Text style={styles.groupChevron}>Open set</Text>
       </View>
-    </View>
+    </>
+  );
+
+  return (
+    <Pressable onPress={onPress} disabled={!onPress} style={({ pressed }) => [styles.findNextRow, onPress && styles.pressableStatRow, pressed && styles.pressed]}>
+      {content}
+    </Pressable>
   );
 }
 
@@ -11730,6 +11793,57 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     marginTop: -2,
+  },
+  findNextSummaryGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  findNextSummaryTile: {
+    flex: 1,
+    minHeight: 64,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#293341",
+    backgroundColor: "#101318",
+  },
+  findNextSummaryValue: {
+    color: "#ffffff",
+    fontSize: 17,
+    lineHeight: 21,
+    fontWeight: "900",
+  },
+  findNextRow: {
+    minHeight: 84,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
+  },
+  findNextAddBadge: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 999,
+    backgroundColor: "#203d38",
+  },
+  findNextAddBadgeText: {
+    color: "#b9fff2",
+    fontSize: 18,
+    fontWeight: "900",
+  },
+  findNextProgressText: {
+    color: "#b4c4ff",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "800",
   },
   statsHeroValue: {
     color: "#fff",
@@ -14535,6 +14649,40 @@ const styles = StyleSheet.create({
     color: "#101318",
     fontSize: 12,
     fontWeight: "900",
+  },
+  profileModeImpactPanel: {
+    gap: 8,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#151a1f",
+  },
+  profileModeImpactRow: {
+    gap: 3,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: "#101318",
+  },
+  profileModeImpactLabel: {
+    color: "#ffffff",
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900",
+  },
+  profileModeImpactCopy: {
+    color: "#c9d0dc",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+  },
+  profileModeSaveHint: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#101318",
   },
   profileHeroLogo: {
     width: 58,
