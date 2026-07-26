@@ -3523,6 +3523,16 @@ function HuntHubScreen({
       : checkedStopCount > 0
         ? "The route is moving. Add a quick note while the stop is fresh."
         : "Start with the first stop, then mark each place as the hunt unfolds.";
+  const nextHuntAction =
+    huntFindCount > 0 && huntMemoryCount === 0
+      ? "Save a photo or memory note from the trip."
+      : foundStopCount > huntFindCount
+        ? "Add the Pop found at the latest stop."
+        : checkedStopCount < routeStopCount
+          ? "Open the route and mark the next stop."
+          : huntFindCount > 0
+            ? "Pick the best find and move the trip to Memory Lane when ready."
+            : "Start at the first stop and capture what happened.";
   const huntModeCopy = !hunt
     ? "Create a Pop Hunt, build the route, rally the shelf, and save the moments worth coming back to."
     : isHuntOwner
@@ -3728,8 +3738,13 @@ function HuntHubScreen({
         ) : (
           <>
             <View style={styles.huntHero}>
-              <Text style={styles.huntEyebrow}>Shelf-n-Pop trip hub</Text>
-              <Text style={styles.huntHeroTitle}>Where is the next Pop hiding?</Text>
+              <View style={styles.huntHeroHeaderRow}>
+                <Image source={DASHBOARD_ICON_POP_HUNTS} style={styles.huntHeroIcon} />
+                <View style={styles.flex}>
+                  <Text style={styles.huntEyebrow}>Shelf-n-Pop trip hub</Text>
+                  <Text style={styles.huntHeroTitle}>Where is the next Pop hiding?</Text>
+                </View>
+              </View>
               <Text style={styles.huntHeroCopy}>Start a new family hunt, jump back into a live route, or stroll through completed trips and saved memories.</Text>
               <View style={styles.huntHeroMetaRow}>
                 <View style={styles.huntHeroMetaTile}>
@@ -3944,6 +3959,10 @@ function HuntHubScreen({
               <Text style={styles.huntProgressValue}>{huntMemories.length}</Text>
               <Text style={styles.huntProgressLabel}>Memories</Text>
             </View>
+          </View>
+          <View style={styles.huntNextActionCard}>
+            <Text style={styles.huntNextActionLabel}>Next best move</Text>
+            <Text style={styles.huntNextActionText}>{nextHuntAction}</Text>
           </View>
           {isHuntOwner ? (
             <View style={styles.huntStatusPicker}>
@@ -6614,6 +6633,30 @@ function ScanScreen({
             copy="Scan the UPC, confirm the variant, and Shelf-n-Pop will check your shelf before adding it."
             style={[styles.scanHero, { borderColor: scanTheme.border, backgroundColor: scanTheme.heroBg }]}
           />
+
+          <View style={styles.scanFlowRail}>
+            <View style={styles.scanFlowStep}>
+              <Text style={styles.scanFlowNumber}>1</Text>
+              <View style={styles.flex}>
+                <Text style={styles.scanFlowTitle}>Scan or search</Text>
+                <Text style={styles.scanFlowCopy}>Start with a UPC, then use photo tools only when needed.</Text>
+              </View>
+            </View>
+            <View style={styles.scanFlowStep}>
+              <Text style={styles.scanFlowNumber}>2</Text>
+              <View style={styles.flex}>
+                <Text style={styles.scanFlowTitle}>Confirm the copy</Text>
+                <Text style={styles.scanFlowCopy}>Check variant, exclusivity, condition, and shared shelf status.</Text>
+              </View>
+            </View>
+            <View style={styles.scanFlowStep}>
+              <Text style={styles.scanFlowNumber}>3</Text>
+              <View style={styles.flex}>
+                <Text style={styles.scanFlowTitle}>Add with confidence</Text>
+                <Text style={styles.scanFlowCopy}>Save it to your shelf, wishlist, or active Pop Hunt.</Text>
+              </View>
+            </View>
+          </View>
 
           {huntContext ? (
             <View style={styles.scanHuntContextBanner}>
@@ -11390,6 +11433,44 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "900",
   },
+  scanFlowRail: {
+    gap: 8,
+  },
+  scanFlowStep: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#2b3853",
+    backgroundColor: "#121720",
+  },
+  scanFlowNumber: {
+    width: 28,
+    height: 28,
+    overflow: "hidden",
+    borderRadius: 999,
+    backgroundColor: "#9db7ff",
+    color: "#101318",
+    fontSize: 13,
+    lineHeight: 28,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  scanFlowTitle: {
+    color: "#fff",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  scanFlowCopy: {
+    color: "#bfc8d8",
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "700",
+  },
   scanEntryPanel: {
     gap: 14,
     padding: 14,
@@ -12543,6 +12624,19 @@ const styles = StyleSheet.create({
     borderColor: "#3a527d",
     backgroundColor: "#121a26",
   },
+  huntHeroHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  huntHeroIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(159, 186, 255, 0.38)",
+    backgroundColor: "#10151c",
+  },
   huntEyebrow: {
     color: "#9fbaff",
     fontSize: 11,
@@ -12801,6 +12895,26 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
+  },
+  huntNextActionCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3d716b",
+    backgroundColor: "#10221f",
+  },
+  huntNextActionLabel: {
+    color: "#9bd5c9",
+    fontSize: 11,
+    fontWeight: "900",
+    textTransform: "uppercase",
+  },
+  huntNextActionText: {
+    color: "#eef7f5",
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: "800",
   },
   huntBestFindCard: {
     gap: 3,
