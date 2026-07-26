@@ -41,10 +41,14 @@ export function ScreenFrame({
                 ) : (
                     <Image source={APP_LOGO} style={styles.headerLogo} />
                 )}
-                <Text style={styles.appTitle}>{title}</Text>
+                <Text style={styles.appTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>
+                    {title}
+                </Text>
                 {rightLabel && onRight ? (
                     <Pressable onPress={onRight} style={styles.rightAction}>
-                        <Text style={styles.rightActionText}>{rightLabel}</Text>
+                        <Text style={styles.rightActionText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>
+                            {rightLabel}
+                        </Text>
                     </Pressable>
                 ) : (
                     <View style={styles.rightActionPlaceholder} />
@@ -98,12 +102,13 @@ const styles = {
         borderBottomWidth: 1,
         borderBottomColor: "#8d77ff",
     },
-    appTitle: { flex: 1, color: "#fff", fontSize: 20, fontWeight: "900" },
+    appTitle: { flex: 1, minWidth: 0, color: "#fff", fontSize: 20, lineHeight: 24, fontWeight: "900" },
     backButton: { width: 38, height: 38, justifyContent: "center" },
     headerLogo: { width: 38, height: 38, borderRadius: 10, marginRight: 8 },
     backText: { color: "#7bd1c3", fontSize: 34, lineHeight: 34 },
     rightAction: {
-        minWidth: 96,
+        minWidth: 84,
+        maxWidth: 118,
         minHeight: 34,
         alignItems: "center",
         justifyContent: "center",
@@ -112,7 +117,7 @@ const styles = {
         backgroundColor: "rgba(16, 19, 24, 0.16)",
     },
     rightActionText: { color: "#fff", fontWeight: "900", fontSize: 12 },
-    rightActionPlaceholder: { minWidth: 96, minHeight: 34 },
+    rightActionPlaceholder: { minWidth: 84, minHeight: 34 },
     content: { padding: 18, gap: 16, paddingBottom: 44 },
     versionFooter: { alignItems: "center", paddingTop: 12, paddingBottom: 2 },
     versionFooterText: { color: "#a9b3c1", fontSize: 12, fontWeight: "800" },

@@ -303,7 +303,12 @@ export function AdminScreen({ appVersion, session, onBack, onFixCatalog, styles 
       ) : activeTab === "health" ? (
         <View style={styles.dashboardInsightPanel}>
           <Text style={styles.dashboardSectionTitle}>{adminHealthFilterLabel(healthFilter)} Queue</Text>
-          {healthRows.length === 0 ? <Text style={styles.mutedSmall}>No catalog rows match this tile.</Text> : null}
+          {healthRows.length === 0 ? (
+            <View style={styles.emptyMiniCard}>
+              <Text style={styles.cardLabel}>Queue is clear</Text>
+              <Text style={styles.mutedSmall}>No catalog rows match this signal right now.</Text>
+            </View>
+          ) : null}
           {healthRows.map((row) => (
             <View key={row.id} style={styles.adminQueueRow}>
               {row.image_url ? <Image source={{ uri: row.image_url }} style={styles.adminQueueImage} /> : <EmptyDisplayBox style={styles.adminQueueImagePlaceholder} />}
@@ -336,7 +341,12 @@ export function AdminScreen({ appVersion, session, onBack, onFixCatalog, styles 
       ) : activeTab === "reports" ? (
         <View style={styles.dashboardInsightPanel}>
           <Text style={styles.dashboardSectionTitle}>User Reports</Text>
-          {reports.length === 0 ? <Text style={styles.mutedSmall}>No open user reports.</Text> : null}
+          {reports.length === 0 ? (
+            <View style={styles.emptyMiniCard}>
+              <Text style={styles.cardLabel}>No open user reports</Text>
+              <Text style={styles.mutedSmall}>When collectors flag bad images, values, or details, they will land here.</Text>
+            </View>
+          ) : null}
           {reports.map((report) => (
             <View key={report.id} style={styles.adminReportCard}>
               <View style={styles.adminReportTop}>
@@ -363,7 +373,12 @@ export function AdminScreen({ appVersion, session, onBack, onFixCatalog, styles 
         <View style={styles.dashboardInsightPanel}>
           <Text style={styles.dashboardSectionTitle}>Learned Overrides</Text>
           <Text style={styles.mutedSmall}>Active parser lessons saved from admin fixes. Disable one if a correction should stop influencing future lookups.</Text>
-          {overrides.length === 0 ? <Text style={styles.mutedSmall}>No active learned overrides.</Text> : null}
+          {overrides.length === 0 ? (
+            <View style={styles.emptyMiniCard}>
+              <Text style={styles.cardLabel}>No active learned overrides</Text>
+              <Text style={styles.mutedSmall}>Fixes with learning enabled will show here after they are saved.</Text>
+            </View>
+          ) : null}
           {overrides.map((override) => {
             const learnedFields = Object.keys(override.override_data ?? {}).filter((field) => !["parse_confidence", "needs_review", "parse_reason_codes", "warnings"].includes(field));
             return (
@@ -391,7 +406,12 @@ export function AdminScreen({ appVersion, session, onBack, onFixCatalog, styles 
       ) : (
         <View style={styles.dashboardInsightPanel}>
           <Text style={styles.dashboardSectionTitle}>Recent Audit Trail</Text>
-          {auditEvents.length === 0 ? <Text style={styles.mutedSmall}>No admin changes have been recorded yet.</Text> : null}
+          {auditEvents.length === 0 ? (
+            <View style={styles.emptyMiniCard}>
+              <Text style={styles.cardLabel}>No admin changes yet</Text>
+              <Text style={styles.mutedSmall}>Catalog fixes, report status changes, and learned override updates will appear here.</Text>
+            </View>
+          ) : null}
           {auditEvents.map((event) => (
             <View key={event.id} style={styles.adminAuditRow}>
               <View style={styles.flex}>

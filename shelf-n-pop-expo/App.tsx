@@ -7596,10 +7596,10 @@ function CollectionScreen({
           busy ? (
             <ActivityIndicator color="#7e67f4" />
           ) : (
-            <View style={styles.panel}>
-              <Text style={styles.centerTitle}>📦 No Pops yet</Text>
-              <Text style={styles.mutedText}>Scan or enter a UPC to add your first Pop.</Text>
-            </View>
+            <FriendlyEmptyState
+              title="Your shelf is ready"
+              copy="Scan a box, enter a UPC, or add a loose Pop to start building the collection view."
+            />
           )
         }
         renderItem={renderCollectionItem}
@@ -7737,10 +7737,10 @@ function SharedShelfScreen({ onBack, onOpenShelf }: { onBack: () => void; onOpen
       <Text style={styles.sectionTitle}>🤝 Your Shared Shelves</Text>
       {busy ? <ActivityIndicator color="#7e67f4" /> : null}
       {!busy && shelves.length === 0 ? (
-        <View style={styles.panel}>
-          <Text style={styles.centerTitle}>🤝 No Shared Shelves yet</Text>
-          <Text style={styles.mutedText}>Create one for your household or join one with an invite code.</Text>
-        </View>
+        <FriendlyEmptyState
+          title="No shared shelves yet"
+          copy="Create one for your household or join one with an invite code when someone sends it over."
+        />
       ) : null}
       {shelves.map((shelf) => (
         <Pressable key={shelf.id} onPress={() => onOpenShelf(shelf)} style={styles.shelfCard}>
@@ -8102,10 +8102,10 @@ function SharedShelfDetailScreen({
 
             {busy ? <ActivityIndicator color="#7e67f4" /> : null}
             {!busy && visibleItems.length === 0 ? (
-              <View style={styles.panel}>
-                <Text style={styles.centerTitle}>Nothing shared yet</Text>
-                <Text style={styles.mutedText}>When members add Pops, they will show up here.</Text>
-              </View>
+              <FriendlyEmptyState
+                title="Nothing shared yet"
+                copy="Once members add Pops to their shelves, this shared view will turn into a group collection recap."
+              />
             ) : null}
           </>
         }
@@ -8361,7 +8361,10 @@ function TradeSellScreen({
                 </View>
               </View>
               {sales.length === 0 ? (
-                <Text style={styles.mutedText}>No sales logged yet. Open an item and use Mark Sold to start tracking.</Text>
+                <FriendlyEmptyState
+                  title="No sales logged yet"
+                  copy="Open an item, use Mark Sold, and Shelf-n-Pop will start building the sales history here."
+                />
               ) : (
                 <>
                   <View style={styles.marketLedgerGrid}>
@@ -8397,8 +8400,10 @@ function TradeSellScreen({
               </View>
               {filteredItems.length === 0 ? (
                 <View style={styles.marketEmptyState}>
-                  <Text style={styles.mutedText}>📦 No Pops match this view yet.</Text>
-                  <Text style={styles.mutedSmall}>Choose an existing shelf item or scan a new Pop, then mark that owned copy for sale or trade.</Text>
+                  <FriendlyEmptyState
+                    title="No Pops match this view yet"
+                    copy="Choose an existing shelf item or scan a new Pop, then mark that owned copy for sale or trade."
+                  />
                   {suggestedItems.length > 0 ? (
                     <View style={styles.marketSuggestionPanel}>
                       <Text style={styles.marketFlowLabel}>Worth reviewing</Text>
@@ -10421,10 +10426,10 @@ function PublicProfileScreen({ userId, onBack }: { userId: string; onBack: () =>
       {busy ? <ActivityIndicator color="#7e67f4" /> : null}
 
       {!busy && !profile ? (
-        <View style={styles.panel}>
-          <Text style={styles.centerTitle}>🔒 Profile is private</Text>
-          <Text style={styles.mutedText}>This collector has not shared a public profile with this shelf.</Text>
-        </View>
+        <FriendlyEmptyState
+          title="Profile is private"
+          copy="This collector has not shared a public profile with this shelf yet."
+        />
       ) : null}
 
       {profile ? (
@@ -10472,10 +10477,10 @@ function PublicProfileScreen({ userId, onBack }: { userId: string; onBack: () =>
             </View>
 
             {wishlist.length === 0 ? (
-              <View style={styles.emptyMiniCard}>
-                <Text style={styles.centerTitle}>⭐ No wishlist items yet</Text>
-                <Text style={styles.mutedText}>When {profileName} adds wishlist Pops, they will show here.</Text>
-              </View>
+              <FriendlyEmptyState
+                title="No wishlist items yet"
+                copy={`When ${profileName} adds wishlist Pops, they will show here for the shared shelf.`}
+              />
             ) : (
               (showAllWishlist ? wishlist : wishlist.slice(0, PUBLIC_WISHLIST_ROW_LIMIT)).map((item) => (
                 <View key={item.id} style={styles.publicWishlistCard}>
@@ -10554,10 +10559,14 @@ function ScreenFrame({
         ) : (
           <Image source={APP_LOGO} style={styles.headerLogo} />
         )}
-        <Text style={styles.appTitle}>{title}</Text>
+        <Text style={styles.appTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>
+          {title}
+        </Text>
         {rightLabel && onRight ? (
           <Pressable onPress={onRight} style={styles.rightAction}>
-            <Text style={styles.rightActionText}>{rightLabel}</Text>
+            <Text style={styles.rightActionText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>
+              {rightLabel}
+            </Text>
           </Pressable>
         ) : (
           <View style={styles.rightActionPlaceholder} />
@@ -10614,6 +10623,33 @@ function SecondaryButton({ label, onPress, disabled }: { label: string; onPress:
     <Pressable onPress={onPress} disabled={disabled} style={[styles.secondaryButton, disabled && styles.disabled]}>
       <Text style={styles.secondaryButtonText}>{label}</Text>
     </Pressable>
+  );
+}
+
+function FriendlyEmptyState({
+  title,
+  copy,
+  actionLabel,
+  onAction,
+}: {
+  title: string;
+  copy: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <View style={styles.friendlyEmptyCard}>
+      <View style={styles.friendlyEmptyBadge}>
+        <Text style={styles.friendlyEmptyBadgeText}>SNP</Text>
+      </View>
+      <Text style={styles.friendlyEmptyTitle}>{title}</Text>
+      <Text style={styles.friendlyEmptyCopy}>{copy}</Text>
+      {actionLabel && onAction ? (
+        <Pressable onPress={onAction} style={styles.friendlyEmptyAction}>
+          <Text style={styles.friendlyEmptyActionText}>{actionLabel}</Text>
+        </Pressable>
+      ) : null}
+    </View>
   );
 }
 
@@ -11023,8 +11059,10 @@ const styles = StyleSheet.create({
   },
   appTitle: {
     flex: 1,
+    minWidth: 0,
     color: "#fff",
     fontSize: 20,
+    lineHeight: 24,
     fontWeight: "900",
   },
   backButton: {
@@ -11048,7 +11086,8 @@ const styles = StyleSheet.create({
     lineHeight: 30,
   },
   rightAction: {
-    minWidth: 96,
+    minWidth: 84,
+    maxWidth: 118,
     minHeight: 38,
     alignItems: "center",
     justifyContent: "center",
@@ -11065,7 +11104,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
   rightActionPlaceholder: {
-    minWidth: 96,
+    minWidth: 84,
     minHeight: 38,
   },
   content: {
@@ -15186,6 +15225,59 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 10,
     backgroundColor: "#101318",
+  },
+  friendlyEmptyCard: {
+    alignItems: "center",
+    gap: 8,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  friendlyEmptyBadge: {
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3d716b",
+    backgroundColor: "#142825",
+  },
+  friendlyEmptyBadgeText: {
+    color: "#9bd8cb",
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "900",
+  },
+  friendlyEmptyTitle: {
+    color: "#ffffff",
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  friendlyEmptyCopy: {
+    color: "#c7d0db",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  friendlyEmptyAction: {
+    minHeight: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    backgroundColor: "#7bd1c3",
+  },
+  friendlyEmptyActionText: {
+    color: "#101318",
+    fontSize: 12,
+    fontWeight: "900",
   },
   publicWishlistCard: {
     minHeight: 124,
