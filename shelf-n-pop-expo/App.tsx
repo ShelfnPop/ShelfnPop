@@ -314,7 +314,7 @@ const EXCLUSIVITIES = [
 const SIGNATURE_AUTHENTICATIONS = ["None", "Unknown", "JSA", "Beckett", "PSA", "Funko Event", "Convention COA", "Other"] as const;
 const SIGNATURE_LOCATIONS = ["Box", "Window", "Insert", "Protector", "Figure", "Base", "Other"] as const;
 const APP_LOGO = require("./assets/shelf-n-pop-logo.png");
-const APP_VERSION = "0.3.26";
+const APP_VERSION = "4.0.0";
 const DASHBOARD_ICON_SCAN_POP = require("./assets/dashboard-icons/scan-pop.png");
 const DASHBOARD_ICON_SET_PROGRESS = require("./assets/dashboard-icons/set-progress.png");
 const DASHBOARD_ICON_MY_SHELF = require("./assets/dashboard-icons/my-shelf.png");
@@ -1859,26 +1859,20 @@ function DashboardScreen({
   const dashboardCopy = collectorModeDashboardCopy(collectorMode);
   const dashboardTheme = collectorModeDashboardTheme(collectorMode);
   const dashboardMetrics = dashboardMetricsForMode(collectorMode, dashboard);
-  const valueSummary = (
-    <View style={[styles.dashboardValueCard, { borderColor: dashboardTheme.valueBorder, backgroundColor: dashboardTheme.panelBg }]}>
-      <Text style={styles.dashboardValueLabel}>{dashboardCopy.valueTitle}</Text>
-      <View style={styles.dashboardValueBody}>
-        <Text style={styles.dashboardValue} adjustsFontSizeToFit numberOfLines={1}>
-          {money(dashboard?.total_collection_value)}
-        </Text>
-        <View style={[styles.dashboardValueSide, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.cardBg }]}>
-          <Text style={styles.dashboardSideLabel}>Avg Value</Text>
-          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_value_per_pop)}</Text>
-          <Text style={styles.dashboardSideLabel}>Avg Paid</Text>
-          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_paid_per_pop)}</Text>
-        </View>
-      </View>
-      <View style={styles.dashboardGainRow}>
-        <Text style={styles.dashboardGainLabel}>{collectorMode === "reseller" ? "Net Gain" : "Shelf Change"}</Text>
-        <Text style={[styles.dashboardGainValue, gainLossColorStyle(dashboard?.gain_loss)]}>{money(dashboard?.gain_loss)}</Text>
-      </View>
-    </View>
-  );
+  const nextMoveTitle =
+    collectorMode === "reseller"
+      ? "Review your market shelf"
+      : collectorMode === "avid"
+        ? "Find the next set-builder win"
+        : "Enjoy the newest shelf moments";
+  const nextMoveBody =
+    collectorMode === "reseller"
+      ? "Check sale/trade status, values, and shelf health before the next move."
+      : collectorMode === "avid"
+        ? "Start with close sets, missing Pops, and variants that tighten the collection."
+        : "Jump into recent adds, favorites, and the shared shelf without digging through stats.";
+  const nextMoveLabel = collectorMode === "reseller" ? "Open Trade & Sell" : collectorMode === "avid" ? "Open Set Organizer" : "View My Shelf";
+  const nextMovePress = collectorMode === "reseller" ? onTradeSell : collectorMode === "avid" ? onShelfStats : onCollection;
   const valueSnapshot = (
     <View style={[styles.dashboardInsightPanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
       <Text style={styles.dashboardSectionTitle}>{dashboardCopy.insightTitle}</Text>
@@ -1918,24 +1912,75 @@ function DashboardScreen({
       />
     </View>
   );
-  const modeFocusStrip = (
-    <View style={[styles.dashboardModePanel, { borderColor: dashboardTheme.softBorder, backgroundColor: dashboardTheme.panelBg }]}>
-      <View style={styles.dashboardModePanelTop}>
+  const dashboardHomeBase = (
+    <View style={[styles.dashboardHomeBase, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}>
+      <View style={styles.dashboardHomeHeader}>
+        <View style={styles.dashboardHeroTop}>
+          <View style={[styles.dashboardLogoShell, styles.dashboardLogoShellCompact, { backgroundColor: dashboardTheme.logoBg }]}>
+            <ProfileAvatar avatarKey={resolveAvatarKey(profile?.avatar_url)} size={38} />
+          </View>
+          <View style={styles.flex}>
+            <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>{dashboardCopy.eyebrow}</Text>
+            <Text style={styles.dashboardGreeting} adjustsFontSizeToFit numberOfLines={1}>
+              {dashboard?.greeting_text ?? "Welcome back, Collector"}
+            </Text>
+          </View>
+        </View>
+        <Pressable onPress={onProfile} style={[styles.dashboardModeMiniButton, { borderColor: dashboardTheme.softBorder, backgroundColor: dashboardTheme.accentSoft }]}>
+          <Text style={[styles.dashboardModeMiniButtonText, { color: dashboardTheme.accentText }]}>Change</Text>
+        </Pressable>
+      </View>
+
+      <Text style={styles.dashboardSubtext}>{dashboardActivityText(dashboard)}</Text>
+
+      <View style={styles.dashboardHomeValueRow}>
+        <View style={styles.flex}>
+          <Text style={styles.dashboardValueLabel}>{dashboardCopy.valueTitle}</Text>
+          <Text style={styles.dashboardValue} adjustsFontSizeToFit numberOfLines={1}>
+            {money(dashboard?.total_collection_value)}
+          </Text>
+          <View style={styles.dashboardGainRow}>
+            <Text style={styles.dashboardGainLabel}>{collectorMode === "reseller" ? "Net Gain" : "Shelf Change"}</Text>
+            <Text style={[styles.dashboardGainValue, gainLossColorStyle(dashboard?.gain_loss)]}>{money(dashboard?.gain_loss)}</Text>
+          </View>
+        </View>
+        <View style={[styles.dashboardValueSide, styles.dashboardHomeValueSide, { borderColor: dashboardTheme.softBorder, backgroundColor: dashboardTheme.cardBg }]}>
+          <Text style={styles.dashboardSideLabel}>Avg Value</Text>
+          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_value_per_pop)}</Text>
+          <Text style={styles.dashboardSideLabel}>Avg Paid</Text>
+          <Text style={styles.dashboardSideValue}>{money(dashboard?.average_paid_per_pop)}</Text>
+        </View>
+      </View>
+
+      <View style={[styles.dashboardHomeFocus, { borderColor: dashboardTheme.softBorder, backgroundColor: dashboardTheme.panelBg }]}>
         <View style={styles.flex}>
           <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>Current focus</Text>
           <Text style={styles.dashboardModeTitle}>{dashboardCopy.focusTitle}</Text>
+          <Text style={styles.dashboardHomeFocusBody}>{dashboardCopy.focusBody}</Text>
         </View>
-        <Pressable onPress={onProfile} style={[styles.dashboardModeChangeButton, { backgroundColor: dashboardTheme.accent }]}>
-          <Text style={styles.dashboardModeChangeText}>Change</Text>
-        </Pressable>
+        <View style={styles.dashboardModeFocusRow}>
+          <ModeFocusPill label={dashboardCopy.primaryFocus} theme={dashboardTheme} />
+          <ModeFocusPill label={dashboardCopy.secondaryFocus} theme={dashboardTheme} />
+          <ModeFocusPill label={dashboardCopy.tertiaryFocus} theme={dashboardTheme} />
+        </View>
       </View>
-      <Text style={styles.dashboardSubtext}>{dashboardCopy.focusBody}</Text>
-      <View style={styles.dashboardModeFocusRow}>
-        <ModeFocusPill label={dashboardCopy.primaryFocus} theme={dashboardTheme} />
-        <ModeFocusPill label={dashboardCopy.secondaryFocus} theme={dashboardTheme} />
-        <ModeFocusPill label={dashboardCopy.tertiaryFocus} theme={dashboardTheme} />
+
+      <View style={styles.dashboardCompactStatsGrid}>
+        {dashboardMetrics.map((metric) => (
+          <MetricCard key={metric.label} label={metric.label} value={metric.value} theme={dashboardTheme} compact />
+        ))}
       </View>
     </View>
+  );
+  const nextBestMove = (
+    <Pressable onPress={nextMovePress} style={[styles.dashboardNextMoveCard, { borderColor: dashboardTheme.softBorder, backgroundColor: dashboardTheme.panelBg }]}>
+      <View style={styles.flex}>
+        <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>Next best move</Text>
+        <Text style={styles.dashboardNextMoveTitle}>{nextMoveTitle}</Text>
+        <Text style={styles.dashboardNextMoveBody}>{nextMoveBody}</Text>
+      </View>
+      <Text style={[styles.dashboardNextMoveAction, { color: dashboardTheme.accentText }]}>{nextMoveLabel}</Text>
+    </Pressable>
   );
   const modeShelfActionLabel = collectorMode === "reseller" ? "Shelf Stats" : dashboardCopy.statsActionLabel;
   const modeShelfActionDescription = collectorMode === "reseller" ? "Values and shelf health" : dashboardCopy.statsActionSub;
@@ -1947,35 +1992,9 @@ function DashboardScreen({
         <ActivityIndicator color="#7e67f4" />
       ) : (
         <>
-          <View style={[styles.dashboardHero, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}>
-            <View style={styles.dashboardHeroTop}>
-              <View style={[styles.dashboardLogoShell, { backgroundColor: dashboardTheme.logoBg }]}>
-                <ProfileAvatar avatarKey={resolveAvatarKey(profile?.avatar_url)} size={46} />
-              </View>
-              <View style={styles.flex}>
-                <Text style={[styles.dashboardEyebrow, { color: dashboardTheme.accent }]}>{dashboardCopy.eyebrow}</Text>
-                <Text style={styles.dashboardGreeting} adjustsFontSizeToFit numberOfLines={1}>
-                  {dashboard?.greeting_text ?? "Welcome back, Collector"}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.dashboardSubtext}>{dashboardActivityText(dashboard)}</Text>
-            <View style={[styles.dashboardModeBadge, { borderColor: dashboardTheme.accent, backgroundColor: dashboardTheme.accentSoft }]}>
-              <Text style={[styles.dashboardModeBadgeText, { color: dashboardTheme.accentText }]}>{collectorModeLabel(collectorMode)} Dashboard</Text>
-            </View>
-          </View>
+          {dashboardHomeBase}
 
-          {modeFocusStrip}
-
-          {valueSummary}
-
-          <View style={styles.dashboardStatsGrid}>
-            {dashboardMetrics.map((metric) => (
-              <MetricCard key={metric.label} label={metric.label} value={metric.value} theme={dashboardTheme} />
-            ))}
-          </View>
-
-          {valueSnapshot}
+          {nextBestMove}
 
           <View style={[styles.dashboardActionPanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.panelBg }]}>
             <Text style={styles.dashboardSectionTitle}>✨ Quick Actions</Text>
@@ -2064,6 +2083,8 @@ function DashboardScreen({
               </Pressable>
             ) : null}
           </View>
+
+          {valueSnapshot}
         </>
       )}
     </ScreenFrame>
@@ -10027,33 +10048,36 @@ function MetricCard({
   onPress,
   active,
   theme,
+  compact,
 }: {
   label: string;
   value: string;
   onPress?: () => void;
   active?: boolean;
   theme?: DashboardTheme;
+  compact?: boolean;
 }) {
   const cardStyle = theme ? { borderColor: theme.border, backgroundColor: theme.cardBg } : null;
+  const baseStyle = compact ? styles.metricCardCompact : styles.metricCard;
   const content = (
     <>
-      <Text style={[styles.cardLabel, theme ? { color: theme.accentText } : null]} adjustsFontSizeToFit numberOfLines={1}>
+      <Text style={[styles.cardLabel, compact && styles.cardLabelCompact, theme ? { color: theme.accentText } : null]} adjustsFontSizeToFit numberOfLines={1}>
         {label}
       </Text>
-      <Text style={styles.metricValue} adjustsFontSizeToFit numberOfLines={1}>
+      <Text style={[styles.metricValue, compact && styles.metricValueCompact]} adjustsFontSizeToFit numberOfLines={1}>
         {value}
       </Text>
     </>
   );
 
   if (!onPress) {
-    return <View style={[styles.metricCard, cardStyle, active && styles.metricCardActive]}>{content}</View>;
+    return <View style={[baseStyle, cardStyle, active && styles.metricCardActive]}>{content}</View>;
   }
 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.metricCard, cardStyle, styles.metricCardPressable, active && styles.metricCardActive, pressed && styles.pressed]}
+      style={({ pressed }) => [baseStyle, cardStyle, styles.metricCardPressable, active && styles.metricCardActive, pressed && styles.pressed]}
     >
       {content}
     </Pressable>
@@ -10660,6 +10684,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#26313d",
   },
+  dashboardHomeBase: {
+    gap: 14,
+    padding: 15,
+    borderRadius: 14,
+    backgroundColor: "#151a1f",
+    borderWidth: 1,
+    borderColor: "#26313d",
+  },
+  dashboardHomeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
   dashboardHeroTop: {
     flexDirection: "row",
     alignItems: "center",
@@ -10677,6 +10715,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 10,
+  },
+  dashboardLogoShellCompact: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
   },
   dashboardEyebrow: {
     color: "#7bd1c3",
@@ -10739,6 +10782,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "900",
   },
+  dashboardModeMiniButton: {
+    minHeight: 34,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  dashboardModeMiniButtonText: {
+    fontSize: 12,
+    fontWeight: "900",
+  },
   dashboardModeFocusRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -10773,10 +10827,21 @@ const styles = StyleSheet.create({
   },
   dashboardValue: {
     color: "#fff",
-    fontSize: 33,
+    fontSize: 36,
+    lineHeight: 41,
     fontWeight: "900",
     flex: 1,
     minWidth: 0,
+  },
+  dashboardHomeValueRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  dashboardHomeValueSide: {
+    minWidth: 92,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
   },
   dashboardValueBody: {
     flexDirection: "row",
@@ -10818,6 +10883,53 @@ const styles = StyleSheet.create({
   dashboardGainValue: {
     fontSize: 17,
     fontWeight: "900",
+  },
+  dashboardHomeFocus: {
+    gap: 9,
+    padding: 11,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#26313d",
+  },
+  dashboardHomeFocusBody: {
+    color: "#b8c0cc",
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 3,
+  },
+  dashboardCompactStatsGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  dashboardNextMoveCard: {
+    minHeight: 84,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 13,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#151a1f",
+  },
+  dashboardNextMoveTitle: {
+    color: "#fff",
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: "900",
+  },
+  dashboardNextMoveBody: {
+    color: "#b8c0cc",
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 2,
+  },
+  dashboardNextMoveAction: {
+    maxWidth: 104,
+    fontSize: 12,
+    lineHeight: 15,
+    fontWeight: "900",
+    textAlign: "right",
   },
   dashboardGainPercent: {
     fontSize: 13,
@@ -14209,6 +14321,11 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 13,
   },
+  cardLabelCompact: {
+    fontSize: 11,
+    lineHeight: 14,
+    textAlign: "center",
+  },
   bigMoney: {
     color: "#fff",
     fontSize: 29,
@@ -14256,6 +14373,19 @@ const styles = StyleSheet.create({
     borderColor: "#26313d",
     backgroundColor: "#151a1f",
   },
+  metricCardCompact: {
+    flex: 1,
+    minHeight: 66,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#151a1f",
+  },
   metricCardPressable: {
     borderColor: "#334252",
   },
@@ -14267,6 +14397,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 22,
     fontWeight: "900",
+  },
+  metricValueCompact: {
+    fontSize: 20,
+    lineHeight: 24,
   },
   sharedShelfHeroRow: {
     flexDirection: "row",
