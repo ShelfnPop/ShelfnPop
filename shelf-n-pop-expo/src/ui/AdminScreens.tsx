@@ -244,6 +244,29 @@ export function AdminScreen({ appVersion, session, onBack, onFixCatalog, styles 
         <Text style={styles.dashboardSectionTitle}>Catalog quality and user reports</Text>
         <Text style={styles.dashboardSubtext}>Review the signals that most affect collector trust.</Text>
       </View>
+      <View style={styles.adminGuidePanel}>
+        <View style={styles.adminGuideStep}>
+          <Text style={styles.adminGuideNumber}>1</Text>
+          <View style={styles.flex}>
+            <Text style={styles.adminGuideTitle}>Start with trust signals</Text>
+            <Text style={styles.adminGuideCopy}>Reports, missing images, missing values, and low parser confidence should get fixed first.</Text>
+          </View>
+        </View>
+        <View style={styles.adminGuideStep}>
+          <Text style={styles.adminGuideNumber}>2</Text>
+          <View style={styles.flex}>
+            <Text style={styles.adminGuideTitle}>Fix the catalog row</Text>
+            <Text style={styles.adminGuideCopy}>Clean franchise, set, box number, name, variant, image, and value before resolving.</Text>
+          </View>
+        </View>
+        <View style={styles.adminGuideStep}>
+          <Text style={styles.adminGuideNumber}>3</Text>
+          <View style={styles.flex}>
+            <Text style={styles.adminGuideTitle}>Let the parser learn</Text>
+            <Text style={styles.adminGuideCopy}>Good fixes become overrides so the next scan starts cleaner.</Text>
+          </View>
+        </View>
+      </View>
       <View style={styles.dashboardStatsGrid}>
         <MetricCard styles={styles} label="Reports" value={integer(metrics.openReports)} active={activeTab === "reports"} onPress={() => setActiveTab("reports")} />
         <MetricCard styles={styles} label="Needs Review" value={integer(metrics.needsReview)} active={activeTab === "health" && healthFilter === "needsReview"} onPress={() => { setHealthFilter("needsReview"); setActiveTab("health"); }} />
@@ -598,6 +621,7 @@ const response = data as { found?: boolean; pop?: PopCatalog; message?: string; 
       );
     }
   };
+  const fixRecapValue = estimatedValue.trim() && Number.isFinite(Number(estimatedValue)) ? Number(estimatedValue) : catalog?.estimated_value;
 
   return (
     <ScreenFrame appVersion={appVersion} title="Fix Catalog Item" onBack={onBack} rightLabel="Reload" onRight={load}>
@@ -619,6 +643,29 @@ const response = data as { found?: boolean; pop?: PopCatalog; message?: string; 
                   </View>
                 ) : null}
               </View>
+            </View>
+          </View>
+          <View style={styles.detailStoryPanel}>
+            <Text style={styles.dashboardSectionTitle}>Fix Recap</Text>
+            <View style={styles.detailStoryGrid}>
+              <View style={styles.detailStoryTile}>
+                <Text style={styles.dashboardInsightLabel}>UPC</Text>
+                <Text style={styles.detailStoryValue} numberOfLines={1}>{catalog.upc ?? "--"}</Text>
+              </View>
+              <View style={styles.detailStoryTile}>
+                <Text style={styles.dashboardInsightLabel}>Value</Text>
+                <Text style={styles.detailStoryValue}>{money(fixRecapValue)}</Text>
+              </View>
+              <View style={styles.detailStoryTile}>
+                <Text style={styles.dashboardInsightLabel}>Confidence</Text>
+                <Text style={styles.detailStoryValue}>{catalog.parse_confidence == null ? "--" : percent(Number(catalog.parse_confidence) * 100)}</Text>
+              </View>
+            </View>
+            <View style={styles.detailNextMoveCard}>
+              <Text style={styles.dashboardInsightLabel}>Save target</Text>
+              <Text style={styles.detailNextMoveText}>
+                Confirm identity first, then media and value. Keep Learn from this fix on when the UPC should use these fields next time.
+              </Text>
             </View>
           </View>
           <View style={styles.detailTwoColumn}>

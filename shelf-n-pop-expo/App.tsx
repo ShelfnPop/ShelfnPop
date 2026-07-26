@@ -5264,6 +5264,43 @@ function ShelfBreakdownScreen({
             ) : null}
           </View>
 
+          <View style={[styles.breakdownGuidePanel, breakdownPanelStyle]}>
+            <View style={styles.breakdownGuideRow}>
+              <View style={styles.breakdownGuideStep}>
+                <Text style={[styles.breakdownGuideNumber, { backgroundColor: breakdownTheme.secondaryActionBg, color: breakdownTheme.accentText }]}>1</Text>
+                <View style={styles.flex}>
+                  <Text style={styles.breakdownGuideTitle}>Pick the shelf</Text>
+                  <Text style={styles.breakdownGuideCopy}>Start with your shelf, then compare a shared shelf when the group is hunting together.</Text>
+                </View>
+              </View>
+              <View style={styles.breakdownGuideStep}>
+                <Text style={[styles.breakdownGuideNumber, { backgroundColor: breakdownTheme.secondaryActionBg, color: breakdownTheme.accentText }]}>2</Text>
+                <View style={styles.flex}>
+                  <Text style={styles.breakdownGuideTitle}>Open a set</Text>
+                  <Text style={styles.breakdownGuideCopy}>Use the row to see what you own, what is missing, and how close it really is.</Text>
+                </View>
+              </View>
+              <View style={styles.breakdownGuideStep}>
+                <Text style={[styles.breakdownGuideNumber, { backgroundColor: breakdownTheme.secondaryActionBg, color: breakdownTheme.accentText }]}>3</Text>
+                <View style={styles.flex}>
+                  <Text style={styles.breakdownGuideTitle}>Build the hunt list</Text>
+                  <Text style={styles.breakdownGuideCopy}>Closest sets and missing rows should become the next Pops to chase.</Text>
+                </View>
+              </View>
+            </View>
+            {groupMode === "set" && heroPrimaryGroup ? (
+              <View style={[styles.breakdownNextCard, { borderColor: breakdownTheme.border, backgroundColor: breakdownTheme.cardBg }]}>
+                <Text style={[styles.breakdownHeroLabel, { color: breakdownTheme.accentText }]}>Recommended focus</Text>
+                <Text style={styles.breakdownGuideTitle}>{heroPrimaryGroup.name}</Text>
+                <Text style={styles.breakdownGuideCopy}>
+                  {setProgressFilter === "withinReach"
+                    ? `${integer(setMissingCount(heroPrimaryGroup) ?? 0)} missing Pops. Open it to turn the gap into a clean hunt list.`
+                    : `${setCompletionText(heroPrimaryGroup) || "Open the row for the reviewed checklist."}`}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
           {sharedShelves.length > 0 ? (
             <View style={[styles.breakdownSwitchPanel, breakdownPanelStyle]}>
               <Text style={[styles.breakdownSwitchLabel, { color: breakdownTheme.accentText }]}>Shelf view</Text>
@@ -8326,6 +8363,24 @@ function ItemDetailScreen({
     signed && signatureAuthentication !== "None" ? signatureAuthentication : null,
     releaseDateText(item),
   ].filter(Boolean);
+  const setMissingForItem = setProgress ? Math.max(0, setProgress.checklistTotal - setProgress.ownedUnique) : null;
+  const listingSummary =
+    listingStatus === "keeping"
+      ? "Keeping"
+      : askingPrice.trim()
+        ? `${listingStatusLabel(listingStatus)} at ${money(parseMoneyInput(askingPrice))}`
+        : listingStatusLabel(listingStatus);
+  const latestHuntFind = itemHuntFinds[0] ?? null;
+  const detailNextMove =
+    listingStatus !== "keeping"
+      ? "Review asking price, platform notes, and sale details before sharing this Pop."
+      : latestHuntFind
+        ? `This find is tied to ${latestHuntFind.funko_hunts?.title || "a Pop Hunt"}. Keep the story and value notes together.`
+        : setMissingForItem != null && setMissingForItem > 0
+          ? `${integer(setMissingForItem)} Pops left in this reviewed set. Use Set Organizer when you are ready to hunt the rest.`
+          : signed
+            ? "Signed details are active. Confirm signer, authentication, and notes before using the value estimate."
+            : "Keep condition, variant, and value fresh so this record stays clean for your shelf and shared views.";
 
   useEffect(() => {
     let cancelled = false;
@@ -8789,6 +8844,28 @@ function ItemDetailScreen({
             <Text style={styles.dashboardInsightLabel}>Gain/Loss</Text>
             <Text style={[styles.detailValueText, gainLossColorStyle(detailGainLoss)]}>{money(detailGainLoss)}</Text>
           </View>
+        </View>
+      </View>
+
+      <View style={styles.detailStoryPanel}>
+        <Text style={styles.dashboardSectionTitle}>Quick Read</Text>
+        <View style={styles.detailStoryGrid}>
+          <View style={styles.detailStoryTile}>
+            <Text style={styles.dashboardInsightLabel}>Shelf status</Text>
+            <Text style={styles.detailStoryValue} numberOfLines={2}>{condition || "Unknown"}</Text>
+          </View>
+          <View style={styles.detailStoryTile}>
+            <Text style={styles.dashboardInsightLabel}>Market</Text>
+            <Text style={styles.detailStoryValue} numberOfLines={2}>{listingSummary}</Text>
+          </View>
+          <View style={styles.detailStoryTile}>
+            <Text style={styles.dashboardInsightLabel}>Set gap</Text>
+            <Text style={styles.detailStoryValue} numberOfLines={2}>{setMissingForItem == null ? "Not reviewed" : setMissingForItem === 0 ? "Complete" : `${integer(setMissingForItem)} missing`}</Text>
+          </View>
+        </View>
+        <View style={styles.detailNextMoveCard}>
+          <Text style={styles.dashboardInsightLabel}>Next best move</Text>
+          <Text style={styles.detailNextMoveText}>{detailNextMove}</Text>
         </View>
       </View>
 
@@ -12083,6 +12160,56 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     marginTop: 4,
   },
+  breakdownGuidePanel: {
+    gap: 12,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#293341",
+    backgroundColor: "#151a1f",
+  },
+  breakdownGuideRow: {
+    gap: 8,
+  },
+  breakdownGuideStep: {
+    minHeight: 54,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: "#101318",
+  },
+  breakdownGuideNumber: {
+    width: 28,
+    height: 28,
+    overflow: "hidden",
+    borderRadius: 999,
+    fontSize: 13,
+    lineHeight: 28,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  breakdownGuideTitle: {
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  breakdownGuideCopy: {
+    color: "#c5ccd8",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+  },
+  breakdownNextCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#293341",
+    backgroundColor: "#101318",
+  },
   breakdownControls: {
     gap: 12,
     padding: 12,
@@ -14039,6 +14166,47 @@ const styles = StyleSheet.create({
     borderColor: "#f6c95f",
     backgroundColor: "#221f14",
   },
+  adminGuidePanel: {
+    gap: 8,
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  adminGuideStep: {
+    minHeight: 54,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: "#111820",
+  },
+  adminGuideNumber: {
+    width: 28,
+    height: 28,
+    overflow: "hidden",
+    borderRadius: 999,
+    color: "#071014",
+    backgroundColor: "#9bd5c9",
+    fontSize: 13,
+    lineHeight: 28,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  adminGuideTitle: {
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  adminGuideCopy: {
+    color: "#c5d2d3",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+  },
   adminQueueRow: {
     minHeight: 92,
     flexDirection: "row",
@@ -14469,6 +14637,49 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "900",
+  },
+  detailStoryPanel: {
+    gap: 12,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  detailStoryGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  detailStoryTile: {
+    flex: 1,
+    minHeight: 70,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#27353d",
+    backgroundColor: "#101318",
+  },
+  detailStoryValue: {
+    color: "#ffffff",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  detailNextMoveCard: {
+    gap: 4,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3d716b",
+    backgroundColor: "#142825",
+  },
+  detailNextMoveText: {
+    color: "#d9fff8",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "800",
   },
   detailSection: {
     gap: 12,
