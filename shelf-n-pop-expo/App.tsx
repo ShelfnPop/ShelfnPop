@@ -7225,6 +7225,26 @@ function CollectionScreen({
     return filtered;
   }, [items, deferredSearch, sort, activeFilter]);
 
+  const shelfSummary = useMemo(() => {
+    const duplicateShelfKeys = buildDuplicateShelfKeys(items);
+    const totalPops = items.reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
+    const uniquePops = new Set(items.map(duplicateShelfKey)).size;
+    const totalValue = items.reduce((sum, item) => sum + Number(item.total_value ?? 0), 0);
+    const recentAdds = items.filter(isRecentCollectionItem).reduce((sum, item) => sum + quantityNumber(item.quantity), 0);
+    const vaulted = items.filter((item) => String(item.vault_status ?? "").toLowerCase().includes("vault")).length;
+    const duplicates = items.filter((item) => quantityNumber(item.quantity) > 1 || duplicateShelfKeys.has(duplicateShelfKey(item))).length;
+    const topPop = [...items].sort((a, b) => Number(perPopValue(b) ?? 0) - Number(perPopValue(a) ?? 0))[0] ?? null;
+    return { totalPops, uniquePops, totalValue, recentAdds, vaulted, duplicates, topPop };
+  }, [items]);
+
+  const shelfQuickFilters: CollectionFilter[] = [
+    NO_COLLECTION_FILTER,
+    { kind: "recent", label: "Recent adds" },
+    { kind: "duplicates", label: "Duplicates" },
+    { kind: "vaulted", label: "Vaulted" },
+    { kind: "limited", label: "Limited" },
+  ];
+
   const renderCollectionItem = useCallback(
     ({ item }: { item: CollectionItem }) => <CollectionListCard item={item} onOpenItem={onOpenItem} />,
     [onOpenItem],
@@ -7241,38 +7261,96 @@ function CollectionScreen({
         maxToRenderPerBatch={8}
         windowSize={7}
         removeClippedSubviews={!IS_WEB}
-        stickyHeaderIndices={[0]}
         ListHeaderComponent={
-          <View style={styles.collectionStickyHeader}>
-            <View style={styles.row}>
-              <TextInput
-                value={search}
-                onChangeText={setSearch}
-                placeholder="Search collection"
-                placeholderTextColor="#8c95a3"
-                style={[styles.input, styles.flex]}
-              />
-              <Pressable
-                style={styles.sortButton}
-                onPress={() => {
-                  const index = SORTS.indexOf(sort);
-                  setSort(SORTS[(index + 1) % SORTS.length]);
-                }}
-              >
-                <Text style={styles.sortText}>{sort}</Text>
-              </Pressable>
+          <>
+            <View style={styles.shelfHeroPanel}>
+              <View style={styles.shelfHeroTopRow}>
+                <Image source={DASHBOARD_ICON_MY_SHELF} style={styles.shelfHeroIcon} />
+                <View style={styles.flex}>
+                  <Text style={styles.dashboardEyebrow}>Personal shelf</Text>
+                  <Text style={styles.dashboardSectionTitle}>Your collection at a glance</Text>
+                  <Text style={styles.dashboardSubtext}>
+                    {integer(shelfSummary.totalPops)} Pops, {integer(shelfSummary.uniquePops)} unique, {money(shelfSummary.totalValue)} total value.
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.shelfHeroStatsGrid}>
+                <MetricCard label="Pops" value={integer(shelfSummary.totalPops)} compact />
+                <MetricCard label="Unique" value={integer(shelfSummary.uniquePops)} compact />
+                <MetricCard label="Recent" value={integer(shelfSummary.recentAdds)} compact />
+              </View>
+              {shelfSummary.topPop ? (
+                <View style={styles.shelfMomentRow}>
+                  <View style={styles.flex}>
+                    <Text style={styles.shelfMomentLabel}>Top shelf piece</Text>
+                    <Text style={styles.shelfMomentTitle} numberOfLines={1}>
+                      {displayPopName(shelfSummary.topPop)}
+                    </Text>
+                    <Text style={styles.mutedSmall} numberOfLines={1}>
+                      {compactName(shelfSummary.topPop.set_name || shelfSummary.topPop.franchise)}
+                    </Text>
+                  </View>
+                  <Text style={styles.shelfMomentValue}>{money(perPopValue(shelfSummary.topPop))}</Text>
+                </View>
+              ) : null}
             </View>
-            {activeFilter.kind !== "none" ? (
-              <View style={styles.activeFilterRow}>
-                <Text style={styles.activeFilterText} numberOfLines={1}>
-                  Showing: {activeFilter.label}
-                </Text>
-                <Pressable onPress={() => setActiveFilter(NO_COLLECTION_FILTER)} style={styles.clearFilterButton}>
-                  <Text style={styles.clearFilterText}>Clear</Text>
+
+            <View style={styles.collectionStickyHeader}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.collectionFilterRailContent}>
+                {shelfQuickFilters.map((filter) => {
+                  const active = activeFilter.kind === filter.kind && activeFilter.label === filter.label;
+                  const count =
+                    filter.kind === "recent"
+                      ? shelfSummary.recentAdds
+                      : filter.kind === "duplicates"
+                        ? shelfSummary.duplicates
+                        : filter.kind === "vaulted"
+                          ? shelfSummary.vaulted
+                          : null;
+                  return (
+                    <Pressable
+                      key={`${filter.kind}-${filter.label}`}
+                      onPress={() => setActiveFilter(filter)}
+                      style={[styles.collectionFilterChip, active && styles.collectionFilterChipActive]}
+                    >
+                      <Text style={[styles.collectionFilterChipText, active && styles.collectionFilterChipTextActive]}>{filter.label}</Text>
+                      {count != null ? <Text style={[styles.collectionFilterChipCount, active && styles.collectionFilterChipTextActive]}>{integer(count)}</Text> : null}
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+              <View style={styles.row}>
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Search by name, set, number, UPC"
+                  placeholderTextColor="#8c95a3"
+                  style={[styles.input, styles.flex]}
+                />
+                <Pressable
+                  style={styles.sortButton}
+                  onPress={() => {
+                    const index = SORTS.indexOf(sort);
+                    setSort(SORTS[(index + 1) % SORTS.length]);
+                  }}
+                >
+                  <Text style={styles.sortText}>{sort}</Text>
                 </Pressable>
               </View>
-            ) : null}
-          </View>
+              {activeFilter.kind !== "none" ? (
+                <View style={styles.activeFilterRow}>
+                  <Text style={styles.activeFilterText} numberOfLines={1}>
+                    Showing {integer(visibleItems.length)}: {activeFilter.label}
+                  </Text>
+                  <Pressable onPress={() => setActiveFilter(NO_COLLECTION_FILTER)} style={styles.clearFilterButton}>
+                    <Text style={styles.clearFilterText}>Clear</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Text style={styles.mutedSmall}>Showing {integer(visibleItems.length)} shelf items. Tap a Pop for details, status, values, and trip history.</Text>
+              )}
+            </View>
+          </>
         }
         ListEmptyComponent={
           busy ? (
@@ -7357,15 +7435,39 @@ function SharedShelfScreen({ onBack, onOpenShelf }: { onBack: () => void; onOpen
     await load();
   };
 
+  const sharedShelfMemberTotal = shelves.reduce((sum, shelf) => sum + Number(shelf.member_count ?? 0), 0);
+
   return (
     <ScreenFrame title="🤝 Shared Shelf" onBack={onBack}>
       <PageIconHero
         icon={PAGE_ICON_SHARED_SHELF_SETUP}
         eyebrow="Shared shelf setup"
         title="Build a shelf together"
-        copy="Create a group shelf for your crew or join one with an invite code."
+        copy="Create a family shelf, join a collector crew, and compare what everyone has in one place."
         style={styles.sharedShelfSetupHero}
       />
+
+      <View style={styles.sharedSetupRecapGrid}>
+        <MetricCard label="Shelves" value={integer(shelves.length)} compact />
+        <MetricCard label="Members" value={integer(sharedShelfMemberTotal)} compact />
+        <MetricCard label="Invite ready" value={shelves.length > 0 ? "Yes" : "Soon"} compact />
+      </View>
+
+      <View style={styles.sharedSetupFlowPanel}>
+        <Text style={styles.dashboardEyebrow}>How it works</Text>
+        <View style={styles.sharedSetupStepRow}>
+          <Text style={styles.sharedSetupStepBadge}>1</Text>
+          <Text style={styles.sharedSetupStepText}>Create or join a shelf.</Text>
+        </View>
+        <View style={styles.sharedSetupStepRow}>
+          <Text style={styles.sharedSetupStepBadge}>2</Text>
+          <Text style={styles.sharedSetupStepText}>Share the invite code with your people.</Text>
+        </View>
+        <View style={styles.sharedSetupStepRow}>
+          <Text style={styles.sharedSetupStepBadge}>3</Text>
+          <Text style={styles.sharedSetupStepText}>Open the shelf to compare members, values, and standout Pops.</Text>
+        </View>
+      </View>
 
       <View style={styles.panel}>
         <Text style={styles.sectionTitle}>✨ Create a Shared Shelf</Text>
@@ -7402,12 +7504,13 @@ function SharedShelfScreen({ onBack, onOpenShelf }: { onBack: () => void; onOpen
       ) : null}
       {shelves.map((shelf) => (
         <Pressable key={shelf.id} onPress={() => onOpenShelf(shelf)} style={styles.shelfCard}>
+          <Image source={PAGE_ICON_SHARED_SHELF} style={styles.sharedShelfListIcon} />
           <View style={styles.flex}>
             <Text style={styles.itemTitle}>{shelf.name}</Text>
             <Text style={styles.mutedText} numberOfLines={2}>
               Members: {shelf.member_names?.trim() || "Just you"}
             </Text>
-            <Text style={styles.mutedText}>Invite code: {shelf.invite_code}</Text>
+            <Text selectable style={styles.inviteText}>Invite code: {shelf.invite_code}</Text>
           </View>
           <Text style={styles.selectChevron}>›</Text>
         </Pressable>
@@ -10481,6 +10584,94 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#202832",
     backgroundColor: "#101318",
+  },
+  shelfHeroPanel: {
+    gap: 14,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#496394",
+    backgroundColor: "#121720",
+  },
+  shelfHeroTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  shelfHeroIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(156, 178, 255, 0.38)",
+    backgroundColor: "#10151c",
+  },
+  shelfHeroStatsGrid: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  shelfMomentRow: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#2b3853",
+    backgroundColor: "#0f141b",
+  },
+  shelfMomentLabel: {
+    color: "#9db7ff",
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: "900",
+    textTransform: "uppercase",
+  },
+  shelfMomentTitle: {
+    color: "#fff",
+    fontSize: 15,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  shelfMomentValue: {
+    color: "#9bd5c9",
+    fontSize: 17,
+    fontWeight: "900",
+  },
+  collectionFilterRailContent: {
+    gap: 8,
+    paddingRight: 4,
+  },
+  collectionFilterChip: {
+    minHeight: 36,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#2b3853",
+    backgroundColor: "#151a1f",
+  },
+  collectionFilterChipActive: {
+    borderColor: "#9db7ff",
+    backgroundColor: "#243052",
+  },
+  collectionFilterChipText: {
+    color: "#cbd3df",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  collectionFilterChipTextActive: {
+    color: "#ffffff",
+  },
+  collectionFilterChipCount: {
+    color: "#9bd5c9",
+    fontSize: 12,
+    fontWeight: "900",
   },
   activeFilterRow: {
     minHeight: 38,
@@ -14183,8 +14374,49 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#26313d",
-    backgroundColor: "#151a1f",
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  sharedSetupRecapGrid: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  sharedSetupFlowPanel: {
+    gap: 10,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  sharedSetupStepRow: {
+    minHeight: 38,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: "#111820",
+  },
+  sharedSetupStepBadge: {
+    width: 24,
+    height: 24,
+    overflow: "hidden",
+    borderRadius: 999,
+    backgroundColor: "#9bd5c9",
+    color: "#101318",
+    fontSize: 12,
+    lineHeight: 24,
+    fontWeight: "900",
+    textAlign: "center",
+  },
+  sharedSetupStepText: {
+    flex: 1,
+    color: "#d7dee9",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "800",
   },
   sharedShelfSummaryGrid: {
     flexDirection: "row",
@@ -14789,6 +15021,14 @@ const styles = StyleSheet.create({
     borderColor: "#202832",
     backgroundColor: "#151a1f",
   },
+  sharedShelfListIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(123, 209, 195, 0.3)",
+    backgroundColor: "#10151c",
+  },
   inviteText: {
     color: "#b8c0cc",
     fontSize: 13,
@@ -14898,10 +15138,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#050608",
-    backgroundColor: "#272d34",
+    borderColor: "#26344d",
+    backgroundColor: "#151a1f",
   },
   thumb: {
     width: 70,
@@ -15117,6 +15357,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
     gap: 2,
+    paddingLeft: 8,
+    borderLeftWidth: 1,
+    borderLeftColor: "#26313d",
   },
   cardValueHero: {
     width: "100%",
