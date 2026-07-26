@@ -67,6 +67,11 @@ type ParsedFunko = {
   edition_notes: string | null;
   description: string | null;
   display_description: string | null;
+  description_source: string | null;
+  description_source_url: string | null;
+  description_quality: string | null;
+  description_last_checked: string | null;
+  description_review_notes: string | null;
   estimated_value: number | null;
   parse_confidence: number;
   parse_reason_codes: ParseWarning[];
@@ -11848,6 +11853,8 @@ function cleanDescription(value: string | null | undefined): string | null {
   if (/^no description found\.?$/i.test(cleaned)) return null;
   if (/^n\/a$/i.test(cleaned)) return null;
   if (/^pop!\s+another line of collectible figures based on movies,\s*tv series,\s*video games and other pop culture themes/i.test(cleaned)) return null;
+  if (/your favou?rite pops! have been shrunk into bitty pops/i.test(cleaned)) return null;
+  if (/[\u0400-\u04FF]/u.test(cleaned)) return null;
 
   // Keep normal Funko/product blurbs. Only reject strong foreign-store or price-comparison text.
   const rejectPatterns = [
@@ -11891,6 +11898,15 @@ function cleanDescription(value: string | null | undefined): string | null {
     /\bcomes packaged\b/i,
     /\bages\s+\d+\s+and up\b/i,
     /\bproduct description\b/i,
+    /\bvinyl figure is approximately\b/i,
+    /\bvinyl figure measures approximately\b/i,
+    /\bmore details\b/i,
+    /\bwie wir cookies\b/i,
+    /\balle akzeptieren\b/i,
+    /\bgoogle analytics\b/i,
+    /\btechnisch notwendig\b/i,
+    /\bthis collectible figure is a must-have\b/i,
+    /\bmade with high-quality materials\b/i,
     /\btoy,\s*dolls and action figures\b/i,
     /\bspecs typology\b/i,
     /\bbatteries required\b/i,
@@ -11931,9 +11947,14 @@ function cleanDescription(value: string | null | undefined): string | null {
   const withoutBoilerplate = cleaned
     .replace(/\s*China Safety Warning:.*$/i, "")
     .replace(/\s*WARNING:.*$/i, "")
+    .replace(/\s*Vinyl figure is approximately\b.*$/i, "")
+    .replace(/\s*Vinyl figure measures approximately\b.*$/i, "")
+    .replace(/\s*More Details\.?$/i, "")
     .replace(/\\n/g, " ")
     .replace(/\s*Please understand this before ordering\.?$/i, "")
     .replace(/\s*Check out the other .*? Collect them all!?$/i, "")
+    .replace(/\s+\.\s+/g, ". ")
+    .replace(/\.{2,}$/g, ".")
     .trim();
 
   if (!withoutBoilerplate) return null;
@@ -11941,6 +11962,78 @@ function cleanDescription(value: string | null | undefined): string | null {
   return withoutBoilerplate.length > 280
     ? `${withoutBoilerplate.slice(0, 277).trim()}...`
     : withoutBoilerplate;
+}
+
+function sourceUrlFromProduct(product: any): string | null {
+  const candidates = [
+    product?.url,
+    product?.link,
+    product?.permalink,
+    product?.product_url,
+    product?.productUrl,
+    product?.["product-url"],
+    product?.["product-link"],
+  ];
+
+  for (const candidate of candidates) {
+    const value = normalizeWhitespace(String(candidate ?? ""));
+    if (/^https?:\/\//i.test(value)) return value;
+  }
+
+  return null;
+}
+
+function articleFor(value: string): "a" | "an" {
+  return /^[aeiou]/i.test(value.trim()) ? "an" : "a";
+}
+
+function normalizeDescriptionDetail(value: string): string {
+  return normalizeWhitespace(value)
+    .replace(/\s+exclusive$/i, "")
+    .replace(/\s+variant$/i, "")
+    .replace(/\s+format$/i, "");
+}
+
+function buildEditionDescription(parts: {
+  name?: string | null;
+  setName?: string | null;
+  style?: string | null;
+  variant?: string | null;
+  exclusivity?: string | null;
+  limited_edition?: boolean | null;
+  limited_count?: number | null;
+  vault_status?: string | null;
+  releaseYear?: string | null;
+}): string | null {
+  const editionParts: string[] = [];
+  const identityText = normalizeWhitespace(`${parts.name ?? ""} ${parts.setName ?? ""}`).toLowerCase();
+  const style = parts.style ? normalizeDescriptionDetail(parts.style) : null;
+  const variant = parts.variant ? normalizeDescriptionDetail(parts.variant) : null;
+  const shouldDescribeVariant = variant
+    && !identityText.includes(variant.toLowerCase())
+    && !/^(exclusive|special edition|limited edition|chase chance)$/i.test(variant);
+  const exclusivity = parts.exclusivity ? normalizeDescriptionDetail(parts.exclusivity) : null;
+
+  if (shouldDescribeVariant) editionParts.push(`${variant} edition`);
+  if (exclusivity) editionParts.push(`${exclusivity} exclusive`);
+
+  const collectorNotes = [
+    parts.vault_status && !/^active$/i.test(parts.vault_status) ? parts.vault_status : null,
+    parts.releaseYear ? `released in ${parts.releaseYear}` : null,
+    parts.limited_edition
+      ? parts.limited_count
+        ? `limited to ${parts.limited_count.toLocaleString("en-US")} pieces`
+        : "limited edition"
+      : null,
+  ].filter(Boolean);
+
+  const sentences = [
+    editionParts.length ? `Collector detail: ${editionParts.join(", ")}.` : null,
+    style && !variant ? `Format: ${style}.` : null,
+    collectorNotes.length ? `Collector note: ${collectorNotes.join("; ")}.` : null,
+  ].filter(Boolean);
+
+  return sentences.length ? sentences.join(" ") : null;
 }
 
 function buildDisplayDescription(parsed: {
@@ -11984,6 +12077,8 @@ function buildDisplayDescription(parsed: {
     /actual item is the one pictured/i,
     /marks or damage/i,
     /vinyl bobblehead is approximately/i,
+    /vinyl figure is approximately/i,
+    /vinyl figure measures approximately/i,
     /figure stands approximately/i,
     /collectible stands approximately/i,
     /measures approximately/i,
@@ -11991,6 +12086,11 @@ function buildDisplayDescription(parsed: {
     /funko pop!\s*television/i,
     /your favourite pops! have been shrunk into bitty pops/i,
     /your favorite pops! have been shrunk into bitty pops/i,
+    /wie wir cookies/i,
+    /alle akzeptieren/i,
+    /google analytics/i,
+    /this collectible figure is a must-have/i,
+    /made with high-quality materials/i,
     /figura de vinilo/i,
     /figura viene/i,
     /vinilo/i,
@@ -12010,47 +12110,41 @@ function buildDisplayDescription(parsed: {
     return cleaned;
   }
 
-  const name = parsed.character || parsed.pop_name;
+  const name = parsed.pop_name || parsed.character;
   if (!name) return null;
 
   const setName = parsed.set_name && parsed.set_name !== parsed.franchise ? parsed.set_name : parsed.set_name || parsed.franchise;
   const type = parsed.pop_type && !/^pop!?$/i.test(parsed.pop_type) ? parsed.pop_type : "Funko Pop";
   const style = parsed.pop_style && !/^(standard|common|pop)$/i.test(parsed.pop_style) ? parsed.pop_style : null;
   const variant = parsed.variant && !/^common$/i.test(parsed.variant) ? parsed.variant : null;
-  const numberText = parsed.number ? ` as #${parsed.number}` : "";
-  const linePrefix = setName && /^(the|a|an)\s/i.test(setName) ? "" : "the ";
-  const lineText = setName ? `${linePrefix}${setName} ${type} line` : `the ${type} line`;
-  const exclusivity = parsed.exclusivity
-    ? /^exclusive$/i.test(parsed.exclusivity)
-      ? "exclusive release"
-      : /exclusive/i.test(parsed.exclusivity)
-        ? parsed.exclusivity
-        : `${parsed.exclusivity} exclusive`
-    : null;
-  const detailParts = [
-    style ? `${style} format` : null,
-    variant ? `${variant} variant` : null,
-    exclusivity,
-  ].filter(Boolean);
+  const normalizedType = normalizeWhitespace(type);
+  const normalizedStyle = style ? normalizeWhitespace(style) : null;
+  const typeWithStyle =
+    normalizedStyle
+      && !normalizedType.toLowerCase().includes(normalizedStyle.toLowerCase())
+      && !(setName ?? "").toLowerCase().includes(normalizedStyle.toLowerCase())
+      ? /^pop!/i.test(normalizedStyle)
+        ? normalizedStyle
+        : `${normalizedType} ${normalizedStyle}`
+      : normalizedType;
+  const numberText = parsed.number ? ` #${parsed.number}` : "";
   const releaseYear = parsed.release_date?.match(/^(\d{4})/)?.[1] ?? null;
-  const vaultStatus =
-    parsed.vault_status && !/^active$/i.test(parsed.vault_status)
-      ? `currently ${parsed.vault_status.toLowerCase()}`
-      : null;
-  const statusParts = [
-    releaseYear ? `released in ${releaseYear}` : null,
-    vaultStatus,
-    parsed.limited_edition
-      ? parsed.limited_count
-        ? `limited to ${parsed.limited_count.toLocaleString("en-US")} pieces`
-        : "limited edition"
-      : null,
-  ].filter(Boolean);
+  const releaseText = `${articleFor(typeWithStyle)} ${typeWithStyle} release${numberText}`;
+  const editionDescription = buildEditionDescription({
+    name,
+    setName,
+    style,
+    variant,
+    exclusivity: parsed.exclusivity,
+    limited_edition: parsed.limited_edition,
+    limited_count: parsed.limited_count,
+    vault_status: parsed.vault_status,
+    releaseYear,
+  });
 
   const sentences = [
-    `${name} belongs to ${lineText}${numberText}.`,
-    detailParts.length ? `This catalog entry tracks the ${detailParts.join(", ")}.` : null,
-    statusParts.length ? `${statusParts.join("; ")}.` : null,
+    setName ? `From ${setName}, ${name} is ${releaseText}.` : `${name} is ${releaseText}.`,
+    editionDescription,
   ].filter(Boolean);
 
   return sentences.join(" ").replace(/\s+/g, " ");
@@ -13613,6 +13707,8 @@ function parseFunkoProduct(product: any): ParsedFunko {
   const character = cleanupCharacterName(cleanTitle, franchise, number, popStyle, exclusivity, setName);
   const estimatedValue = estimateValueFromStores(product);
   const description = cleanDescription(product?.description);
+  const descriptionSourceUrl = sourceUrlFromProduct(product);
+  const descriptionCheckedAt = new Date().toISOString();
 
   const partial: Omit<ParsedFunko, "parse_confidence" | "parse_reason_codes" | "needs_review" | "warnings"> = {
     raw_title: rawTitle || null,
@@ -13633,6 +13729,13 @@ function parseFunkoProduct(product: any): ParsedFunko {
     edition_notes: limitedEdition.edition_notes,
     description,
     display_description: null,
+    description_source: description ? "source_payload" : "generated",
+    description_source_url: descriptionSourceUrl,
+    description_quality: description ? "source_payload_cleaned" : "generated",
+    description_last_checked: descriptionCheckedAt,
+    description_review_notes: description
+      ? "Accepted cleaned source payload description."
+      : "Generated collector-style summary; needs official/source blurb enrichment.",
     estimated_value: estimatedValue,
   };
 
@@ -15753,6 +15856,11 @@ const newPop = {
   estimated_value: catalogEstimatedValue,
   description: parsed.description ?? existing?.description ?? null,
   display_description: parsed.display_description ?? existing?.display_description ?? null,
+  description_source: parsed.description_source ?? existing?.description_source ?? null,
+  description_source_url: parsed.description_source_url ?? existing?.description_source_url ?? null,
+  description_quality: parsed.description_quality ?? existing?.description_quality ?? null,
+  description_last_checked: parsed.description_last_checked ?? existing?.description_last_checked ?? null,
+  description_review_notes: parsed.description_review_notes ?? existing?.description_review_notes ?? null,
   api_source: valueSource,
   api_last_updated: new Date().toISOString(),
   raw_api_json: valueRaw,

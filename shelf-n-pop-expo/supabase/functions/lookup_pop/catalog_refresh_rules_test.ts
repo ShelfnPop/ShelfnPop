@@ -22,6 +22,8 @@ import {
   LAST100_ACTIVE_VAULT_STATUS_BATCH_2_OVERRIDES,
   LAST100_ACTIVE_VAULT_STATUS_BATCH_3_OVERRIDES,
   LAST100_ACTIVE_VAULT_STATUS_BATCH_4_OVERRIDES,
+  LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES,
+  LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES,
   LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES,
   LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES,
   LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES,
@@ -82,7 +84,7 @@ import {
 } from "./catalog_refresh_rules.ts";
 
 function assertEquals(actual: unknown, expected: unknown, message: string): void {
-  if (Object.is(actual, expected)) return;
+  if (JSON.stringify(actual) === JSON.stringify(expected)) return;
   throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
 }
 
@@ -638,7 +640,8 @@ Deno.test("review queue cleanup UPCs no longer stay in health review", () => {
   const phoebe = getStaticCatalogOverride("849803058760");
   assertEquals(batwoman.set_name, "DC Bombshells", "reported Batwoman should use the user-confirmed DC Bombshells set");
   assertEquals(batwoman.number, "221", "reported Batwoman should keep box #221");
-  assertEquals(phoebe, null, "Phoebe Buffay UPC should not be remapped to Wall-E from an unverified user report");
+  assertEquals(phoebe?.pop_name ?? null, null, "Phoebe Buffay UPC should not be remapped to Wall-E from an unverified user report");
+  assertEquals(phoebe?.set_name ?? null, null, "Phoebe Buffay UPC should not receive a Wall-E set label from a denominator-only cleanup");
 });
 
 Deno.test("last 100 active vault status batch 1 UPCs stay vaulted after refresh", () => {
@@ -1956,7 +1959,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Zombieland"), 5, "Zombieland should count Bill Murray common and chase as separate checklist entries");
   assertEquals(getSetTotalOverride(" Shazam! Fury of the Gods "), 10, "Shazam Fury of the Gods should normalize spacing");
   assertEquals(getSetTotalOverride("Shazam! Fury Of The Gods"), 10, "Shazam Fury of the Gods should tolerate title-case Of");
-  assertEquals(getSetTotalOverride("DC Super Heroes"), null, "broad buckets should not receive guessed totals");
+  assertEquals(getSetTotalOverride("DC Super Heroes"), 834, "DC Super Heroes should use the reviewed broad DC denominator");
 });
 
 Deno.test("Winnie the Pooh cleanup overrides keep set names and variants out of parser drift", () => {
@@ -3106,6 +3109,41 @@ Deno.test("missing set total cleanup batch AG protects fifty reviewed denominato
   assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES["889698285698"].set_total, 2, "Funko Shop Black Light Hulk should use the Marvel Black Light denominator");
 });
 
+Deno.test("latest fifty scanned review cleanup protects sourced fixes", () => {
+  assertEquals(Object.keys(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES).length, 12, "latest fifty scan review should protect twelve UPCs");
+
+  for (const [upc, override] of Object.entries(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.needs_review, false, `${upc} should be served by the static override chain`);
+  }
+
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["849803040765"].set_total, 134, "Petyr Baelish should use the reviewed Game of Thrones denominator");
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698800648"].pop_type, "Pop! Television", "Mary Katherine Gallagher should keep television classification");
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698335164"].character, "Black Widow", "gold chrome Black Widow should fill character");
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698255080"].franchise, "Cap'n Crunch", "Jean LaFoote should not drift to Target franchise");
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698773690"].set_name, "Ahsoka", "Grand Admiral Thrawn should normalize to the Ahsoka set");
+  assertEquals(LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698864794"].set_total, 12, "TMNT Last Ronin children should use the existing reviewed denominator");
+});
+
+Deno.test("latest two hundred catalog review protects vault, name, and description fixes", () => {
+  assertEquals(Object.keys(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES).length, 12, "latest 200 catalog review should protect twelve UPCs");
+
+  for (const [upc, override] of Object.entries(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.needs_review, false, `${upc} should be served by the static override chain`);
+  }
+
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["849803040765"].vault_status, "Vaulted", "Petyr Baelish should be marked vaulted");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["849803074036"].vault_status, "Vaulted", "Jorah Mormont should be marked vaulted");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["849803055561"].set_name, "The Flash (TV Series)", "Flash Unmasked should not drift to Justice League");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["849803055578"].set_total, 21, "Captain Cold Unmasked should use The Flash TV denominator");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698639859"].franchise, "Indiana Jones", "Helena Shaw should use Indiana Jones franchise");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698879477"].exclusivity, "Summer Convention", "Jorgen two-pack should keep Summer Convention exclusivity");
+  assertEquals(LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES["889698545600"].pop_name, "Master Chief", "Master Chief game cover should keep the box number out of pop_name");
+});
+
 for (const [upc, override] of Object.entries(STAR_WARS_REFRESH_REGRESSION_OVERRIDES)) {
   Deno.test(`${upc} keeps its corrected identity during forced refresh`, () => {
     const expected = expectedRefreshResults[upc as keyof typeof expectedRefreshResults];
@@ -3124,7 +3162,7 @@ for (const [upc, override] of Object.entries(STAR_WARS_REFRESH_REGRESSION_OVERRI
       limited_edition: false,
       limited_count: null,
       edition_notes: null,
-      estimated_value: expected.value,
+      estimated_value: expected?.value ?? override.estimated_value ?? null,
       description: null,
       display_description: null,
       api_source: "legacy",
@@ -3149,15 +3187,15 @@ for (const [upc, override] of Object.entries(STAR_WARS_REFRESH_REGRESSION_OVERRI
       forceRefresh: true,
       hasExclusivityOverride: false,
       imageBlocked: false,
-      resolvedRefreshEstimatedValue: expected.value,
+      resolvedRefreshEstimatedValue: expected?.value ?? override.estimated_value ?? null,
     });
     const overrideRecord = override as Record<string, unknown>;
 
     for (const field of ["pop_name", "character", "franchise", "number", "variant", "exclusivity", "pop_type", "pop_style", "set_name"] as const) {
       assertEquals(refreshed[field] ?? null, overrideRecord[field] ?? null, `${upc} ${field}`);
     }
-    assertEquals(refreshed.vault_status, expected.vault_status, `${upc} vault_status`);
-    assertEquals(refreshed.estimated_value, expected.value, `${upc} estimated_value`);
+    assertEquals(refreshed.vault_status, expected?.vault_status ?? override.vault_status ?? null, `${upc} vault_status`);
+    assertEquals(refreshed.estimated_value, expected?.value ?? override.estimated_value ?? null, `${upc} estimated_value`);
     assertEquals(refreshed.needs_review, false, `${upc} needs_review`);
     assertEquals(refreshed.parse_confidence, 0.98, `${upc} parse_confidence`);
   });

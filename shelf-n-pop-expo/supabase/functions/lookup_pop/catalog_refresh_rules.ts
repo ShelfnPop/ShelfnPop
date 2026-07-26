@@ -63,6 +63,7 @@ export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "Captain America: Civil War Die-Cast": 1,
   "Captain America: The First Avenger": 3,
   "Captain America: The Winter Soldier": 9,
+  "Captain Marvel": 28,
   "Captain Planet": 9,
   "Cast Away": 2,
   "Cartoon Network": 8,
@@ -856,6 +857,7 @@ export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
     character: "Ahsoka Tano",
     franchise: "Star Wars",
     set_name: "Ahsoka",
+    set_total: 23,
     number: "650",
     variant: "Grey Hood",
     exclusivity: null,
@@ -888,6 +890,7 @@ export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
     character: "Professor Huyang",
     franchise: "Star Wars",
     set_name: "Ahsoka",
+    set_total: 23,
     number: "652",
     variant: null,
     exclusivity: null,
@@ -920,6 +923,7 @@ export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
     character: "Ahsoka Tano",
     franchise: "Star Wars",
     set_name: "Ahsoka",
+    set_total: 23,
     number: "658",
     variant: "CW20",
     exclusivity: "Target",
@@ -2814,6 +2818,7 @@ export const STAR_WARS_REFRESH_REGRESSION_OVERRIDES = {
     character: "Doctor Strange",
     franchise: "Marvel",
     set_name: "Marvel Comics",
+    set_total: 21,
     number: "4",
     variant: null,
     exclusivity: "Target",
@@ -5192,12 +5197,12 @@ export const APPROVED_CATALOG_CLEANUP_OVERRIDES = {
     display_description: "Ebony Maw belongs to the Avengers: Infinity War Pop! Marvel line as #291.",
   },
   "889698269049": {
-    number: "293", variant: null, pop_name: "Groot", pop_type: "Pop! Marvel",
+    number: "293", variant: null, pop_name: "Teen Groot with Gun", pop_type: "Pop! Marvel",
     set_name: "Avengers: Infinity War", set_total: 51, warnings: [], character: "Groot", franchise: "Marvel",
     pop_style: "Standard", exclusivity: null, needs_review: false, vault_status: "Active",
     parse_confidence: 0.98,
-    description: "Groot belongs to the Avengers: Infinity War Pop! Marvel line as #293.",
-    display_description: "Groot belongs to the Avengers: Infinity War Pop! Marvel line as #293.",
+    description: "Teen Groot with Gun belongs to the Avengers: Infinity War Pop! Marvel line as #293.",
+    display_description: "Teen Groot with Gun belongs to the Avengers: Infinity War Pop! Marvel line as #293.",
   },
   "889698297738": {
     number: "286", variant: "Glow in the Dark", pop_name: "Thor", pop_type: "Pop! Marvel",
@@ -5217,7 +5222,7 @@ export const APPROVED_CATALOG_CLEANUP_OVERRIDES = {
   },
   "889698548984": {
     number: "759", variant: null, pop_name: "Victory Shawarma: Black Widow", pop_type: "Pop! Marvel",
-    set_name: "The Avengers", warnings: [], character: "Black Widow", franchise: "Marvel",
+    set_name: "Victory Shawarma", set_total: 6, warnings: [], character: "Black Widow", franchise: "Marvel",
     pop_style: "Deluxe", exclusivity: "Amazon", needs_review: false, vault_status: "Active",
     parse_confidence: 0.98,
     description: "Victory Shawarma: Black Widow belongs to The Avengers Pop! Marvel line as #759. This catalog entry tracks the Deluxe Amazon exclusive.",
@@ -8414,6 +8419,57 @@ export const MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES = {
   "889698841146": { set_total: 3, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
 };
 
+export const LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES = {
+  "849803040765": { set_name: "Game of Thrones", set_total: 134, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803074036": { set_name: "Game of Thrones", set_total: 134, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803074234": { set_total: 2, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698255080": { franchise: "Cap'n Crunch", set_name: "Cap'n Crunch", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698335164": { pop_name: "Black Widow (Gold Chrome)", character: "Black Widow", set_total: 5, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698433471": { set_name: "Spyro Reignited Trilogy (2018)", set_total: 5, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698773690": { set_name: "Ahsoka", set_total: 23, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698800648": { pop_type: "Pop! Television", set_total: 9, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698862172": { set_total: 6, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698864787": { set_name: "TMNT: The Last Ronin", set_total: 12, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698864794": { set_name: "TMNT: The Last Ronin", set_total: 12, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698864800": { set_name: "TMNT: The Last Ronin", set_total: 12, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+};
+
+export const LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES = {
+  "849803040765": { vault_status: "Vaulted", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803051341": { pop_name: "Ariel (Blue Dress)", character: "Ariel", variant: "Blue Dress", vault_status: "Vaulted", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803055561": { set_name: "The Flash (TV Series)", set_total: 21, vault_status: "Vaulted", description: "The Flash Unmasked belongs to The Flash (TV Series) Pop! Television line as #214, Unmasked variant, Summer Convention exclusive.", display_description: "The Flash Unmasked belongs to The Flash (TV Series) Pop! Television line as #214, Unmasked variant, Summer Convention exclusive.", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803055578": { set_name: "The Flash (TV Series)", set_total: 21, description: "Captain Cold Unmasked belongs to The Flash (TV Series) Pop! Television line as #217.", display_description: "Captain Cold Unmasked belongs to The Flash (TV Series) Pop! Television line as #217.", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "849803074036": { vault_status: "Vaulted", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698409568": { parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698455381": { parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698545600": { pop_name: "Master Chief", vault_status: "Vaulted", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698618236": { pop_name: "Olaf as Simba", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698639859": {
+    franchise: "Indiana Jones",
+    set_name: "Indiana Jones and the Dial of Destiny",
+    vault_status: "Vaulted",
+    description: "Helena Shaw belongs to the Indiana Jones and the Dial of Destiny Pop! line as #1386.",
+    display_description: "Helena Shaw belongs to the Indiana Jones and the Dial of Destiny Pop! line as #1386.",
+    parse_confidence: 0.98,
+    needs_review: false,
+    parse_reason_codes: [],
+    warnings: [],
+  },
+  "889698879477": {
+    character: "Jorgen Von Strangle & Tooth Fairy",
+    franchise: "The Fairly OddParents",
+    set_name: "The Fairly OddParents",
+    exclusivity: "Summer Convention",
+    description: "Jorgen Von Strangle & Tooth Fairy 2-Pack belongs to The Fairly OddParents Pop! Television line, Summer Convention exclusive.",
+    display_description: "Jorgen Von Strangle & Tooth Fairy 2-Pack belongs to The Fairly OddParents Pop! Television line, Summer Convention exclusive.",
+    parse_confidence: 0.98,
+    needs_review: false,
+    parse_reason_codes: [],
+    warnings: [],
+  },
+  "889698932042": { pop_name: "Maui (Glow in the Dark)", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+};
+
 export const MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES = {
   "889698485296": { set_total: 2, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
   "889698498128": { set_total: 2, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
@@ -8749,6 +8805,10 @@ type CatalogRow = Record<string, any>;
 
 export function getStaticCatalogOverride(upc: string): CatalogRow | null {
   return (APPROVED_CATALOG_CLEANUP_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (STAR_WARS_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
@@ -8758,7 +8818,6 @@ export function getStaticCatalogOverride(upc: string): CatalogRow | null {
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
-    ?? (STAR_WARS_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (BATMAN_1989_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (GAME_OF_THRONES_67_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (GAME_OF_THRONES_60_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
@@ -8767,7 +8826,6 @@ export function getStaticCatalogOverride(upc: string): CatalogRow | null {
     ?? (AVENGERS_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (WHAT_IF_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (POKEMON_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
-    ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (VENOM_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MIXED_CATALOG_CLEANUP_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (WINNIE_THE_POOH_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
@@ -8895,6 +8953,11 @@ const TRUSTED_OVERRIDE_FIELDS = [
   "pop_style",
   "description",
   "display_description",
+  "description_source",
+  "description_source_url",
+  "description_quality",
+  "description_last_checked",
+  "description_review_notes",
   "vault_status",
   "release_date",
   "limited_edition",
@@ -9038,6 +9101,7 @@ const CANONICAL_SET_LABELS: Record<string, string> = {
   "nycc ted lasso": "Ted Lasso",
   "nightmare before christmas": "The Nightmare Before Christmas",
   "pokemon pokemon premium": "Pokemon",
+  "pokemon pok mon premium": "Pokemon",
   "pokemon premium": "Pokemon",
   "pokemon spring convention": "Pokemon",
   "sdcc anchorman the legend of ron burgundy": "Anchorman: The Legend of Ron Burgundy",
@@ -9136,6 +9200,11 @@ export function buildCatalogRefreshUpdate(
       estimated_value: options.resolvedRefreshEstimatedValue,
       description: newPop.description || existing.description,
       display_description: newPop.display_description || existing.display_description,
+      description_source: newPop.description_source || existing.description_source,
+      description_source_url: newPop.description_source_url || existing.description_source_url,
+      description_quality: newPop.description_quality || existing.description_quality,
+      description_last_checked: newPop.description_last_checked || existing.description_last_checked,
+      description_review_notes: newPop.description_review_notes || existing.description_review_notes,
       api_source: newPop.api_source || existing.api_source,
       api_last_updated: newPop.api_last_updated,
       raw_api_json: newPop.raw_api_json ?? existing.raw_api_json,
@@ -9174,9 +9243,15 @@ export function buildCatalogRefreshUpdate(
     estimated_value: newPop.estimated_value ?? existing.estimated_value,
     description: newPop.description || existing.description,
     display_description: newPop.display_description || existing.display_description,
+    description_source: newPop.description_source || existing.description_source,
+    description_source_url: newPop.description_source_url || existing.description_source_url,
+    description_quality: newPop.description_quality || existing.description_quality,
+    description_last_checked: newPop.description_last_checked || existing.description_last_checked,
+    description_review_notes: newPop.description_review_notes || existing.description_review_notes,
     raw_title: newPop.raw_title || existing.raw_title,
     clean_title: newPop.clean_title || existing.clean_title,
     parse_confidence: Math.max(Number(newPop.parse_confidence ?? 0), Number(existing.parse_confidence ?? 0)),
+    parse_reason_codes: newPop.parse_reason_codes ?? existing.parse_reason_codes,
     needs_review: mergeNeedsReview(existing.needs_review, newPop.needs_review),
   };
   return {
