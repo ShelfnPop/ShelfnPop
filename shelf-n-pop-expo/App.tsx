@@ -8060,6 +8060,7 @@ function TradeSellScreen({
   onChooseShelf: () => void;
   onOpenItem: (item: CollectionItem) => void;
 }) {
+  const [shelfItems, setShelfItems] = useState<CollectionItem[]>([]);
   const [items, setItems] = useState<CollectionItem[]>([]);
   const [sales, setSales] = useState<PopSale[]>([]);
   const [filter, setFilter] = useState<TradeSellFilter>("active");
@@ -8072,6 +8073,7 @@ function TradeSellScreen({
       supabase.from("pop_sales").select("*").eq("user_id", session.user.id).order("sold_at", { ascending: false }).limit(100),
     ]);
 
+    setShelfItems(collectionRows);
     setItems(collectionRows.filter((item) => normalizeListingStatus(item.listing_status, item.for_sale, item.for_trade) !== "keeping"));
     setSales(salesResult.error ? [] : ((salesResult.data ?? []) as PopSale[]));
     setBusy(false);
@@ -8097,6 +8099,11 @@ function TradeSellScreen({
   const askingValue = saleItems.reduce((sum, item) => sum + Number(item.asking_price ?? item.value_each ?? item.current_value ?? item.estimated_value ?? 0), 0);
   const soldNet = sales.reduce((sum, sale) => sum + saleNet(sale), 0);
   const soldProfit = sales.reduce((sum, sale) => sum + saleProfit(sale), 0);
+  const soldGross = sales.reduce((sum, sale) => sum + Number(sale.sale_price ?? 0), 0);
+  const suggestedItems = shelfItems
+    .filter((item) => normalizeListingStatus(item.listing_status, item.for_sale, item.for_trade) === "keeping")
+    .sort((a, b) => Number(b.current_value ?? b.estimated_value ?? b.value_each ?? 0) - Number(a.current_value ?? a.estimated_value ?? a.value_each ?? 0))
+    .slice(0, 3);
   const filteredItems = filter === "for_sale" ? saleItems : filter === "for_trade" ? tradeItems : filter === "sold" ? [] : activeItems;
   const marketTheme = collectorModeDashboardTheme("reseller");
   const marketNextMove =
@@ -8118,6 +8125,20 @@ function TradeSellScreen({
             <Text style={styles.dashboardEyebrow}>Value tracker</Text>
             <Text style={styles.dashboardModeTitle}>Move Pops with intent</Text>
             <Text style={styles.dashboardSubtext}>Keep sale, trade, and sold history in one place without turning your shelf into a spreadsheet.</Text>
+            <View style={styles.marketHeroSnapshot}>
+              <View style={styles.marketSnapshotTile}>
+                <Text style={styles.marketFlowLabel}>Listed</Text>
+                <Text style={styles.marketSnapshotValue}>{integer(activeItems.length)}</Text>
+              </View>
+              <View style={styles.marketSnapshotTile}>
+                <Text style={styles.marketFlowLabel}>For sale</Text>
+                <Text style={styles.marketSnapshotValue}>{integer(saleItems.length)}</Text>
+              </View>
+              <View style={styles.marketSnapshotTile}>
+                <Text style={styles.marketFlowLabel}>Trades</Text>
+                <Text style={styles.marketSnapshotValue}>{integer(tradeItems.length)}</Text>
+              </View>
+            </View>
             <View style={styles.marketFlowCard}>
               <Text style={styles.marketFlowLabel}>Next best move</Text>
               <Text style={styles.marketFlowText}>{marketNextMove}</Text>
@@ -8182,7 +8203,23 @@ function TradeSellScreen({
               {sales.length === 0 ? (
                 <Text style={styles.mutedText}>No sales logged yet. Open an item and use Mark Sold to start tracking.</Text>
               ) : (
-                sales.map((sale) => <SaleHistoryRow key={sale.id} sale={sale} />)
+                <>
+                  <View style={styles.marketLedgerGrid}>
+                    <View style={styles.marketLedgerTile}>
+                      <Text style={styles.marketFlowLabel}>Gross</Text>
+                      <Text style={styles.marketSnapshotValue}>{money(soldGross)}</Text>
+                    </View>
+                    <View style={styles.marketLedgerTile}>
+                      <Text style={styles.marketFlowLabel}>Net</Text>
+                      <Text style={styles.marketSnapshotValue}>{money(soldNet)}</Text>
+                    </View>
+                    <View style={styles.marketLedgerTile}>
+                      <Text style={styles.marketFlowLabel}>Gain/loss</Text>
+                      <Text style={[styles.marketSnapshotValue, gainLossColorStyle(soldProfit)]}>{money(soldProfit)}</Text>
+                    </View>
+                  </View>
+                  {sales.map((sale) => <SaleHistoryRow key={sale.id} sale={sale} />)}
+                </>
               )}
             </View>
           ) : (
@@ -8202,6 +8239,14 @@ function TradeSellScreen({
                 <View style={styles.marketEmptyState}>
                   <Text style={styles.mutedText}>📦 No Pops match this view yet.</Text>
                   <Text style={styles.mutedSmall}>Choose an existing shelf item or scan a new Pop, then mark that owned copy for sale or trade.</Text>
+                  {suggestedItems.length > 0 ? (
+                    <View style={styles.marketSuggestionPanel}>
+                      <Text style={styles.marketFlowLabel}>Worth reviewing</Text>
+                      {suggestedItems.map((item) => (
+                        <MarketCandidateRow key={item.collection_item_id} item={item} onPress={() => onOpenItem(item)} />
+                      ))}
+                    </View>
+                  ) : null}
                   <View style={styles.marketEmptyActions}>
                     <SecondaryButton label="Choose from My Shelf" onPress={onChooseShelf} />
                     <SecondaryButton label="Scan Pop" onPress={onScan} />
@@ -8245,10 +8290,39 @@ function MarketItemRow({ item, onPress }: { item: CollectionItem; onPress: () =>
             {item.trade_notes}
           </Text>
         ) : null}
+        <View style={styles.marketActionRow}>
+          <Text style={styles.marketActionChip}>View details</Text>
+          {(status === "for_sale" || status === "sale_or_trade") ? <Text style={styles.marketActionChip}>Mark sold there</Text> : null}
+          <Text style={styles.marketActionChip}>Keep / change</Text>
+        </View>
       </View>
       <View style={styles.alignEnd}>
         <Text style={styles.statsListValue}>{money(asking)}</Text>
         <Text style={styles.mutedSmall}>{minPrice != null ? `min ${money(minPrice)}` : "asking"}</Text>
+        <Text style={styles.marketValueHint}>{money(item.current_value ?? item.estimated_value)} value</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function MarketCandidateRow({ item, onPress }: { item: CollectionItem; onPress: () => void }) {
+  const value = Number(item.current_value ?? item.estimated_value ?? item.value_each ?? 0);
+  const metaLine = [item.set_name || item.franchise, item.number ? `#${item.number}` : null].filter(Boolean).join("  ");
+
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.marketCandidateRow, pressed && styles.pressed]}>
+      {item.image_url ? <Image source={{ uri: item.image_url }} style={styles.marketCandidateImage} /> : <EmptyDisplayBox style={styles.marketCandidateImage} />}
+      <View style={styles.flex}>
+        <Text style={styles.statsListTitle} numberOfLines={1}>
+          {displayPopName(item)}
+        </Text>
+        <Text style={styles.mutedSmall} numberOfLines={1}>
+          {metaLine}
+        </Text>
+      </View>
+      <View style={styles.alignEnd}>
+        <Text style={styles.statsListValue}>{money(value)}</Text>
+        <Text style={styles.marketValueHint}>Review</Text>
       </View>
     </Pressable>
   );
@@ -8257,6 +8331,7 @@ function MarketItemRow({ item, onPress }: { item: CollectionItem; onPress: () =>
 function SaleHistoryRow({ sale }: { sale: PopSale }) {
   const metaLine = [sale.set_name || sale.franchise, sale.number ? `#${sale.number}` : null, sale.variant, sale.platform].filter(Boolean).join("  ");
   const profit = saleProfit(sale);
+  const net = saleNet(sale);
 
   return (
     <View style={styles.marketRow}>
@@ -8269,9 +8344,11 @@ function SaleHistoryRow({ sale }: { sale: PopSale }) {
           {metaLine}
         </Text>
         <Text style={styles.mutedSmall}>Sold {sale.sold_at ?? "--"}</Text>
+        {sale.notes ? <Text style={styles.marketTradeNotes} numberOfLines={2}>{sale.notes}</Text> : null}
       </View>
       <View style={styles.alignEnd}>
         <Text style={styles.statsListValue}>{money(sale.sale_price)}</Text>
+        <Text style={styles.mutedSmall}>net {money(net)}</Text>
         <Text style={[styles.mutedSmall, gainLossColorStyle(profit)]}>{money(profit)}</Text>
       </View>
     </View>
@@ -11333,6 +11410,27 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontWeight: "800",
   },
+  marketHeroSnapshot: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  marketSnapshotTile: {
+    flex: 1,
+    minHeight: 62,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    backgroundColor: "#121820",
+  },
+  marketSnapshotValue: {
+    color: "#ffffff",
+    fontSize: 17,
+    lineHeight: 21,
+    fontWeight: "900",
+  },
   marketHeroActions: {
     flexDirection: "row",
     gap: 10,
@@ -11460,8 +11558,31 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#101318",
   },
+  marketSuggestionPanel: {
+    gap: 8,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    backgroundColor: "#161a1e",
+  },
   marketEmptyActions: {
     gap: 8,
+  },
+  marketLedgerGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  marketLedgerTile: {
+    flex: 1,
+    minHeight: 64,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    backgroundColor: "#121820",
   },
   marketRow: {
     minHeight: 78,
@@ -11508,6 +11629,45 @@ const styles = StyleSheet.create({
     color: "#d8e4dc",
     fontSize: 12,
     lineHeight: 16,
+  },
+  marketActionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 6,
+  },
+  marketActionChip: {
+    alignSelf: "flex-start",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#3b3324",
+    color: "#ffe8ad",
+    backgroundColor: "#211c14",
+    fontSize: 10,
+    fontWeight: "900",
+  },
+  marketValueHint: {
+    color: "#b8c0cc",
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "800",
+  },
+  marketCandidateRow: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+    padding: 8,
+    borderRadius: 10,
+    backgroundColor: "#101318",
+  },
+  marketCandidateImage: {
+    width: 42,
+    height: 50,
+    borderRadius: 7,
   },
   marketSalePreview: {
     gap: 3,
