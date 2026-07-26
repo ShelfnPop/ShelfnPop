@@ -9104,6 +9104,17 @@ function ItemDetailScreen({
           <Text style={styles.dashboardInsightLabel}>Next best move</Text>
           <Text style={styles.detailNextMoveText}>{detailNextMove}</Text>
         </View>
+        <View style={styles.detailActionPanel}>
+          <View style={styles.flex}>
+            <Text style={styles.dashboardInsightLabel}>Manage this Pop</Text>
+            <Text style={styles.detailActionCopy}>Save edits, log a sale, or flag a catalog issue from the top of the record.</Text>
+          </View>
+          <View style={styles.detailActionRow}>
+            <PrimaryButton label={busy ? "Saving..." : "Save"} onPress={save} disabled={busy} />
+            <SecondaryButton label="Sold" onPress={() => setSaleModalOpen(true)} disabled={busy} />
+            <SecondaryButton label="Report" onPress={() => setIssueModalOpen(true)} disabled={busy || issueBusy} />
+          </View>
+        </View>
       </View>
 
       {itemHuntFinds.length > 0 ? (
@@ -9553,6 +9564,27 @@ function AdminScreen({
         <Text style={styles.dashboardSubtext}>Review the signals that most affect collector trust.</Text>
       </View>
 
+      <View style={styles.adminWorkflowPanel}>
+        <Text style={styles.dashboardEyebrow}>Review rhythm</Text>
+        <View style={styles.adminWorkflowGrid}>
+          <View style={styles.adminWorkflowTile}>
+            <Text style={styles.manualAddGuideStep}>1</Text>
+            <Text style={styles.manualAddGuideTitle}>Pick a signal</Text>
+            <Text style={styles.manualAddGuideCopy}>Start with reports, missing images, values, or low parser confidence.</Text>
+          </View>
+          <View style={styles.adminWorkflowTile}>
+            <Text style={styles.manualAddGuideStep}>2</Text>
+            <Text style={styles.manualAddGuideTitle}>Fix the row</Text>
+            <Text style={styles.manualAddGuideCopy}>Clean name, franchise, set, number, image, and value together.</Text>
+          </View>
+          <View style={styles.adminWorkflowTile}>
+            <Text style={styles.manualAddGuideStep}>3</Text>
+            <Text style={styles.manualAddGuideTitle}>Close the loop</Text>
+            <Text style={styles.manualAddGuideCopy}>Resolve the report and let the audit trail keep the receipt.</Text>
+          </View>
+        </View>
+      </View>
+
       <View style={styles.dashboardStatsGrid}>
         <MetricCard label="Reports" value={integer(metrics.openReports)} active={activeTab === "reports"} onPress={() => setActiveTab("reports")} />
         <MetricCard
@@ -9916,6 +9948,27 @@ function AdminCatalogFixScreen({
                 ) : null}
               </View>
             </View>
+          </View>
+
+          <View style={styles.adminFixGuidePanel}>
+            <Text style={styles.dashboardEyebrow}>Clean catalog pass</Text>
+            <View style={styles.adminFixGuideRow}>
+              <View style={styles.adminFixGuideTile}>
+                <Text style={styles.dashboardInsightLabel}>Identity</Text>
+                <Text style={styles.detailStoryValue} numberOfLines={1}>{popName.trim() ? "Named" : "Missing"}</Text>
+              </View>
+              <View style={styles.adminFixGuideTile}>
+                <Text style={styles.dashboardInsightLabel}>Set link</Text>
+                <Text style={styles.detailStoryValue} numberOfLines={1}>{setName.trim() ? "Ready" : "Check"}</Text>
+              </View>
+              <View style={styles.adminFixGuideTile}>
+                <Text style={styles.dashboardInsightLabel}>Value</Text>
+                <Text style={styles.detailStoryValue} numberOfLines={1}>
+                  {estimatedValue.trim() ? (Number.isFinite(Number(estimatedValue)) ? money(Number(estimatedValue)) : "Check") : "Missing"}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.detailActionCopy}>Use Save & Resolve Report when the row is good enough for scanning, set progress, and shared shelves.</Text>
           </View>
 
           <View style={styles.detailTwoColumn}>
@@ -10361,6 +10414,7 @@ function PublicProfileScreen({ userId, onBack }: { userId: string; onBack: () =>
   }, [userId]);
 
   const profileName = profile?.display_name?.trim() || profile?.username?.trim() || "Collector";
+  const wishlistPreviewCount = Math.min(wishlist.length, PUBLIC_WISHLIST_ROW_LIMIT);
 
   return (
     <ScreenFrame title="👤 Collector Profile" onBack={onBack}>
@@ -10395,6 +10449,15 @@ function PublicProfileScreen({ userId, onBack }: { userId: string; onBack: () =>
               <Text style={styles.mutedText}>{profile.bio}</Text>
             </View>
           ) : null}
+
+          <View style={styles.publicProfileRecapCard}>
+            <Text style={styles.dashboardEyebrow}>Shared with your shelf</Text>
+            <Text style={styles.dashboardSectionTitle}>{profileName}'s collector snapshot</Text>
+            <Text style={styles.dashboardSubtext}>
+              {integer(summary?.total_pops)} Pops, {integer(summary?.unique_items)} unique items, and{" "}
+              {wishlist.length > 0 ? `${integer(wishlistPreviewCount)} wishlist picks ready to compare.` : "no wishlist picks shared yet."}
+            </Text>
+          </View>
 
           <View style={styles.publicProfileStatsRow}>
             <MetricCard label="Pops" value={integer(summary?.total_pops)} />
@@ -14698,6 +14761,28 @@ const styles = StyleSheet.create({
     borderColor: "#f6c95f",
     backgroundColor: "#221f14",
   },
+  adminWorkflowPanel: {
+    gap: 12,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  adminWorkflowGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  adminWorkflowTile: {
+    flex: 1,
+    minHeight: 92,
+    gap: 5,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#27353d",
+    backgroundColor: "#101318",
+  },
   adminGuidePanel: {
     gap: 8,
     padding: 12,
@@ -14789,6 +14874,29 @@ const styles = StyleSheet.create({
     borderColor: "#2d655f",
     fontSize: 10,
     fontWeight: "900",
+  },
+  adminFixGuidePanel: {
+    gap: 10,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
+  adminFixGuideRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  adminFixGuideTile: {
+    flex: 1,
+    minHeight: 66,
+    justifyContent: "center",
+    gap: 4,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#27353d",
+    backgroundColor: "#101318",
   },
   adminQueueMeta: {
     width: 72,
@@ -15052,6 +15160,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#26313d",
   },
+  publicProfileRecapCard: {
+    gap: 8,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#314a49",
+    backgroundColor: "#101a1c",
+  },
   publicProfileStatsRow: {
     flexDirection: "row",
     gap: 10,
@@ -15246,6 +15362,25 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     fontWeight: "800",
+  },
+  detailActionPanel: {
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#2f4060",
+    backgroundColor: "#111722",
+  },
+  detailActionCopy: {
+    color: "#c9d3e1",
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "700",
+  },
+  detailActionRow: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
   },
   detailSection: {
     gap: 12,
