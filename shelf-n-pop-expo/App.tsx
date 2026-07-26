@@ -4832,43 +4832,40 @@ function ShelfStatsScreen({
   }, [setChecklists, stats.closestSets]);
 
   return (
-    <ScreenFrame title="📊 Shelf Stats" onBack={onBack}>
+    <ScreenFrame title="Set Progress" onBack={onBack}>
       {busy ? (
         <ActivityIndicator color="#7e67f4" />
       ) : (
         <>
-          <PageIconHero
-            icon={PAGE_ICON_SHELF_STATS}
-            eyebrow="Set progress"
-            title={`${integer(stats.completedSetCount)} Complete Sets`}
-            copy={`${integer(stats.inProgressSetCount)} reviewed sets are still in progress, with the closest ones shown first.`}
-            style={[styles.statsHero, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}
-          />
-
-          <View style={styles.dashboardStatsGrid}>
-            <MetricCard label="Complete" value={integer(stats.completedSetCount)} onPress={() => onOpenBreakdown("complete")} theme={dashboardTheme} />
-            <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} onPress={() => onOpenBreakdown("withinReach")} theme={dashboardTheme} />
-            <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} onPress={() => onOpenBreakdown("reviewed")} theme={dashboardTheme} />
-          </View>
-
-          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
-            <DashboardSectionTitle icon={DASHBOARD_ICON_SHELF_RECAP} title="Shelf Recap" />
-            <View style={styles.dashboardStatsGrid}>
-              <MetricCard label="Pops" value={integer(stats.totalPops)} theme={dashboardTheme} />
-              <MetricCard label="Unique" value={integer(stats.uniqueItems)} theme={dashboardTheme} />
-              <MetricCard label="Recent Adds" value={integer(stats.recentAdds)} theme={dashboardTheme} />
+          <View style={[styles.statsGuidePanel, { borderColor: dashboardTheme.border, backgroundColor: dashboardTheme.heroBg }]}>
+            <PageIconHero
+              icon={PAGE_ICON_SHELF_STATS}
+              eyebrow="Set builder recap"
+              title={`${integer(stats.completedSetCount)} verified sets complete`}
+              copy={`${integer(stats.inProgressSetCount)} reviewed sets are still in progress. Start with the closest ones, then use Pops to Find Next as the hunt list.`}
+              style={styles.statsGuideHero}
+            />
+            <View style={styles.dashboardCompactStatsGrid}>
+              <MetricCard label="Pops" value={integer(stats.totalPops)} theme={dashboardTheme} compact />
+              <MetricCard label="Unique" value={integer(stats.uniqueItems)} theme={dashboardTheme} compact />
+              <MetricCard label="Recent" value={integer(stats.recentAdds)} theme={dashboardTheme} compact />
             </View>
+            <View style={styles.dashboardCompactStatsGrid}>
+              <MetricCard label="Complete" value={integer(stats.completedSetCount)} onPress={() => onOpenBreakdown("complete")} theme={dashboardTheme} compact />
+              <MetricCard label="Within Reach" value={integer(stats.inProgressSetCount)} onPress={() => onOpenBreakdown("withinReach")} theme={dashboardTheme} compact />
+              <MetricCard label="Reviewed" value={integer(stats.reviewedSetCount)} onPress={() => onOpenBreakdown("reviewed")} theme={dashboardTheme} compact />
+            </View>
+            <Pressable
+              onPress={() => onOpenBreakdown("withinReach")}
+              style={({ pressed }) => [styles.statsPrimaryAction, { backgroundColor: dashboardTheme.accent }, pressed && styles.pressed]}
+            >
+              <DashboardIconLabel icon={DASHBOARD_ICON_OPEN_SET_ORGANIZER} label="Open Set Organizer" labelStyle={styles.statsBreakdownButtonText} size={32} />
+            </Pressable>
           </View>
 
-          <Pressable
-            onPress={() => onOpenBreakdown("withinReach")}
-            style={({ pressed }) => [styles.statsBreakdownButton, { backgroundColor: dashboardTheme.accent }, pressed && styles.pressed]}
-          >
-            <DashboardIconLabel icon={DASHBOARD_ICON_OPEN_SET_ORGANIZER} label="Open Set Organizer" labelStyle={styles.statsBreakdownButtonText} size={32} />
-          </Pressable>
-
-          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
-            <Text style={styles.dashboardSectionTitle}>🎯 Sets Within Reach</Text>
+          <View style={[styles.dashboardInsightPanel, styles.statsPriorityPanel, themedPanelStyle]}>
+            <DashboardSectionTitle icon={DASHBOARD_ICON_OPEN_SET_ORGANIZER} title="Sets Within Reach" />
+            <Text style={styles.statsSectionCopy}>These are the reviewed sets closest to a satisfying finish.</Text>
             {stats.closestSets.length === 0 ? (
               <Text style={styles.mutedText}>No incomplete reviewed sets are close yet. Add a few more Pops to unlock completion suggestions.</Text>
             ) : (
@@ -4884,8 +4881,9 @@ function ShelfStatsScreen({
             )}
           </View>
 
-          <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
+          <View style={[styles.dashboardInsightPanel, styles.statsPriorityPanel, themedPanelStyle]}>
             <DashboardSectionTitle icon={DASHBOARD_ICON_POPS_TO_FIND_NEXT} title="Pops to Find Next" />
+            <Text style={styles.statsSectionCopy}>Use this like a short hunt list. Values are estimates when the catalog has one.</Text>
             {setRecommendations.length === 0 ? (
               <Text style={styles.mutedText}>Missing Pops from close reviewed sets will appear here.</Text>
             ) : (
@@ -4894,7 +4892,7 @@ function ShelfStatsScreen({
           </View>
 
           <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
-            <Text style={styles.dashboardSectionTitle}>Top Sets</Text>
+            <Text style={styles.dashboardSectionTitle}>Biggest Shelf Lines</Text>
             {stats.topSets.length === 0 ? (
               <Text style={styles.mutedText}>Add Pops to your shelf to see set highlights here.</Text>
             ) : (
@@ -4920,10 +4918,10 @@ function ShelfStatsScreen({
           </View>
 
           <View style={[styles.dashboardInsightPanel, themedPanelStyle]}>
-            <Text style={styles.dashboardSectionTitle}>Shelf Health</Text>
+            <Text style={styles.dashboardSectionTitle}>Needs Attention</Text>
             <View style={styles.statsTwoColumn}>
               <StatPill label="Missing images" value={integer(stats.missingImage)} onPress={() => onOpenFilter({ kind: "missingImages", label: "Missing images" })} />
-              <StatPill label="Missing values" value={integer(stats.missingValue)} onPress={() => onOpenFilter({ kind: "missingValues", label: "Missing values" })} />
+              <StatPill label="Worth updating" value={integer(stats.missingValue)} onPress={() => onOpenFilter({ kind: "missingValues", label: "Missing values" })} />
               <StatPill label="Unknown condition" value={integer(stats.unknownCondition)} onPress={() => onOpenFilter({ kind: "unknownCondition", label: "Unknown condition" })} />
               <StatPill label="Shelf entries" value={integer(stats.shelfEntries)} />
             </View>
@@ -11137,6 +11135,29 @@ const styles = StyleSheet.create({
     borderColor: "#7bd1c3",
     backgroundColor: "#151a1f",
   },
+  statsGuidePanel: {
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#26313d",
+    backgroundColor: "#151a1f",
+  },
+  statsGuideHero: {
+    minHeight: 112,
+    padding: 0,
+    borderWidth: 0,
+    backgroundColor: "transparent",
+  },
+  statsPriorityPanel: {
+    borderWidth: 1,
+  },
+  statsSectionCopy: {
+    color: "#b8c0cc",
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: -2,
+  },
   statsHeroValue: {
     color: "#fff",
     fontSize: 34,
@@ -11152,6 +11173,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 12,
+    backgroundColor: "#9bd8cb",
+  },
+  statsPrimaryAction: {
+    minHeight: 54,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 14,
     backgroundColor: "#9bd8cb",
   },
   statsBreakdownButtonText: {
