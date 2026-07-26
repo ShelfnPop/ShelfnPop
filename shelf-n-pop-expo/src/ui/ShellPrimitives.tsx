@@ -65,7 +65,7 @@ export function ScreenFrame({
     );
 }
 
-export function VersionFooter({ appVersion = "0.2.0" }: { appVersion?: string }) {
+export function VersionFooter({ appVersion = "0.3.24" }: { appVersion?: string }) {
     return (
         <View style={styles.versionFooter}>
             <Text style={styles.versionFooterText}>Shelf-n-Pop v{appVersion}</Text>

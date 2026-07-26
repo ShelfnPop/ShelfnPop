@@ -70,7 +70,7 @@ export async function fetchUserCollectionItems(userId: string): Promise<Collecti
 export async function fetchSetChecklistSummaries(): Promise<Record<string, SetChecklistSummary>> {
   const { data, error } = await supabase
     .from("pop_set_completion_catalog_summary")
-    .select("set_id,set_name,status,source_label,required_count")
+    .select("set_id,set_name,status,source_label,required_count,set_classification,completion_eligible,completion_review_note")
     .eq("status", "reviewed");
 
   if (error) throw error;

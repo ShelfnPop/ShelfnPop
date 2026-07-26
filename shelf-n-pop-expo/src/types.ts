@@ -59,6 +59,12 @@ export type CollectionItem = {
   notes: string | null;
   for_trade: boolean | null;
   for_sale: boolean | null;
+  listing_status?: "keeping" | "for_sale" | "for_trade" | "sale_or_trade" | "sold" | string | null;
+  asking_price?: number | null;
+  minimum_price?: number | null;
+  listing_platform?: string | null;
+  listed_at?: string | null;
+  trade_notes?: string | null;
   acquired_date?: string | null;
   created_at?: string | null;
   upc: string | null;
@@ -92,6 +98,36 @@ export type CollectionItem = {
   signature_personalized: boolean | null;
   signature_notes: string | null;
   signed_value_boost_percent: number | null;
+  signed_estimated_value_low?: number | null;
+  signed_estimated_value_median?: number | null;
+  signed_estimated_value_high?: number | null;
+  signed_value_confidence?: "low" | "medium" | "high" | string | null;
+  signed_value_source?: string | null;
+  signed_value_last_checked?: string | null;
+};
+
+export type PopSale = {
+  id: string;
+  user_id: string;
+  collection_item_id: string | null;
+  pop_catalog_id: string | null;
+  sold_at: string | null;
+  sale_price: number | null;
+  platform: string | null;
+  platform_fees: number | null;
+  shipping_charged: number | null;
+  shipping_cost: number | null;
+  purchase_price: number | null;
+  estimated_value_at_sale: number | null;
+  pop_name: string | null;
+  franchise: string | null;
+  set_name: string | null;
+  number: string | null;
+  variant: string | null;
+  image_url: string | null;
+  notes: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 };
 
 export type SharedShelf = {

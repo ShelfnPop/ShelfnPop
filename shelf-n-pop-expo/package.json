@@ -1,6 +1,6 @@
 {
   "name": "shelf-n-pop-expo",
-  "version": "0.2.0",
+  "version": "0.3.26",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -18,12 +18,14 @@
     "@zxing/library": "0.22.0",
     "expo": "~54.0.35",
     "expo-camera": "~17.0.10",
+    "expo-image-picker": "~17.0.11",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-url-polyfill": "3.0.0",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "^0.21.2",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@expo/ngrok": "4.1.3",

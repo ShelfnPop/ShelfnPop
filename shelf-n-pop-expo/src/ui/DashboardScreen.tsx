@@ -16,7 +16,7 @@ import { ScreenFrame } from "./ShellPrimitives";
 import { Text } from "./Primitives";
 import { SecondaryButton } from "./FormPrimitives";
 
-const APP_VERSION = "0.2.0";
+const APP_VERSION = "0.3.26";
 const AVATAR_IMAGES: Record<AvatarKey, any> = {
   logo: require("../../assets/shelf-n-pop-logo.png"),
   midnight: require("../../assets/avatars/avatar-beanie.png"),

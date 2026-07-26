@@ -2,7 +2,7 @@
   "expo": {
     "name": "Shelf-n-Pop",
     "slug": "shelf-n-pop",
-    "version": "0.2.0",
+    "version": "0.3.26",
     "orientation": "portrait",
     "icon": "./assets/shelf-n-pop-logo.png",
     "userInterfaceStyle": "dark",
@@ -14,13 +14,15 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.shelfnpop.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "Shelf-n-Pop uses the camera to scan UPC barcodes for adding Pops to your collection."
+        "NSCameraUsageDescription": "Shelf-n-Pop uses the camera to scan UPC barcodes, test Pop box photos, and save Funko hunt memories.",
+        "NSPhotoLibraryUsageDescription": "Shelf-n-Pop lets you choose photos to test Pop box drafts and save Funko hunt memories."
       }
     },
     "android": {
       "package": "com.shelfnpop.app",
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "READ_MEDIA_IMAGES"
       ]
     },
     "web": {

@@ -27,6 +27,8 @@ type CatalogRow = {
   parse_reason_codes?: string[] | null;
 };
 
+type RefreshMode = "stale" | "yesterday";
+
 type RefreshResult = {
   id: string;
   upc: string;
@@ -38,6 +40,11 @@ type RefreshResult = {
   pricecharting_product_name?: string | null;
   price_field?: string | null;
   fallback_source?: string | null;
+};
+
+type RefreshWindow = {
+  since: string;
+  until: string;
 };
 
 const BLOCKED_IMAGE_UPCS = new Set([
@@ -52,6 +59,27 @@ function normalizeWhitespace(value: string): string {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function previousUtcDayWindow(): RefreshWindow {
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return {
+    since: new Date(todayUtc - 24 * 60 * 60 * 1000).toISOString(),
+    until: new Date(todayUtc).toISOString(),
+  };
+}
+
+function parseRefreshWindow(body: any): RefreshWindow {
+  const fallback = previousUtcDayWindow();
+  const since = typeof body?.since === "string" && body.since.trim() ? body.since.trim() : fallback.since;
+  const until = typeof body?.until === "string" && body.until.trim() ? body.until.trim() : fallback.until;
+
+  if (Number.isNaN(new Date(since).getTime()) || Number.isNaN(new Date(until).getTime())) {
+    throw new Error("Invalid refresh window. Use ISO strings for since and until.");
+  }
+
+  return { since, until };
 }
 
 function extractReleaseDate(raw: any): string | null {
@@ -589,6 +617,68 @@ function clearEstimatedValueMissing(row: CatalogRow): string[] | null {
   );
 }
 
+async function loadYesterdayAddedCatalogRows(
+  supabase: any,
+  window: RefreshWindow,
+  limit: number,
+): Promise<{ rows: CatalogRow[]; addedCount: number }> {
+  const { data: additions, error: additionsError } = await supabase
+    .from("user_collection_items")
+    .select("pop_catalog_id,created_at")
+    .not("pop_catalog_id", "is", null)
+    .gte("created_at", window.since)
+    .lt("created_at", window.until)
+    .order("created_at", { ascending: false })
+    .limit(500);
+
+  if (additionsError) throw additionsError;
+
+  const catalogIds = Array.from(
+    new Set(
+      ((additions ?? []) as Array<{ pop_catalog_id: string | null }>)
+        .map((row) => row.pop_catalog_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ).slice(0, limit);
+
+  if (catalogIds.length === 0) return { rows: [], addedCount: 0 };
+
+  const { data: rows, error } = await supabase
+    .from("pop_catalog")
+    .select(
+      "id,upc,pop_name,character,franchise,set_name,number,variant,image_url,release_date,estimated_value,api_source,raw_api_json,parse_reason_codes",
+    )
+    .in("id", catalogIds)
+    .not("upc", "is", null);
+
+  if (error) throw error;
+
+  const rowsById = new Map(((rows ?? []) as CatalogRow[]).map((row) => [row.id, row]));
+  return {
+    rows: catalogIds.map((id) => rowsById.get(id)).filter((row): row is CatalogRow => Boolean(row)),
+    addedCount: additions?.length ?? 0,
+  };
+}
+
+async function syncBlankCollectionValuesForWindow(
+  supabase: any,
+  catalogId: string,
+  value: number | null,
+  window: RefreshWindow | null,
+): Promise<void> {
+  if (value == null || value <= 0 || !window) return;
+
+  const { error } = await supabase
+    .from("user_collection_items")
+    .update({ current_value: value })
+    .eq("pop_catalog_id", catalogId)
+    .gte("created_at", window.since)
+    .lt("created_at", window.until)
+    .or("current_value.is.null,current_value.eq.0");
+
+  if (error) throw error;
+}
+
 async function requireAdmin(req: Request, supabase: any): Promise<boolean> {
   const maintenanceToken = Deno.env.get("MAINTENANCE_ADMIN_TOKEN") ?? "";
   const providedToken = req.headers.get("x-maintenance-token") ??
@@ -649,28 +739,38 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
+    const mode: RefreshMode = body?.mode === "yesterday" ? "yesterday" : "stale";
     const limit = Math.max(1, Math.min(Number(body?.limit ?? 25), 50));
     const dryRun = Boolean(body?.dryRun ?? false);
+    const syncCollectionValues = Boolean(body?.syncCollectionValues ?? mode === "yesterday");
+    const refreshWindow = mode === "yesterday" ? parseRefreshWindow(body) : null;
     const staleBefore = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString();
 
-    const { data: rows, error } = await supabase
-      .from("pop_catalog")
-      .select(
-        "id,upc,pop_name,character,franchise,set_name,number,variant,image_url,release_date,estimated_value,api_source,raw_api_json,parse_reason_codes",
-      )
-      .not("upc", "is", null)
-      .or(
-        `api_source.is.null,api_source.not.ilike.%pricecharting%,api_last_updated.is.null,api_last_updated.lt.${staleBefore}`,
-      )
-      .order("api_last_updated", { ascending: true, nullsFirst: true })
-      .limit(limit);
+    const loaded = mode === "yesterday"
+      ? await loadYesterdayAddedCatalogRows(supabase, refreshWindow!, limit)
+      : await (async () => {
+        const { data, error } = await supabase
+          .from("pop_catalog")
+          .select(
+            "id,upc,pop_name,character,franchise,set_name,number,variant,image_url,release_date,estimated_value,api_source,raw_api_json,parse_reason_codes",
+          )
+          .not("upc", "is", null)
+          .or(
+            `api_source.is.null,api_source.not.ilike.%pricecharting%,api_last_updated.is.null,api_last_updated.lt.${staleBefore}`,
+          )
+          .order("api_last_updated", { ascending: true, nullsFirst: true })
+          .limit(limit);
 
-    if (error) throw error;
+        if (error) throw error;
+        return { rows: (data ?? []) as CatalogRow[], addedCount: 0 };
+      })();
+
+    const rows = loaded.rows;
 
     const results: RefreshResult[] = [];
 
-    for (const row of (rows ?? []) as CatalogRow[]) {
+    for (const row of rows) {
       const oldValue = row.estimated_value == null
         ? null
         : Number(row.estimated_value);
@@ -746,6 +846,14 @@ Deno.serve(async (req) => {
                 .eq("id", row.id);
 
               if (fallbackUpdateError) throw fallbackUpdateError;
+              if (syncCollectionValues) {
+                await syncBlankCollectionValuesForWindow(
+                  supabase,
+                  row.id,
+                  retailFallback.value,
+                  refreshWindow,
+                );
+              }
             }
 
             results.push({
@@ -804,11 +912,13 @@ Deno.serve(async (req) => {
           },
         };
         const releaseDate = extractReleaseDate(priceCharting.raw);
+        const enrichment = buildPriceChartingEnrichment(row, priceCharting.raw);
 
         if (!dryRun) {
           const { error: updateError } = await supabase
             .from("pop_catalog")
             .update({
+              ...enrichment,
               estimated_value: priceCharting.value,
               release_date: releaseDate ?? row.release_date,
               api_source: `${row.api_source ?? "catalog"}+pricecharting`,
@@ -818,6 +928,14 @@ Deno.serve(async (req) => {
             .eq("id", row.id);
 
           if (updateError) throw updateError;
+          if (syncCollectionValues) {
+            await syncBlankCollectionValuesForWindow(
+              supabase,
+              row.id,
+              priceCharting.value,
+              refreshWindow,
+            );
+          }
         }
 
         results.push({
@@ -849,8 +967,12 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         ok: true,
+        mode,
         dryRun,
         requested: limit,
+        added: loaded.addedCount,
+        since: refreshWindow?.since ?? null,
+        until: refreshWindow?.until ?? null,
         processed: results.length,
         updated: results.filter((result) => result.status === "updated").length,
         review: results.filter((result) => result.status === "review").length,

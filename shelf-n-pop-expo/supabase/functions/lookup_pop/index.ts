@@ -1,6 +1,7 @@
 ﻿import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import {
+  AQUAMAN_REFRESH_REGRESSION_OVERRIDES,
   APPROVED_CATALOG_CLEANUP_OVERRIDES,
   AVENGERS_REFRESH_REGRESSION_OVERRIDES,
   BATMAN_1989_REFRESH_REGRESSION_OVERRIDES,
@@ -26,6 +27,7 @@ import {
   STAR_WARS_REFRESH_REGRESSION_OVERRIDES,
   VENOM_REFRESH_REGRESSION_OVERRIDES,
   WHAT_IF_REFRESH_REGRESSION_OVERRIDES,
+  ZOMBIELAND_REFRESH_REGRESSION_OVERRIDES,
 } from "./catalog_refresh_rules.ts";
 
 const corsHeaders = {
@@ -79,6 +81,8 @@ const CATALOG_OVERRIDES_BY_UPC: Record<string, Partial<ParsedFunko>> = {
   ...VENOM_REFRESH_REGRESSION_OVERRIDES,
   ...MIXED_CATALOG_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
   ...RECENT_SCAN_DATA_QUALITY_OVERRIDES,
+  ...AQUAMAN_REFRESH_REGRESSION_OVERRIDES,
+  ...ZOMBIELAND_REFRESH_REGRESSION_OVERRIDES,
   "889698613491": {
     pop_name: "Karre",
     character: "Karre",
@@ -15143,6 +15147,7 @@ function applyPriceChartingCatalogInfo(parsed: ParsedFunko, raw: any): void {
     if (warning === "missing_franchise" && parsed.franchise) return false;
     if (warning === "missing_character" && parsed.character) return false;
     if (warning === "missing_set" && parsed.set_name) return false;
+    if (warning === "estimated_value_missing" && Number(parsed.estimated_value ?? 0) > 0) return false;
     if (warning === "weak_name_cleanup" && parsed.pop_name) return false;
     return true;
   });

@@ -84,6 +84,9 @@ export type StatsGroup = {
   checklistTotal?: number | null;
   completionPercent?: number | null;
   completionSourceLabel?: string | null;
+  completionEligible?: boolean | null;
+  setClassification?: string | null;
+  completionReviewNote?: string | null;
   setPremiumBoost?: number | null;
   setPremiumRate?: number | null;
   setPremiumReason?: string | null;
@@ -97,6 +100,9 @@ export type SetChecklistSummary = {
   status: string | null;
   source_label: string | null;
   required_count: number | null;
+  set_classification?: string | null;
+  completion_eligible?: boolean | null;
+  completion_review_note?: string | null;
 };
 
 export type SetChecklistItem = {
@@ -268,16 +274,41 @@ export function passwordRedirectTo() {
   return undefined;
 }
 
-export function defaultSignedBoost(authentication: string, personalized: boolean): number {
+export function defaultSignedPremiumPercent(authentication: string, personalized: boolean): number {
   if (personalized) return 10;
   if (/^(jsa|beckett|psa|funko event|convention coa)$/i.test(authentication)) return 30;
   if (/^unknown$/i.test(authentication)) return 15;
   return 15;
 }
 
-export function adjustedSignedValue(baseValue: number, signed: boolean, boostPercent: number): number {
-  if (!signed || baseValue <= 0) return baseValue;
-  return Math.round(baseValue * (1 + Math.max(boostPercent, 0) / 100) * 100) / 100;
+export type SignedValueEstimate = {
+  low: number;
+  median: number;
+  high: number;
+  premiumPercent: number;
+};
+
+export function estimateSignedValueRange(baseValue: number, signed: boolean, premiumPercent: number): SignedValueEstimate {
+  const safeBaseValue = Math.max(Number(baseValue) || 0, 0);
+  const safePremiumPercent = Math.max(Number(premiumPercent) || 0, 0);
+  const median = signed && safeBaseValue > 0 ? safeBaseValue * (1 + safePremiumPercent / 100) : safeBaseValue;
+  const rangeSpread = signed ? Math.max(0.18, Math.min(0.35, 0.24 + safePremiumPercent / 500)) : 0;
+  const low = median * (1 - rangeSpread);
+  const high = median * (1 + rangeSpread);
+
+  return {
+    low: Math.round(low * 100) / 100,
+    median: Math.round(median * 100) / 100,
+    high: Math.round(high * 100) / 100,
+    premiumPercent: safePremiumPercent,
+  };
+}
+
+export function signedValueConfidence(authentication: string, personalized: boolean): "low" | "medium" | "high" {
+  if (personalized) return "medium";
+  if (/^(jsa|beckett|psa)$/i.test(authentication)) return "high";
+  if (/^(funko event|convention coa)$/i.test(authentication)) return "medium";
+  return "low";
 }
 
 export function isDigitalPopType(value: string | null | undefined): boolean {
@@ -552,11 +583,15 @@ export function duplicateShelfKey(item: StatsSourceItem): string {
 export function completionOwnershipKey(
   item: Pick<StatsSourceItem, "pop_catalog_id" | "collection_item_id" | "owned_variant" | "display_variant" | "variant">,
 ): string {
-  if (item.pop_catalog_id) return `catalog:${item.pop_catalog_id}`;
-  if (item.collection_item_id) return `collection:${item.collection_item_id}`;
   const catalogVariant = item.display_variant ?? item.variant;
-  const variantSource = isMeaningfulVariant(catalogVariant) ? catalogVariant : item.owned_variant;
-  const variant = normalizeShelfVariant(variantSource).toLowerCase();
+  const variantSource = isMeaningfulVariant(item.owned_variant)
+    ? item.owned_variant
+    : isMeaningfulVariant(catalogVariant)
+      ? catalogVariant
+      : null;
+  const variant = variantSource ? normalizeShelfVariant(variantSource).toLowerCase() : "common";
+  if (item.pop_catalog_id) return `catalog:${item.pop_catalog_id}::${variant}`;
+  if (item.collection_item_id) return `collection:${item.collection_item_id}::${variant}`;
   return `unknown::${variant}`;
 }
 

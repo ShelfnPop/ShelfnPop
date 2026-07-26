@@ -1,5 +1,7 @@
 import {
+  AQUAMAN_REFRESH_REGRESSION_OVERRIDES,
   AVENGERS_REFRESH_REGRESSION_OVERRIDES,
+  BACK_TO_THE_FUTURE_REFRESH_REGRESSION_OVERRIDES,
   BATMAN_1989_REFRESH_REGRESSION_OVERRIDES,
   BLOCKED_IMAGE_UPCS,
   buildCatalogCollisionKey,
@@ -15,12 +17,59 @@ import {
   getStaticCatalogOverride,
   HARRY_POTTER_175_REFRESH_REGRESSION_OVERRIDES,
   mergeNeedsReview,
+  JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES,
+  LAST100_ACTIVE_VAULT_STATUS_BATCH_1_OVERRIDES,
+  LAST100_ACTIVE_VAULT_STATUS_BATCH_2_OVERRIDES,
+  LAST100_ACTIVE_VAULT_STATUS_BATCH_3_OVERRIDES,
+  LAST100_ACTIVE_VAULT_STATUS_BATCH_4_OVERRIDES,
+  LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_E_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_I_REFRESH_REGRESSION_OVERRIDES,
+  LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES,
+  LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES,
+  LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES,
+  LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES,
+  LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AC_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AD_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES,
+  MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES,
   MIXED_CATALOG_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
   NIGHTMARE_BEFORE_CHRISTMAS_REFRESH_REGRESSION_OVERRIDES,
+  NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES,
   normalizeMultipackNumber,
   POKEMON_REFRESH_REGRESSION_OVERRIDES,
   PIXAR_UP_HOUSE_OF_THE_DRAGON_REFRESH_REGRESSION_OVERRIDES,
+  pruneResolvedParseReasonCodes,
+  RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES,
   RECENT_SCAN_DATA_QUALITY_OVERRIDES,
+  REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES,
+  REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES,
+  REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES,
+  REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES,
+  REVIEW_QUEUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES,
   SET_LABEL_AND_NO_SET_REFRESH_REGRESSION_OVERRIDES,
   shouldFlagNeedsReview,
   shouldPromoteSpecificSet,
@@ -29,6 +78,7 @@ import {
   SUPERMAN_REFRESH_REGRESSION_OVERRIDES,
   VENOM_REFRESH_REGRESSION_OVERRIDES,
   WHAT_IF_REFRESH_REGRESSION_OVERRIDES,
+  ZOMBIELAND_REFRESH_REGRESSION_OVERRIDES,
 } from "./catalog_refresh_rules.ts";
 
 function assertEquals(actual: unknown, expected: unknown, message: string): void {
@@ -106,6 +156,11 @@ Deno.test("explicit specialty product labels prevent Standard-style drift", () =
   assertEquals(getExplicitProductClassification("Bitty POP! Arcade Wolverine")?.pop_style, "Bitty Pop Arcade", "Bitty Arcade should keep its specialty style");
   assertEquals(getExplicitProductClassification("POP! Moment: WWE Cena vs Rock")?.pop_style, "Moment", "Pop Moments should keep their specialty style");
   assertEquals(getExplicitProductClassification("Marvel Avengers Hulkbuster Super-Sized 6 inch")?.pop_style, "Jumbo", "Marvel super-sized Pops should be classified as Jumbo");
+  assertEquals(getExplicitProductClassification("Funko Pop! Rides: Disney 100 Moana")?.pop_type, "Pop! Rides", "Pop Rides should keep the rides product line");
+  assertEquals(getExplicitProductClassification("Funko Pop! Town Vecna with Creel House")?.pop_style, "Town", "Pop Town should keep town style");
+  assertEquals(getExplicitProductClassification("Funko Pop! Deluxe Disney Tinker Bell")?.pop_style, "Deluxe", "Pop Deluxe should keep deluxe style");
+  assertEquals(getExplicitProductClassification("Funko Pop! Super Baymax with Mochi")?.pop_style, "Super", "Pop Super should keep super style");
+  assertEquals(getExplicitProductClassification("Funko Pop! Disney Jumbo Stitch with Ukulele")?.pop_style, "Jumbo", "Disney jumbo text should keep jumbo style");
   assertEquals(getExplicitProductClassification("Generic Super-Sized 6 inch")?.pop_style ?? null, null, "non-Marvel super-sized text should not force a Marvel classification");
 });
 
@@ -168,6 +223,87 @@ Deno.test("recent scan cleanup UPCs keep reviewed identity, image, and value fie
   const captainUniverse = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698470643"];
   const scarletWitch = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698922081"];
   const grootAsLoki = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698795173"];
+  const spiderWolverine = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698951241"];
+  const conquest = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698930833"];
+  const doctorPhosphorus = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698824613"];
+  const samManson = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698879378"];
+  const oogieFlocked = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698884082"];
+  const jackPatchwork = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698861472"];
+  const courage = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698577885"];
+  const willow = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698862547"];
+  const jason = RECENT_SCAN_DATA_QUALITY_OVERRIDES["830395022925"];
+  const disneylandCheshire = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698513746"];
+  const cap125 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803072230"];
+  const cap137 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803077204"];
+  const tiffany = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698201179"];
+  const corpseBrideEmily = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698862639"];
+  const superman3Pack = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698353014"];
+  const donnie = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698757393"];
+  const eliza = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698757409"];
+  const pugsley = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698797443"];
+  const freddyTorch = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698819428"];
+  const goodGuyChucky = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698809993"];
+  const abigail = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698822374"];
+  const victorWithSparky = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698861533"];
+  const glenWithAxe = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698871679"];
+  const buffyScythe = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698862530"];
+  const laraCroft = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698908405"];
+  const flashNew52 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["830395035215"];
+  const gooseChase = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698376877"];
+  const redDeath = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698402262"];
+  const sallyArt = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698493017"];
+  const jackArt = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698508513"];
+  const drowned = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698588515"];
+  const talia = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698717489"];
+  const deadman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698542630"];
+  const spectre = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698542654"];
+  const batmanScythe = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698555128"];
+  const jokerKing = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698582032"];
+  const batmanHush = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698669061"];
+  const winifredHocusPocus = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698415248"];
+  const maryFlyingHocusPocus = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698491419"];
+  const captainMarvelAxe = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698717519"];
+  const cheerleaderKim = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698849425"];
+  const shegoGlow = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698849432"];
+  const batMite = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698372596"];
+  const batmanRedSon = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698372619"];
+  const batman1997 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698372626"];
+  const jokerIsWild = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698439701"];
+  const merciless = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698448666"];
+  const grimKnight = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698460521"];
+  const devastator = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698460545"];
+  const freakshowBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698747899"];
+  const freakshowJoker = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698747905"];
+  const squire = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698787758"];
+  const belltowerBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698806862"];
+  const hikariBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698821636"];
+  const btasRiddler = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835169"];
+  const btasHarley = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835145"];
+  const darkKnightBane = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698820295"];
+  const batmanReturnsCatwoman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698806978"];
+  const civilWar4Pack = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803076047"];
+  const batmanReturnsPenguin = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698806985"];
+  const batmanForeverRiddler = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698806992"];
+  const bvsBatmanDamned = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698405591"];
+  const bvsBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698415385"];
+  const bvsFirstToMarket = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803058852"];
+  const armoredBatmanBvs = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698060288"];
+  const jumboTheBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698592826"];
+  const warner100TwoFace = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698743136"];
+  const wednesdayEnid = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698866811"];
+  const wednesdayMorticia = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698866804"];
+  const wednesdayFencing = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698881968"];
+  const kimCommon = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835244"];
+  const btasRas = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835152"];
+  const btasTwoFace = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698591607"];
+  const arkhamBatman = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803063832"];
+  const arkhamScarecrow = RECENT_SCAN_DATA_QUALITY_OVERRIDES["849803062910"];
+  const arkhamAzrael = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698581530"];
+  const jimmyNeutron = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835367"];
+  const carlWheezer = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698835350"];
+  const jokerBatman85 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698806879"];
+  const unmaskedBatman85 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698820950"];
+  const lightsSoundsBatman85 = RECENT_SCAN_DATA_QUALITY_OVERRIDES["889698668590"];
 
   assertEquals(hulk.pop_name, "The Hulk", "Hulk #8 should keep the reviewed name");
   assertEquals(hulk.image_url, "https://storage.googleapis.com/images.pricecharting.com/d72s6boepnwncb3i/1600.jpg", "Hulk #8 should not inherit a Deadpool image");
@@ -182,6 +318,534 @@ Deno.test("recent scan cleanup UPCs keep reviewed identity, image, and value fie
   assertEquals(scarletWitch.estimated_value, 24.99, "Scarlet Witch #1575 should not remain value-missing");
   assertEquals(grootAsLoki.pop_name, "Groot as Loki", "Groot as Loki #1394 should not truncate to Groot As");
   assertEquals(grootAsLoki.set_name, "We Are Groot", "Groot as Loki #1394 should not use Loki as the set");
+  assertEquals(spiderWolverine.pop_name, "Wolverine (Spider-Man Mash-Up)", "Spider-Man mash-up should use official Wolverine title");
+  assertEquals(spiderWolverine.number, "1607", "Spider-Man mash-up should keep box #1607");
+  assertEquals(spiderWolverine.exclusivity, "Target", "Spider-Man mash-up should keep Target exclusivity");
+  assertEquals(conquest.pop_name, "Conquest", "shared Conquest chase UPC should stay neutral at catalog level");
+  assertEquals(conquest.number, "1913", "Conquest should keep box #1913");
+  assertEquals(conquest.variant, null, "Conquest shared UPC should not become chase-only");
+  assertEquals(conquest.set_total, 17, "Conquest should use the reviewed Invincible Pop Vinyl denominator");
+  assertEquals(doctorPhosphorus.estimated_value, 17.8, "Doctor Phosphorus GITD should not remain value-missing");
+  assertEquals(doctorPhosphorus.exclusivity, "Funko Shop", "Doctor Phosphorus GITD should keep Funko Shop exclusivity");
+  assertEquals(doctorPhosphorus.set_total, 7, "Doctor Phosphorus GITD should use the reviewed Creature Commandos denominator");
+  assertEquals(samManson.estimated_value, 14.3, "Sam Manson should not remain value-missing");
+  assertEquals(samManson.set_total, 2, "Sam Manson should use the reviewed Danny Phantom physical Pop denominator");
+  assertEquals(oogieFlocked.pop_name, "Oogie Boogie (Flocked)", "Oogie #1634 should distinguish Flocked from common Patchwork");
+  assertEquals(oogieFlocked.exclusivity, "Hot Topic", "Oogie #1634 Flocked should keep Hot Topic exclusivity");
+  assertEquals(jackPatchwork.number, "1633", "Jack Patchwork should keep box #1633");
+  assertEquals(courage.number, "1070", "Courage should keep box #1070");
+  assertEquals(willow.pop_name, "Willow (Vampire)", "Willow #1729 should keep Vampire variant in the title");
+  assertEquals(willow.character, "Willow", "Willow #1729 should fill missing character");
+  assertEquals(jason.franchise, "Friday the 13th", "Jason #1 should fill the missing franchise");
+  assertEquals(jason.set_total, 11, "Friday the 13th Jason #1 should use the reviewed Pop! Vinyl denominator");
+  assertEquals(disneylandCheshire.set_name, "Disneyland Resort 65th Anniversary", "Cheshire Cat #974 should use the reviewed Disneyland 65th label");
+  assertEquals(disneylandCheshire.set_total, 20, "Cheshire Cat #974 should use the reviewed Disneyland 65th denominator");
+  assertEquals(disneylandCheshire.exclusivity, "Target", "Cheshire Cat #974 should keep Target exclusivity");
+  assertEquals(cap125.character, "Captain America", "Captain America #125 should fill missing character");
+  assertEquals(cap125.set_name, "Captain America: Civil War", "Captain America #125 should use the Civil War set");
+  assertEquals(cap137.variant, "Action Pose", "Captain America #137 should preserve the action-pose variant");
+  assertEquals(cap137.exclusivity, "GameStop", "Captain America #137 should preserve GameStop exclusivity");
+  assertEquals(tiffany.franchise, "Bride of Chucky", "Tiffany #468 should fill the missing franchise");
+  assertEquals(tiffany.set_total, 10, "Tiffany #468 should use the reviewed Bride of Chucky denominator");
+  assertEquals(corpseBrideEmily.pop_type, "Pop! Plus", "Emily with Butterflies should keep Pop! Plus type");
+  assertEquals(corpseBrideEmily.set_total, 9, "Emily with Butterflies should use the reviewed Corpse Bride denominator");
+  assertEquals(superman3Pack.number, null, "Superman Chrome 3-Pack is an unnumbered multipack");
+  assertEquals(superman3Pack.pop_style, "Multipack", "Superman Chrome 3-Pack should be typed as a multipack");
+  assertEquals(donnie.franchise, "Nickelodeon", "Donnie Thornberry #1527 should fill Nickelodeon franchise");
+  assertEquals(eliza.franchise, "Nickelodeon", "Eliza Thornberry #1528 should fill Nickelodeon franchise");
+  assertEquals(pugsley.variant, "Nevermore Uniform", "Pugsley #1819 should preserve Nevermore Uniform identity");
+  assertEquals(freddyTorch.franchise, "Freddy Funko", "Freddy as Torch Bearer #223 should fill Freddy Funko franchise");
+  assertEquals(goodGuyChucky.set_name, "Chucky Vintage Halloween", "Good Guy Chucky #1589 should keep the seasonal Chucky set");
+  assertEquals(goodGuyChucky.pop_style, "Deluxe", "Good Guy Chucky #1589 should preserve Deluxe style");
+  assertEquals(goodGuyChucky.variant, "Blacklight", "Good Guy Chucky #1589 should preserve Blacklight variant");
+  assertEquals(goodGuyChucky.set_total, undefined, "Good Guy Chucky should not get a fake single-item set total");
+  assertEquals(abigail.pop_name, "Abigail (Bloody)", "Abigail #1582 should keep Bloody variant identity");
+  assertEquals(abigail.set_total, undefined, "Abigail #1582 should not become a fake one-of-one set");
+  assertEquals(victorWithSparky.pop_name, "Victor with Sparky", "Victor with Sparky #2038 should use reviewed casing");
+  assertEquals(victorWithSparky.pop_style, "Pop! & Buddy", "Victor with Sparky #2038 should preserve Pop! & Buddy style");
+  assertEquals(victorWithSparky.set_total, 4, "Victor with Sparky #2038 should use the reviewed Frankenweenie denominator");
+  assertEquals(glenWithAxe.set_name, "Seed of Chucky", "Glen #1772 should keep Seed of Chucky set identity");
+  assertEquals(glenWithAxe.variant, "Axe", "Glen #1772 should preserve Axe variant");
+  assertEquals(glenWithAxe.exclusivity, "Spirit Halloween", "Glen #1772 should keep Spirit Halloween exclusivity");
+  assertEquals(glenWithAxe.set_total, undefined, "Glen #1772 should not get an unsourced Seed of Chucky denominator");
+  assertEquals(buffyScythe.franchise, "Buffy the Vampire Slayer", "Buffy with Scythe #1728 should fill franchise");
+  assertEquals(laraCroft.set_name, "Tomb Raider: The Angel of Darkness", "Lara Croft #1194 should use the specific game set");
+  assertEquals(laraCroft.set_total, 1, "Lara Croft #1194 should use the one-item Angel of Darkness subseries total");
+  assertEquals(flashNew52.exclusivity, "PX Previews", "The Flash New 52 #52 should keep PX Previews exclusivity");
+  assertEquals(gooseChase.pop_name, "Goose (Flerken) (Chase)", "Goose #445 should keep Chase identity in the title");
+  assertEquals(redDeath.pop_name, "Batman (Red Death)", "Batman Red Death #283 should use parenthesized variant identity");
+  assertEquals(redDeath.exclusivity, "PX Previews", "Batman Red Death #283 should keep PX Previews exclusivity");
+  assertEquals(sallyArt.pop_style, "Art Series", "Sally #8 should be marked Art Series");
+  assertEquals(jackArt.pop_name, "Jack Skellington (Art Series)", "Jack #7 should not remain weak Black naming");
+  assertEquals(jackArt.exclusivity, "Hot Topic", "Jack #7 Art Series should keep Hot Topic exclusivity");
+  assertEquals(drowned.exclusivity, "Hot Topic", "The Drowned #424 should keep Hot Topic exclusivity");
+  assertEquals(talia.exclusivity, "Summer Convention", "Talia al Ghul #475 should move convention label to exclusivity");
+  assertEquals(deadman.exclusivity, "Spring Convention", "Deadman #379 should keep Spring Convention exclusivity");
+  assertEquals(spectre.exclusivity, "Spring Convention", "Spectre #380 should keep Spring Convention exclusivity");
+  assertEquals(batmanScythe.pop_name, "Batman (Scythe)", "Batman Scythe #397 should use parenthesized variant identity");
+  assertEquals(batmanScythe.variant, "Scythe", "Batman Scythe #397 should preserve Scythe variant");
+  assertEquals(batmanScythe.exclusivity, "FunKon", "Batman Scythe #397 should keep FunKon exclusivity");
+  assertEquals(jokerKing.exclusivity, "Funko Shop", "The Joker King #416 should keep Funko Shop exclusivity");
+  assertEquals(jokerKing.vault_status, "Vaulted", "The Joker King #416 should keep verified vaulted status");
+  assertEquals(batmanHush.pop_name, "Batman (Hush)", "Batman Hush #460 should use parenthesized variant identity");
+  assertEquals(batmanHush.variant, "Hush", "Batman Hush #460 should preserve Hush variant");
+  assertEquals(batmanHush.exclusivity, "GameStop", "Batman Hush #460 should keep GameStop exclusivity");
+  assertEquals(batmanHush.vault_status, "Vaulted", "Batman Hush #460 should keep verified vaulted status");
+  assertEquals(winifredHocusPocus.set_total, 15, "Hocus Pocus vinyl rows should use the reviewed 15-item Pop! Vinyl total");
+  assertEquals(maryFlyingHocusPocus.pop_name, "Mary Sanderson (Flying)", "Mary #772 should preserve Flying identity");
+  assertEquals(maryFlyingHocusPocus.variant, "Flying", "Mary #772 should keep Flying variant");
+  assertEquals(maryFlyingHocusPocus.set_total, 15, "Mary #772 should use the reviewed Hocus Pocus Pop! Vinyl total");
+  assertEquals(captainMarvelAxe.set_name, "Marvel Fear Itself", "Captain Marvel #1263 should use the Fear Itself set");
+  assertEquals(cheerleaderKim.exclusivity, "Amazon", "Cheerleader Kim Possible #1583 should keep Amazon exclusivity");
+  assertEquals(shegoGlow.pop_name, "Shego (Glow in the Dark)", "Shego #1582 should include the glow variant in the reviewed name");
+  assertEquals(batMite.set_name, "Batman: 80th Anniversary", "Bat-Mite #300 should fill the Batman 80th set");
+  assertEquals(batMite.estimated_value, 10.08, "Bat-Mite #300 should not remain value-missing");
+  assertEquals(batmanRedSon.pop_name, "Batman (Red Son 2003)", "Batman #312 should not remain unqualified Red Son text");
+  assertEquals(batman1997.variant, "1997", "Batman #314 should preserve the 1997 variant");
+  assertEquals(jokerIsWild.exclusivity, "Entertainment Earth", "Batman Joker Is Wild #292 should keep Entertainment Earth exclusivity");
+  assertEquals(merciless.exclusivity, "Hot Topic", "Batman Merciless #313 should keep Hot Topic exclusivity");
+  assertEquals(grimKnight.pop_name, "Batman (Grim Knight)", "Batman Grim Knight #318 should use parenthesized variant identity");
+  assertEquals(devastator.exclusivity, "FYE", "The Devastator #319 should keep FYE exclusivity");
+  assertEquals(freakshowBatman.set_name, "Batman Gotham Freakshow", "Batman #491 should use the Gotham Freakshow set");
+  assertEquals(freakshowJoker.exclusivity, "GameStop", "The Joker #492 should keep GameStop exclusivity");
+  assertEquals(squire.character, "Squire", "Squire #514 should not parse as Batman Squire character text");
+  assertEquals(belltowerBatman.variant, "Belltower Battle", "Batman #518 should keep Belltower Battle identity");
+  assertEquals(hikariBatman.estimated_value, 143.12, "Batman Hikari #515 should not keep retail fallback pricing");
+  assertEquals(btasRiddler.pop_name, "The Riddler", "Batman Animated Series Riddler #548 should not keep the full source title as the name");
+  assertEquals(btasRiddler.number, "548", "Batman Animated Series Riddler should keep box #548");
+  assertEquals(btasRiddler.needs_review, false, "Batman Animated Series Riddler should be reviewed after exact UPC cleanup");
+  assertEquals(btasHarley.pop_name, "Harley Quinn", "Batman Animated Series Harley Quinn #546 should not keep V2 source noise");
+  assertEquals(btasHarley.set_name, "Batman: The Animated Series", "Batman Animated Series Harley should fill the set");
+  assertEquals(btasHarley.number, "546", "Batman Animated Series Harley should keep box #546");
+  assertEquals(darkKnightBane.franchise, "DC", "Bane #533 should fill missing DC franchise");
+  assertEquals(darkKnightBane.exclusivity, "Target", "Bane #533 should keep Target exclusivity");
+  assertEquals(darkKnightBane.pop_name, "Bane (with Harvey Dent Photo)", "Bane #533 should preserve the Harvey Dent Photo identity");
+  assertEquals(darkKnightBane.variant, "With Harvey Dent Photo", "Bane #533 should keep the Harvey Dent Photo variant");
+  assertEquals(darkKnightBane.set_total, 6, "Bane #533 should use the reviewed Dark Knight Rises denominator");
+  assertEquals(batmanReturnsCatwoman.pop_name, "Catwoman (Unmasked)", "Batman Returns Catwoman #528 should preserve the unmasked identity");
+  assertEquals(batmanReturnsCatwoman.number, "528", "Batman Returns Catwoman should keep box #528");
+  assertEquals(civilWar4Pack.pop_name, "Captain America / Iron Man / Hawkeye / Spider-Man 4-Pack", "Civil War 4-pack should not keep a chopped leading slash name");
+  assertEquals(civilWar4Pack.set_name, "Captain America: Civil War", "Civil War 4-pack should stay in the Civil War set");
+  assertEquals(batMite.set_total, 33, "Batman 80th batch should keep the reviewed 33-item denominator");
+  assertEquals(redDeath.set_total, 33, "Batman Red Death should keep the Batman 80th set total");
+  assertEquals(devastator.set_total, 33, "The Devastator should keep the Batman 80th set total");
+  assertEquals(cap125.set_total, 30, "Civil War #125 should keep the reviewed 30-item denominator");
+  assertEquals(cap137.set_total, 30, "Civil War Action Pose should keep the reviewed 30-item denominator");
+  assertEquals(civilWar4Pack.set_total, 30, "Civil War 4-pack should keep the reviewed 30-item denominator");
+  assertEquals(batmanReturnsCatwoman.set_total, 5, "Batman Returns Catwoman should keep the reviewed five-entry set total");
+  assertEquals(batmanReturnsPenguin.set_total, 5, "Batman Returns Penguin should keep the reviewed five-entry set total");
+  assertEquals(batmanForeverRiddler.set_total, 5, "Batman Forever Riddler should keep the reviewed five-entry set total");
+  assertEquals(bvsBatmanDamned.set_name, "Batman: 80th Anniversary", "Batman Damned #288 should not sit in Batman v Superman");
+  assertEquals(bvsBatmanDamned.set_total, 33, "Batman Damned #288 should carry the Batman 80th denominator");
+  assertEquals(bvsBatmanDamned.exclusivity, "PX Previews", "Batman Damned #288 should keep PX Previews exclusivity");
+  assertEquals(bvsBatman.set_name, "Batman: 80th Anniversary", "Batman #284 should not sit in Batman v Superman");
+  assertEquals(bvsBatman.set_total, 33, "Batman #284 should carry the Batman 80th denominator");
+  assertEquals(bvsBatman.exclusivity, "San Diego Comic-Con", "Batman #284 should keep SDCC exclusivity");
+  assertEquals(bvsFirstToMarket.pop_name, "Batman vs Superman (First to Market) 2-Pack", "SDCC 2-pack should keep First to Market identity");
+  assertEquals(bvsFirstToMarket.character, "Batman / Superman", "SDCC 2-pack should not use the whole title as character");
+  assertEquals(bvsFirstToMarket.number, "2-Pack", "SDCC 2-pack should not use box #2");
+  assertEquals(bvsFirstToMarket.variant, "First to Market", "SDCC 2-pack should keep First to Market variant");
+  assertEquals(bvsFirstToMarket.exclusivity, "San Diego Comic-Con", "SDCC 2-pack should keep convention exclusivity");
+  assertEquals(bvsFirstToMarket.limited_count, 500, "SDCC 2-pack should keep limited run detail");
+  assertEquals(bvsFirstToMarket.set_total, 16, "SDCC 2-pack should carry the Batman v Superman denominator");
+  assertEquals(bvsFirstToMarket.image_url, "https://storage.googleapis.com/images.pricecharting.com/hj557rhlrkgnc4b5/1600.jpg", "SDCC 2-pack should not use a Patina Aquaman image");
+  assertEquals(armoredBatmanBvs.pop_name, "Armored Batman", "Armored Batman #88 should keep reviewed name");
+  assertEquals(armoredBatmanBvs.set_name, "Batman v Superman: Dawn of Justice", "Armored Batman #88 should stay in BvS set");
+  assertEquals(armoredBatmanBvs.set_total, 16, "Armored Batman #88 should keep BvS denominator");
+  assertEquals(armoredBatmanBvs.exclusivity, "DC Legion of Collectors", "Armored Batman #88 should keep Legion of Collectors exclusivity");
+  assertEquals(armoredBatmanBvs.image_url, "https://storage.googleapis.com/images.pricecharting.com/fa3j3psbohbqigbc/1600.jpg", "Armored Batman #88 should not use a Patina Aquaman image");
+  assertEquals(jumboTheBatman.set_name, "The Batman", "Batman #1188 should not sit in Batman v Superman");
+  assertEquals(jumboTheBatman.pop_style, "Jumbo", "Batman #1188 should keep Jumbo style");
+  assertEquals(jumboTheBatman.set_total, 15, "Batman #1188 should use The Batman denominator");
+  assertEquals(warner100TwoFace.pop_name, "Two-Face", "Warner Bros 100 #484 should not be named Warner Bros");
+  assertEquals(warner100TwoFace.set_name, "Warner Bros 100", "Two-Face #484 should not sit in Batman v Superman");
+  assertEquals(warner100TwoFace.variant, "Flipping Coin", "Two-Face #484 should keep Flipping Coin detail");
+  assertEquals(warner100TwoFace.set_total, null, "Warner Bros 100 should not receive an unsourced broad denominator");
+  assertEquals(spiderWolverine.set_total, 5, "Spider-Man Mash-Up Wolverine should keep the reviewed five-entry set total");
+  assertEquals(pugsley.set_total, 4, "Wednesday Pugsley should keep the reviewed four-entry set total");
+  assertEquals(wednesdayEnid.set_total, 4, "Wednesday Enid should keep the reviewed four-entry set total");
+  assertEquals(wednesdayMorticia.set_total, 4, "Wednesday Morticia should keep the reviewed four-entry set total");
+  assertEquals(wednesdayFencing.set_total, 4, "Wednesday Fencing should keep the reviewed four-entry set total");
+  assertEquals(cheerleaderKim.set_total, 3, "Kim Possible cheerleader should keep the reviewed three-entry set total");
+  assertEquals(shegoGlow.set_total, 3, "Shego glow should keep the reviewed three-entry set total");
+  assertEquals(kimCommon.set_total, 3, "Kim Possible common should keep the reviewed three-entry set total");
+  assertEquals(squire.set_name, "Batman 85 Years", "Batman 85th Squire should use the reviewed Batman 85 Years set label");
+  assertEquals(squire.set_total, 17, "Batman 85th Squire should keep the reviewed 17-entry set total");
+  assertEquals(belltowerBatman.set_total, 17, "Batman 85th Belltower Battle should keep the reviewed 17-entry set total");
+  assertEquals(hikariBatman.set_total, 17, "Batman 85th Hikari should keep the reviewed 17-entry set total");
+  assertEquals(jokerBatman85.set_name, "Batman 85 Years", "Joker #517 should not remain in broad Batman");
+  assertEquals(jokerBatman85.set_total, 17, "Joker #517 should keep the reviewed Batman 85 Years denominator");
+  assertEquals(unmaskedBatman85.pop_name, "Batman (Unmasked)", "Batman #523 should preserve the Unmasked identity");
+  assertEquals(unmaskedBatman85.exclusivity, "Hot Topic", "Batman #523 should keep Hot Topic exclusivity");
+  assertEquals(unmaskedBatman85.set_total, 17, "Batman #523 should keep the reviewed Batman 85 Years denominator");
+  assertEquals(lightsSoundsBatman85.set_name, "Batman 85 Years", "Lights and Sounds Batman should not remain in broad Batman");
+  assertEquals(lightsSoundsBatman85.set_total, 17, "Lights and Sounds Batman should keep the reviewed Batman 85 Years denominator");
+  assertEquals(btasRiddler.set_total, 4, "Batman TAS Riddler should keep the reviewed four-entry set total");
+  assertEquals(btasHarley.set_total, 4, "Batman TAS Harley should keep the reviewed four-entry set total");
+  assertEquals(btasRas.set_total, 4, "Batman TAS Ra's al Ghul should keep the reviewed four-entry set total");
+  assertEquals(btasTwoFace.set_total, 4, "Batman TAS Two-Face should keep the reviewed four-entry set total");
+  assertEquals(arkhamBatman.set_total, 3, "Arkham Knight Batman should keep the reviewed three-entry set total");
+  assertEquals(arkhamScarecrow.set_total, 3, "Arkham Knight Scarecrow should keep the reviewed three-entry set total");
+  assertEquals(arkhamAzrael.set_total, 3, "Arkham Knight Azrael Batman should keep the reviewed three-entry set total");
+  assertEquals(freakshowBatman.set_total, 2, "Gotham Freakshow Batman should keep the reviewed two-entry set total");
+  assertEquals(freakshowJoker.set_total, 2, "Gotham Freakshow Joker should keep the reviewed two-entry set total");
+  assertEquals(buffyScythe.set_total, 2, "Buffy with Scythe should keep the reviewed two-entry set total");
+  assertEquals(willow.set_total, 2, "Willow Vampire should keep the reviewed two-entry set total");
+  assertEquals(donnie.set_total, 2, "Donnie Thornberry should keep the reviewed two-entry set total");
+  assertEquals(eliza.set_total, 2, "Eliza Thornberry should keep the reviewed two-entry set total");
+  assertEquals(jimmyNeutron.set_total, 2, "Jimmy Neutron should keep the reviewed two-entry set total");
+  assertEquals(carlWheezer.set_total, 2, "Carl Wheezer should keep the reviewed two-entry set total");
+});
+
+Deno.test("newest catalog batch keeps reviewed specialty product identities", () => {
+  const grogu = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698583909"];
+  const stitch = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698767866"];
+  const vecnaTown = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698721332"];
+  const drFacilier = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698646802"];
+  const kronkYzma = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698646789"];
+  const carlEllie = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698506700"];
+  const formalBelleBeast = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698575881"];
+  const tinkerBell = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698587945"];
+  const spyro = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698414302"];
+  const baymax = NEWEST_CATALOG_BATCH_REFRESH_REGRESSION_OVERRIDES["889698844451"];
+
+  assertEquals(grogu.set_total, 116, "Grogu #485 should use the live reviewed Mandalorian denominator");
+  assertEquals(stitch.pop_style, "Jumbo", "Stitch with Ukulele #1419 should not become a common Standard row");
+  assertEquals(stitch.exclusivity, "Target Con / Target", "Stitch with Ukulele #1419 should keep TargetCon/Target exclusivity");
+  assertEquals(stitch.set_total, 64, "Stitch with Ukulele #1419 should carry the reviewed Lilo & Stitch denominator");
+  assertEquals(vecnaTown.pop_type, "Pop! Town", "Vecna with Creel House #37 should keep Pop! Town product type");
+  assertEquals(vecnaTown.set_total, 179, "Vecna with Creel House should use the broad Stranger Things denominator instead of staying 1-of-1");
+  assertEquals(drFacilier.pop_style, "Deluxe", "Dr. Facilier #1207 should keep Deluxe style");
+  assertEquals(drFacilier.set_total, 6, "Dr. Facilier should carry Villains Assemble denominator");
+  assertEquals(kronkYzma.pop_style, "Moment", "Kronk and Yzma #1205 should keep Moment style");
+  assertEquals(kronkYzma.set_name, "Villains Assemble", "Kronk and Yzma should move out of the movie bucket");
+  assertEquals(carlEllie.set_name, "Pixar Up", "Carl & Ellie #979 should fill the missing Up set");
+  assertEquals(carlEllie.needs_review, false, "Carl & Ellie #979 should not stay review-flagged after exact UPC verification");
+  assertEquals(formalBelleBeast.number, "1141", "Formal Belle and Beast should fill the missing box number");
+  assertEquals(formalBelleBeast.set_total, 25, "Formal Belle and Beast should carry the Beauty and the Beast denominator");
+  assertEquals(tinkerBell.pop_style, "Deluxe", "Tinker Bell on Spool #1143 should keep Deluxe style");
+  assertEquals(tinkerBell.set_total, 7, "Tinker Bell on Spool should carry the Peter Pan denominator");
+  assertEquals(spyro.franchise, "Spyro the Dragon", "Spyro #528 should fill missing franchise");
+  assertEquals(spyro.pop_style, "Jumbo", "Spyro #528 should keep 10-inch/Jumbo style");
+  assertEquals(baymax.pop_type, "Pop! Super", "Super Baymax with Mochi #1541 should keep Pop! Super product type");
+  assertEquals(baymax.set_total, 19, "Super Baymax with Mochi should carry the Big Hero 6 denominator");
+});
+
+Deno.test("Back to the Future glow Doc Brown keeps high-value GITD identity", () => {
+  const docBrownGlow = BACK_TO_THE_FUTURE_REFRESH_REGRESSION_OVERRIDES["849803039608"];
+  const staticOverride = getStaticCatalogOverride("849803039608");
+
+  assertEquals(docBrownGlow.set_name, "Back to the Future", "Doc Brown #62 should normalize set casing");
+  assertEquals(docBrownGlow.set_total, 25, "Doc Brown #62 should carry the Back to the Future denominator");
+  assertEquals(docBrownGlow.variant, "Glow in the Dark", "Doc Brown #62 should stay on the GITD variant");
+  assertEquals(docBrownGlow.exclusivity, "MegaCon / Convention", "Doc Brown #62 should keep convention exclusivity context");
+  assertEquals(docBrownGlow.vault_status, "Vaulted", "Doc Brown #62 should not refresh back to Active");
+  assertEquals(docBrownGlow.estimated_value, 890, "Doc Brown #62 should use the high-value GITD/con-exclusive market value");
+  assertEquals(staticOverride?.estimated_value, 890, "Static lookup override should resolve the GITD value");
+});
+
+Deno.test("recent added 21-40 Disney batch keeps reviewed identity fields", () => {
+  const hannahMontana = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698679886"];
+  const aurora100 = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698679701"];
+  const ursulaThrone = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698502719"];
+  const arielFriends = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698707312"];
+  const sorcererMickey = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698338479"];
+  const rapunzel = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698112222"];
+  const belle = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698112208"];
+  const kissTheGirl = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698387545"];
+  const conventionAriel = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698717564"];
+  const diamondAriel = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698711234"];
+  const diamondUrsula = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698476058"];
+  const scuttle = RECENT_ADDED_21_40_REFRESH_REGRESSION_OVERRIDES["889698401050"];
+
+  assertEquals(hannahMontana.set_name, "Hannah Montana", "Hannah Montana #1347 should not stay in the noisy Disney 100 set label");
+  assertEquals(hannahMontana.variant, "Disney 100", "Hannah Montana #1347 should keep Disney 100 as variant context");
+  assertEquals(hannahMontana.vault_status, "Vaulted", "Hannah Montana #1347 should keep vaulted status");
+  assertEquals(hannahMontana.pop_type, "Pop! Television", "Hannah Montana #1347 should keep Pop! Television type");
+  assertEquals(hannahMontana.set_total, 1, "Hannah Montana #1347 should use the single Hannah Montana Pop denominator");
+  assertEquals(aurora100.set_name, "Sleeping Beauty", "Aurora #1316 should keep the movie set instead of broad Disney 100");
+  assertEquals(aurora100.variant, "100th Anniversary", "Aurora #1316 should keep Disney 100 as variant context");
+  assertEquals(aurora100.number, "1316", "Aurora #1316 should keep box number");
+  assertEquals(aurora100.vault_status, "Vaulted", "Aurora #1316 should keep vaulted status");
+  assertEquals(aurora100.set_total, 6, "Aurora #1316 should carry the Sleeping Beauty denominator");
+  assertEquals(ursulaThrone.set_name, "Disney Villains", "Ursula on Throne should move out of generic Villains");
+  assertEquals(ursulaThrone.pop_style, "Deluxe", "Ursula on Throne should keep Deluxe style");
+  assertEquals(ursulaThrone.set_total, 44, "Ursula on Throne should carry the reviewed Disney Villains denominator");
+  assertEquals(arielFriends.pop_style, "Deluxe", "Ariel & Friends #1367 should keep Deluxe style");
+  assertEquals(arielFriends.set_name, "The Little Mermaid Live Action", "Ariel & Friends should stay with the live-action set");
+  assertEquals(arielFriends.number, "1367", "Ariel & Friends should use Funko box #1367");
+  assertEquals(arielFriends.set_total, 6, "Ariel & Friends should carry the reviewed live-action denominator");
+  assertEquals(sorcererMickey.set_name, "Fantasia", "Sorcerer Mickey #481 should not keep the noisy Movie Moments set label");
+  assertEquals(sorcererMickey.pop_style, "Movie Moment", "Sorcerer Mickey #481 should keep Movie Moment style");
+  assertEquals(sorcererMickey.set_total, 12, "Sorcerer Mickey #481 should carry the reviewed Fantasia denominator");
+  assertEquals(rapunzel.set_name, "Tangled", "Rapunzel #223 should fill the missing Tangled set");
+  assertEquals(rapunzel.number, "223", "Rapunzel should fill box #223");
+  assertEquals(rapunzel.needs_review, false, "Rapunzel should not stay review-flagged after exact UPC verification");
+  assertEquals(rapunzel.set_total, 15, "Rapunzel should carry the Tangled denominator");
+  assertEquals(belle.set_name, "Beauty and the Beast", "Belle #221 should normalize Beauty and the Beast casing");
+  assertEquals(belle.set_total, 25, "Belle should carry the Beauty and the Beast denominator");
+  assertEquals(kissTheGirl.pop_type, "Pop! Moments", "Kiss the Girl #546 should keep Pop! Moments product type");
+  assertEquals(kissTheGirl.set_total, 25, "Kiss the Girl should carry the Little Mermaid denominator");
+  assertEquals(conventionAriel.number, "1366", "Summer Convention Ariel should fill box #1366");
+  assertEquals(conventionAriel.exclusivity, "Summer Convention / Target", "Summer Convention Ariel should replace generic Exclusive");
+  assertEquals(conventionAriel.set_total, 25, "Summer Convention Ariel should carry the Little Mermaid denominator");
+  assertEquals(diamondAriel.variant, "Diamond Collection", "Ariel #1362 should preserve Diamond Collection variant");
+  assertEquals(diamondAriel.exclusivity, "Target", "Ariel Diamond #1362 should keep Target exclusivity");
+  assertEquals(diamondAriel.set_total, 6, "Ariel Diamond #1362 should carry the live-action denominator");
+  assertEquals(diamondUrsula.pop_name, "Ursula with Eels (Diamond Collection)", "Ursula Diamond #568 should not drop With Eels identity");
+  assertEquals(diamondUrsula.set_total, 16, "Ursula Diamond #568 should carry the 30 Years denominator");
+  assertEquals(scuttle.pop_name, "Scuttle with Fork", "Scuttle #566 should keep with Fork detail");
+  assertEquals(scuttle.set_total, 16, "Scuttle #566 should carry the 30 Years denominator");
+});
+
+Deno.test("review queue cleanup UPCs no longer stay in health review", () => {
+  const expectedUpcs = [
+    "671803384415",
+    "889698918879",
+    "889698442794",
+    "889698821131",
+    "889698864138",
+    "889698881999",
+    "889698656641",
+    "889698656658",
+    "889698656665",
+    "889698809368",
+    "849803069940",
+    "889698663830",
+    "889698815482",
+    "889698811729",
+    "889698801614",
+    "889698573849",
+    "849803038854",
+    "889698792592",
+    "889698580892",
+    "889698485494",
+    "889698575874",
+    "889698918190",
+    "889698881913",
+    "889698228909",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = REVIEW_QUEUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES[upc as keyof typeof REVIEW_QUEUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have an exact reviewed override`);
+    assertEquals(override.needs_review, false, `${upc} should be removed from the review queue`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should not keep stale health reason codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.needs_review, false, `${upc} should be served by static lookup override chain`);
+  }
+
+  const batwoman = REVIEW_QUEUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES["889698228909"];
+  const phoebe = getStaticCatalogOverride("849803058760");
+  assertEquals(batwoman.set_name, "DC Bombshells", "reported Batwoman should use the user-confirmed DC Bombshells set");
+  assertEquals(batwoman.number, "221", "reported Batwoman should keep box #221");
+  assertEquals(phoebe, null, "Phoebe Buffay UPC should not be remapped to Wall-E from an unverified user report");
+});
+
+Deno.test("last 100 active vault status batch 1 UPCs stay vaulted after refresh", () => {
+  const expectedUpcs = [
+    "889698367134",
+    "889698260626",
+    "889698203920",
+    "889698203890",
+    "889698147217",
+    "889698497558",
+    "889698458610",
+    "889698123310",
+    "889698398923",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = LAST100_ACTIVE_VAULT_STATUS_BATCH_1_OVERRIDES[upc as keyof typeof LAST100_ACTIVE_VAULT_STATUS_BATCH_1_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have a vaulted-status override`);
+    assertEquals(override.vault_status, "Vaulted", `${upc} should be protected as vaulted`);
+    assertEquals(getStaticCatalogOverride(upc)?.vault_status, "Vaulted", `${upc} static override should win over older Active rows`);
+  }
+});
+
+Deno.test("last 100 active vault status batch 2 UPCs stay vaulted after refresh", () => {
+  const expectedUpcs = [
+    "889698209861",
+    "889698506533",
+    "889698506557",
+    "889698516730",
+    "889698118101",
+    "889698100793",
+    "849803095291",
+    "889698107785",
+    "889698107778",
+    "889698138772",
+    "889698160032",
+    "889698257022",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = LAST100_ACTIVE_VAULT_STATUS_BATCH_2_OVERRIDES[upc as keyof typeof LAST100_ACTIVE_VAULT_STATUS_BATCH_2_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have a vaulted-status override`);
+    assertEquals(override.vault_status, "Vaulted", `${upc} should be protected as vaulted`);
+    assertEquals(getStaticCatalogOverride(upc)?.vault_status, "Vaulted", `${upc} static override should win over older Active rows`);
+  }
+});
+
+Deno.test("last 100 active vault status batch 3 UPCs stay vaulted after refresh", () => {
+  const expectedUpcs = [
+    "889698204057",
+    "889698134439",
+    "849803062484",
+    "889698444286",
+    "889698202374",
+    "889698104548",
+    "889698567978",
+    "889698631952",
+    "889698626637",
+    "889698631969",
+    "849803091392",
+    "849803091378",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = LAST100_ACTIVE_VAULT_STATUS_BATCH_3_OVERRIDES[upc as keyof typeof LAST100_ACTIVE_VAULT_STATUS_BATCH_3_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have a vaulted-status override`);
+    assertEquals(override.vault_status, "Vaulted", `${upc} should be protected as vaulted`);
+    assertEquals(getStaticCatalogOverride(upc)?.vault_status, "Vaulted", `${upc} static override should win over older Active rows`);
+  }
+});
+
+Deno.test("last 100 active vault status batch 4 UPCs stay vaulted after refresh", () => {
+  const expectedUpcs = [
+    "889698563567",
+    "889698560153",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = LAST100_ACTIVE_VAULT_STATUS_BATCH_4_OVERRIDES[upc as keyof typeof LAST100_ACTIVE_VAULT_STATUS_BATCH_4_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have a vaulted-status override`);
+    assertEquals(override.vault_status, "Vaulted", `${upc} should be protected as vaulted`);
+    assertEquals(getStaticCatalogOverride(upc)?.vault_status, "Vaulted", `${upc} static override should win over older Active rows`);
+  }
+});
+
+Deno.test("missing number and value cleanup UPCs keep reviewed identifiers", () => {
+  const expectedUpcs = [
+    "889698920384",
+    "849803050450",
+    "889698850940",
+    "889698573887",
+    "889698918244",
+    "849803079390",
+    "889698586894",
+    "889698800297",
+    "889698930857",
+    "889698855174",
+    "889698930871",
+    "889698854146",
+    "889698637299",
+    "889698112192",
+    "889698907972",
+    "889698683920",
+    "889698108706",
+    "889698862455",
+    "889698860703",
+    "889698878111",
+    "889698355100",
+    "889698469944",
+    "889698401197",
+    "889698904384",
+    "889698574174",
+    "671803422049",
+    "889698373999",
+    "889698614634",
+    "889698830478",
+    "889698913959",
+    "889698855365",
+    "889698844574",
+    "889698933605",
+    "0889698163361",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES[upc as keyof typeof MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES];
+    assertEquals(Boolean(override), true, `${upc} should have an exact missing number/value override`);
+    assertEquals(Boolean(override.number), true, `${upc} should not have a blank reviewed number/format label`);
+    assertEquals(Number(override.estimated_value ?? 0) > 0, true, `${upc} should not have a missing value`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should not keep stale missing-field reason codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.needs_review, false, `${upc} should be served by static lookup override chain`);
+  }
+
+  assertEquals(MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES["889698637299"].franchise, "Stranger Things", "8-bit Stranger Things 4-pack should not drift to Supernatural");
+  assertEquals(MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES["889698907972"].number, "632", "Supergirl Target exclusive should keep box #632");
+  assertEquals(MISSING_NUMBER_VALUE_CLEANUP_REFRESH_REGRESSION_OVERRIDES["889698850940"].estimated_value, 14.99, "Leonardo with Swords should fill current retail value");
+});
+
+Deno.test("July 19 added catalog cleanup fixes visible label drift", () => {
+  const bear = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698286831"];
+  const echoBaseChewbacca = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698497558"];
+  const marty = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698487078"];
+  const taz = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698862868"];
+  const hagridTown = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698581349"];
+  const dawbreaker = JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES["889698363495"];
+
+  assertEquals(bear.set_name, "Teen Titans Go!", "Bear should not keep Toys R Us inside the set label");
+  assertEquals(bear.exclusivity, "Toys R Us", "Bear should move Toys R Us to exclusivity");
+  assertEquals(echoBaseChewbacca.set_name, "Star Wars: The Empire Strikes Back", "Echo Base Chewbacca should normalize ESB set");
+  assertEquals(marty.set_name, "Back to the Future", "Marty should normalize Back to the Future casing");
+  assertEquals(taz.set_name, "Looney Tunes", "Sketched Deco should not remain glued to the set label");
+  assertEquals(taz.variant, "Sketched Deco", "Tasmanian Devil should keep Sketched Deco as variant");
+  assertEquals(hagridTown.pop_type, "Pop! Town", "Hagrid with Leaky Cauldron should be a Pop! Town");
+  assertEquals(dawbreaker.pop_name, "Batman (The Dawnbreaker)", "Dawnbreaker should keep reviewed parenthesized title");
+
+  for (const [upc, override] of Object.entries(JULY_19_ADDED_CATALOG_CLEANUP_OVERRIDES)) {
+    assertEquals(override.parse_reason_codes, [], `${upc} should not retain stale parser reason codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.needs_review, false, `${upc} should be served by static lookup override chain`);
+  }
+});
+
+Deno.test("Aquaman batch A UPCs keep reviewed set totals and variants", () => {
+  const gladiatorCommon = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698311762"];
+  const gladiatorGold = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698336789"];
+  const gladiatorPatina = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698336772"];
+  const aquaman245 = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698311779"];
+
+  assertEquals(getSetTotalOverride("Aquaman"), 14, "Aquaman set should use the reviewed 14-item denominator");
+  assertEquals(gladiatorCommon.pop_name, "Arthur Curry (Gladiator)", "common #244 should use the parenthesized reviewed name");
+  assertEquals(gladiatorCommon.set_total, 14, "common #244 should keep the Aquaman set total");
+  assertEquals(gladiatorGold.variant, "Gold Chrome", "gold chrome #244 should keep the variant");
+  assertEquals(gladiatorGold.exclusivity, "Target", "gold chrome #244 should keep Target exclusivity");
+  assertEquals(gladiatorGold.set_total, 14, "gold chrome #244 should keep the Aquaman set total");
+  assertEquals(gladiatorPatina.variant, "Patina", "patina #244 should keep the variant");
+  assertEquals(gladiatorPatina.set_total, 14, "patina #244 should keep the Aquaman set total");
+  assertEquals(aquaman245.pop_name, "Aquaman", "Aquaman #245 should keep the reviewed name");
+  assertEquals(aquaman245.set_total, 14, "Aquaman #245 should keep the Aquaman set total");
+});
+
+Deno.test("Aquaman Black Manta UPCs keep reviewed variants and Lost Kingdom identity", () => {
+  const blackMantaCommon = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698311830"];
+  const blackMantaFlatBlack = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698345347"];
+  const blackMantaGlossBlack = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698345750"];
+  const blackMantaUnmasked = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698311823"];
+  const lostKingdomBlackManta = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698675673"];
+  const lostKingdomAquaman = AQUAMAN_REFRESH_REGRESSION_OVERRIDES["889698675659"];
+
+  assertEquals(blackMantaCommon.variant, null, "Black Manta #248 common should remain common");
+  assertEquals(blackMantaCommon.set_total, 14, "Black Manta #248 common should keep Aquaman total");
+  assertEquals(blackMantaFlatBlack.pop_name, "Black Manta (Flat Black)", "Target #248 should keep Flat Black identity");
+  assertEquals(blackMantaFlatBlack.exclusivity, "Target", "Flat Black #248 should keep Target exclusivity");
+  assertEquals(blackMantaGlossBlack.pop_name, "Black Manta (Gloss Black)", "Walmart #248 should keep Gloss Black identity");
+  assertEquals(blackMantaGlossBlack.exclusivity, "Walmart", "Gloss Black #248 should keep Walmart exclusivity");
+  assertEquals(blackMantaUnmasked.variant, "Unmasked", "Black Manta #249 should keep Unmasked variant");
+  assertEquals(blackMantaUnmasked.exclusivity, "Regal Cinemas", "Black Manta #249 should keep Regal Cinemas exclusivity");
+  assertEquals(lostKingdomBlackManta.number, "1303", "UPC 889698675673 should not remain 2018 Aquaman #248");
+  assertEquals(lostKingdomBlackManta.set_name, "Aquaman And The Lost Kingdom", "UPC 889698675673 should stay in Lost Kingdom");
+  assertEquals(lostKingdomAquaman.number, "1301", "UPC 889698675659 should be Aquaman #1301");
+  assertEquals(lostKingdomAquaman.pop_name, "Aquaman", "UPC 889698675659 should not be Black Manta");
+});
+
+Deno.test("Zombieland shared Bill Murray UPC stays neutral for common and chase ownership", () => {
+  const billMurray = ZOMBIELAND_REFRESH_REGRESSION_OVERRIDES["889698491099"];
+
+  assertEquals(getSetTotalOverride("Zombieland"), 5, "Zombieland should include both Bill Murray common and chase checklist entries");
+  assertEquals(billMurray.pop_name, "Bill Murray", "shared Bill Murray UPC should keep neutral catalog identity");
+  assertEquals(billMurray.variant, null, "shared Bill Murray UPC should not be cataloged as chase-only");
+  assertEquals(billMurray.set_total, 5, "Bill Murray #1000 should keep the five-entry Zombieland denominator");
 });
 
 Deno.test("Venom cleanup UPCs keep reviewed identity fields", () => {
@@ -1087,6 +1751,26 @@ Deno.test("What If cleanup UPCs keep reviewed identities", () => {
   assertEquals(zolavision.exclusivity, "Target", "Zolavision should keep Target exclusivity");
 });
 
+Deno.test("recent top 40 cleanup set totals are reusable parser knowledge", () => {
+  assertEquals(getSetTotalOverride("Back to the Future"), 25, "Back to the Future should use the reviewed checklist total");
+  assertEquals(getSetTotalOverride("Back To The Future"), 25, "Back To The Future casing variant should normalize to the reviewed total");
+  assertEquals(getSetTotalOverride("Beauty and the Beast"), 25, "Beauty and the Beast should include Pop vinyl and Pop Moments entries");
+  assertEquals(getSetTotalOverride("Big Hero 6"), 19, "Big Hero 6 should use the reviewed Pop denominator");
+  assertEquals(getSetTotalOverride("Disney 100"), 56, "Disney 100 should use the reviewed anniversary checklist total");
+  assertEquals(getSetTotalOverride("Disney Villains"), 44, "Disney Villains should keep the reviewed villain-series denominator");
+  assertEquals(getSetTotalOverride("Hannah Montana"), 1, "Hannah Montana should use the single Pop Television release total");
+  assertEquals(getSetTotalOverride("Moana"), 25, "Moana should use the reviewed Pop checklist total");
+  assertEquals(getSetTotalOverride("Peter Pan"), 7, "Peter Pan should use the reviewed Pop denominator");
+  assertEquals(getSetTotalOverride("Sleeping Beauty"), 6, "Sleeping Beauty should use the reviewed movie-set denominator");
+  assertEquals(getSetTotalOverride("Stranger Things"), 179, "Stranger Things should use the broad reviewed Pop checklist total");
+  assertEquals(getSetTotalOverride("The Incredibles 2"), 17, "The Incredibles 2 should use the full Pop checklist total");
+  assertEquals(getSetTotalOverride("The Little Mermaid"), 25, "The Little Mermaid should use the reviewed Pop checklist total");
+  assertEquals(getSetTotalOverride("The Little Mermaid: 30 Years"), 16, "The Little Mermaid 30 Years should use the reviewed anniversary denominator");
+  assertEquals(getSetTotalOverride("Tangled"), 15, "Tangled should use the reviewed checklist total");
+  assertEquals(getSetTotalOverride("Wall-E"), 13, "Wall-E should use the full Figure Realm Pop checklist total");
+  assertEquals(getSetTotalOverride("Walt Disney World: 50th Anniversary"), 16, "Walt Disney World 50th should use the reviewed attraction-series denominator");
+});
+
 Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("300"), 6, "300 should tolerate the shorter movie set label");
   assertEquals(getSetTotalOverride("300 Movie"), 6, "300 Movie should use the full 2023 movie release total");
@@ -1119,6 +1803,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Coca-Cola"), 14, "Coca-Cola should use the full Pop Ad Icons checklist total");
   assertEquals(getSetTotalOverride("Coco"), 13, "Coco should use the full checklist total");
   assertEquals(getSetTotalOverride("Crash Bandicoot"), 13, "Crash Bandicoot should use the Pop vinyl checklist total");
+  assertEquals(getSetTotalOverride("Creature Commandos"), 7, "Creature Commandos should use the seven-entry Pop checklist total");
   assertEquals(getSetTotalOverride("Cuphead"), 30, "Cuphead should use the full checklist total");
   assertEquals(getSetTotalOverride("Daredevil: Born Again"), 7, "Daredevil: Born Again should use the reviewed seven-item checklist total");
   assertEquals(getSetTotalOverride("Deadpool The Duck"), 1, "Deadpool The Duck should use the one figure subline total");
@@ -1127,6 +1812,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Disney 90th Anniversary"), 4, "Disney 90th Anniversary should use the four figure Donald Duck anniversary total");
   assertEquals(getSetTotalOverride("Disney Land : 65th Anniversary"), 20, "Disney Land punctuation variant should use the Disneyland Resort 65th Anniversary total");
   assertEquals(getSetTotalOverride("Disney Archives"), 8, "Disney Archives should use the Disney Archives Pop checklist total");
+  assertEquals(getSetTotalOverride("Danny Phantom"), 2, "Danny Phantom should use the two physical Pop Vinyl rows");
   assertEquals(getSetTotalOverride("Disturbed"), 1, "Disturbed should use the one figure checklist total");
   assertEquals(getSetTotalOverride("Dolly Parton"), 6, "Dolly Parton should use the full Funko checklist total");
   assertEquals(getSetTotalOverride("Duck Dodgers"), 12, "Duck Dodgers should use the Pop vinyl subset checklist total");
@@ -1163,6 +1849,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Indiana Jones and the Last Crusade"), 3, "Indiana Jones Last Crusade should use the scoped movie release total");
   assertEquals(getSetTotalOverride("Ironheart"), 2, "Ironheart should use the two figure Marvel Studios checklist total");
   assertEquals(getSetTotalOverride("Infinity Warps"), 15, "Infinity Warps should use the full Infinity Warps Pop checklist total");
+  assertEquals(getSetTotalOverride("Invincible"), 17, "Invincible should use the reviewed Pop Vinyl denominator");
   assertEquals(getSetTotalOverride("It's A Small World"), 6, "It's A Small World should use the Pop vinyl subset checklist total");
   assertEquals(getSetTotalOverride("Jingle All the Way"), 5, "Jingle All the Way should use the full movie checklist total");
   assertEquals(getSetTotalOverride("Jungle Cruise"), 1, "Jungle Cruise should use the one figure checklist total");
@@ -1192,6 +1879,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Poltergeist II: The Other Side"), 1, "Poltergeist II should use the one figure checklist total");
   assertEquals(getSetTotalOverride("Post Malone"), 3, "Post Malone should use the three figure Pop Rocks checklist total");
   assertEquals(getSetTotalOverride("Pirates Of The Caribbean Dead Men Tell No Tales"), 5, "Pirates Dead Men Tell No Tales should use the movie subset total");
+  assertEquals(getSetTotalOverride("Frankenweenie"), 4, "Frankenweenie should use the four-entry FigureRealm checklist total");
   assertEquals(getSetTotalOverride("Psych"), 1, "Psych should use the one 2-pack catalog item total");
   assertEquals(getSetTotalOverride("Ren And Stimpy"), 8, "Ren And Stimpy should use the Pop entries and exclude Dorbz");
   assertEquals(getSetTotalOverride("Robocop"), 5, "Robocop should use the full Pop checklist total");
@@ -1240,6 +1928,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Ted Lasso"), 23, "Ted Lasso should use the full Pop checklist total");
   assertEquals(getSetTotalOverride("The Adventures Of Jimmy Neutron Boy Genius"), 4, "Jimmy Neutron should use the four Pop vinyl release total");
   assertEquals(getSetTotalOverride("The Batman"), 15, "The Batman should use the full subseries checklist total");
+  assertEquals(getSetTotalOverride("The Dark Knight Rises"), 6, "The Dark Knight Rises should use the six-entry Dark Knight Rises Pop checklist total");
   assertEquals(getSetTotalOverride("The Exorcist: Believer"), 2, "The Exorcist Believer should use the Angela and Katherine release total");
   assertEquals(getSetTotalOverride("The Flash (TV Series)"), 21, "The Flash TV series should use the full Pop checklist total");
   assertEquals(getSetTotalOverride("The Godfather Part II"), 4, "The Godfather Part II should use the four figure Part II release total");
@@ -1251,6 +1940,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("The Nightmare Before Christmas"), 9, "Nightmare Before Christmas should use the reviewed in-catalog scoped checklist total");
   assertEquals(getSetTotalOverride("The Tick"), 2, "The Tick should use the standard and glow-in-the-dark release total");
   assertEquals(getSetTotalOverride("Tombstone"), 6, "Tombstone should use the six figure Pop Movies checklist total");
+  assertEquals(getSetTotalOverride("Tomb Raider: The Angel of Darkness"), 1, "Angel of Darkness should use the one-item Tomb Raider subseries total");
   assertEquals(getSetTotalOverride("Thor: Love and Thunder"), 18, "Thor Love and Thunder should use the reviewed checklist total");
   assertEquals(getSetTotalOverride("Trigun"), 13, "Trigun should use the Pop vinyl checklist total excluding the Pocket Keychain");
   assertEquals(getSetTotalOverride("Us"), 7, "Us should use the full Pop Movies checklist including chase and later Red release");
@@ -1263,6 +1953,7 @@ Deno.test("specific set total overrides fill known small buckets", () => {
   assertEquals(getSetTotalOverride("Winnie the Pooh VHS Covers"), 1, "Winnie the Pooh VHS Covers should use the single VHS cover item total");
   assertEquals(getSetTotalOverride("Wondla"), 3, "Wondla should use the three figure Pop checklist total");
   assertEquals(getSetTotalOverride("Wolverine 50th Anniversary"), 4, "Wolverine 50th Anniversary should use the four figure 1371-1374 release total");
+  assertEquals(getSetTotalOverride("Zombieland"), 5, "Zombieland should count Bill Murray common and chase as separate checklist entries");
   assertEquals(getSetTotalOverride(" Shazam! Fury of the Gods "), 10, "Shazam Fury of the Gods should normalize spacing");
   assertEquals(getSetTotalOverride("Shazam! Fury Of The Gods"), 10, "Shazam Fury of the Gods should tolerate title-case Of");
   assertEquals(getSetTotalOverride("DC Super Heroes"), null, "broad buckets should not receive guessed totals");
@@ -1514,6 +2205,907 @@ Deno.test("Captain America batch 4 protects adjacent Infinity Saga rows and Infi
   assertEquals(infinityWarGroot.set_total, 51, "Groot #416 should carry the verified Infinity War denominator");
 });
 
+Deno.test("latest 101-200 batch A preserves regular and Pops with Purpose DC Bombshells separately", () => {
+  const regularSupergirl = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698228947"];
+  assertEquals(regularSupergirl.pop_name, "Supergirl", "regular Supergirl #222 should have clean name");
+  assertEquals(regularSupergirl.set_name, "DC Comics Bombshells", "regular green-box Supergirl stays in DC Comics Bombshells");
+  assertEquals(regularSupergirl.pop_type, "Pop! Heroes", "regular Supergirl should not parse as Pop! Movies");
+  assertEquals(regularSupergirl.set_total, 23, "regular Bombshells keep reviewed denominator");
+
+  const pinkSupergirl = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698585026"];
+  assertEquals(pinkSupergirl.set_name, "DC Comics Bombshells: Pops with Purpose", "pink Supergirl goes to Pops with Purpose");
+  assertEquals(pinkSupergirl.variant, "Breast Cancer Awareness", "pink Supergirl keeps Breast Cancer Awareness detail");
+  assertEquals(pinkSupergirl.set_total, 6, "Pops with Purpose Bombshells keep six-item denominator");
+
+  const pinkHawkgirl = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698585019"];
+  assertEquals(pinkHawkgirl.set_name, "DC Comics Bombshells: Pops with Purpose", "pink Hawkgirl should not collapse into regular Bombshells");
+  assertEquals(pinkHawkgirl.exclusivity, "Target", "pink Hawkgirl keeps Target exclusivity");
+  assertEquals(pinkHawkgirl.vault_status, "Vaulted", "pink Hawkgirl keeps reviewed vault status");
+});
+
+Deno.test("latest 101-200 batch A protects Disney set totals and identity fixes", () => {
+  const thumper = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698631266"];
+  assertEquals(thumper.set_name, "Bambi", "Thumper #1186 should not regress to the mangled Bi set");
+  assertEquals(thumper.variant, "With Flowers / BoxLunch", "Thumper #1186 keeps BoxLunch detail");
+  assertEquals(thumper.vault_status, "Vaulted", "Thumper #1186 keeps Funko From the Vault status");
+
+  const snowWhite = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698768641"];
+  assertEquals(snowWhite.pop_name, "Snow White (Translucent Blue Glow)", "Snow White #1427 keeps translucent blue glow identity");
+  assertEquals(snowWhite.limited_edition, true, "Snow White #1427 keeps limited edition flag");
+  assertEquals(snowWhite.limited_count, 5000, "Snow White #1427 keeps 5000-piece run");
+
+  const wonderConCinderella = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698708494"];
+  assertEquals(wonderConCinderella.set_name, "Disney Ultimate Princess Celebration", "WonderCon Cinderella should normalize into Ultimate Princess");
+  assertEquals(wonderConCinderella.variant, "WonderCon", "WonderCon Cinderella keeps convention detail");
+
+  const rapunzelWithPascal = LATEST200_101_200_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698862936"];
+  assertEquals(rapunzelWithPascal.set_name, "Tangled", "Tangled #1640 keeps its scoped set");
+  assertEquals(rapunzelWithPascal.set_total, 15, "Tangled #1640 keeps reviewed denominator");
+});
+
+Deno.test("latest 101-200 batch B protects known Disney denominators", () => {
+  const chefLouis = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698401043"];
+  assertEquals(chefLouis.set_name, "The Little Mermaid: 30 Years", "Chef Louis should stay in Little Mermaid 30 Years");
+  assertEquals(chefLouis.set_total, 16, "Chef Louis should carry reviewed Little Mermaid 30 Years denominator");
+  assertEquals(chefLouis.parse_reason_codes, [], "Chef Louis should not keep stale missing-set warnings");
+
+  const ariel66 = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["830395034324"];
+  assertEquals(ariel66.set_name, "The Little Mermaid", "Ariel #66 should stay in The Little Mermaid");
+  assertEquals(ariel66.set_total, 25, "Ariel #66 should carry reviewed Little Mermaid denominator");
+
+  const belle67 = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["849803035761"];
+  assertEquals(belle67.set_name, "Beauty and the Beast", "Belle #67 should stay in Beauty and the Beast");
+  assertEquals(belle67.set_total, 25, "Belle #67 should carry Beauty and the Beast denominator");
+
+  const bambi94 = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["849803037512"];
+  assertEquals(bambi94.set_name, "Bambi", "Bambi #94 should stay in Bambi");
+  assertEquals(bambi94.set_total, 4, "Bambi #94 should carry reviewed Bambi denominator");
+});
+
+Deno.test("latest 101-200 batch B cleans Cinderella confidence and single-item Disney Sketched", () => {
+  const gusGus = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["849803051945"];
+  assertEquals(gusGus.pop_name, "Gus Gus in Slipper", "Gus Gus should use clean casing");
+  assertEquals(gusGus.character, "Gus Gus", "Gus Gus should not include pose detail as character");
+  assertEquals(gusGus.set_total, 11, "Gus Gus should carry Cinderella denominator");
+  assertEquals(gusGus.parse_confidence, 0.98, "Gus Gus low confidence should be resolved");
+
+  const princeCharming = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698834599"];
+  const fairyGodmother = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698834575"];
+  const jaqGus = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698834582"];
+  assertEquals(princeCharming.set_total, 11, "Prince Charming should carry Cinderella denominator");
+  assertEquals(fairyGodmother.set_total, 11, "Fairy Godmother should carry Cinderella denominator");
+  assertEquals(jaqGus.set_total, 11, "Jaq & Gus Gus should carry Cinderella denominator");
+
+  const sketchedCinderella = LATEST200_101_200_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698809368"];
+  assertEquals(sketchedCinderella.set_name, "Disney Sketched", "Sketched Cinderella should stay in Disney Sketched");
+  assertEquals(sketchedCinderella.set_total, 1, "Disney Sketched comic-cover bucket should be one reviewed item");
+});
+
+Deno.test("latest 101-200 batch C protects scoped denominators", () => {
+  const lady = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698835688"];
+  const tramp = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698835695"];
+  assertEquals(lady.set_name, "Lady and the Tramp", "Lady with Puppy should stay in scoped Lady and the Tramp pair");
+  assertEquals(lady.set_total, 2, "Lady with Puppy should carry two-item denominator");
+  assertEquals(tramp.set_total, 2, "Tramp with Puppy should carry two-item denominator");
+
+  const coraline = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698811668"];
+  assertEquals(coraline.pop_style, "Deluxe", "Coraline in Tunnel should keep Deluxe style");
+  assertEquals(coraline.set_total, 1, "Coraline 15th Anniversary scoped row should be one reviewed item");
+
+  const supergirl = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698907972"];
+  assertEquals(supergirl.set_name, "Supergirl (2026)", "Supergirl #632 should use scoped movie set");
+  assertEquals(supergirl.exclusivity, "Target", "Supergirl #632 keeps Target exclusivity");
+  assertEquals(supergirl.set_total, 7, "Supergirl 2026 should carry seven-item denominator including Ride");
+});
+
+Deno.test("latest 101-200 batch C protects Warner, Aladdin, Batman Beyond, and Mama Odie identities", () => {
+  const batmanBeyond = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698666459"];
+  assertEquals(batmanBeyond.set_name, "Batman Beyond", "Batman #458 should stay in Batman Beyond");
+  assertEquals(batmanBeyond.set_total, 3, "Batman Beyond should keep reviewed three-item denominator");
+  assertEquals(batmanBeyond.parse_reason_codes, [], "Batman Beyond should not keep stale missing-set warning");
+
+  const twoFace = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698743136"];
+  assertEquals(twoFace.set_name, "Warner Bros 100", "Two-Face #484 should stay in Warner Bros 100");
+  assertEquals(twoFace.set_total, 8, "Warner Bros 100 DC Heroes villain set should keep eight-item denominator");
+
+  const jasmine = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["849803035754"];
+  assertEquals(jasmine.pop_name, "Jasmine (Hipster)", "Jasmine #68 should preserve Hipster identity");
+  assertEquals(jasmine.exclusivity, "Hot Topic", "Jasmine #68 should keep Hot Topic exclusivity");
+  assertEquals(jasmine.set_total, 34, "Aladdin should keep reviewed denominator");
+
+  const mamaOdie = LATEST200_101_200_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698623384"];
+  assertEquals(mamaOdie.set_name, "The Princess and the Frog", "Mama Odie should use normalized set casing");
+  assertEquals(mamaOdie.variant, "With Snake", "Mama Odie should preserve snake detail");
+  assertEquals(mamaOdie.parse_confidence, 0.98, "Mama Odie confidence should be resolved");
+});
+
+Deno.test("latest 101-200 batch D clears remaining set-total rows with UPC-scoped overrides", () => {
+  const iCare = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698718776"];
+  assertEquals(iCare.set_name, "Care Bears: Earth Day", "I Care Bear should not use the broad Care Bears denominator");
+  assertEquals(iCare.set_total, 2, "I Care Bear should carry the scoped Earth Day denominator");
+  assertEquals(iCare.vault_status, "Vaulted", "I Care Bear should keep Funko Vault status");
+
+  const alice = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["830395031965"];
+  assertEquals(alice.set_name, "Alice in Wonderland", "Alice #49 keeps the Alice in Wonderland identity");
+  assertEquals(alice.set_total, 8, "Alice #49 should carry the reviewed early Alice subset denominator");
+
+  const cinderella = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["830395027876"];
+  assertEquals(cinderella.set_name, "Cinderella", "Cinderella #41 should not stay in the broad Disney Store bucket");
+  assertEquals(cinderella.set_total, 11, "Cinderella #41 should use the reviewed Cinderella denominator");
+  assertEquals(cinderella.parse_reason_codes, [], "Cinderella #41 should not keep stale missing-set warnings");
+});
+
+Deno.test("latest 101-200 batch D protects vault, Vocaloid, Mickey, and Sesame Street details", () => {
+  const bambi = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698652445"];
+  assertEquals(bambi.pop_name, "Bambi with Butterfly", "Bambi #1215 should preserve butterfly detail");
+  assertEquals(bambi.set_name, "Disney Classics: From the Vault", "Bambi #1215 should be scoped as a From the Vault item");
+  assertEquals(bambi.vault_status, "Vaulted", "Bambi #1215 should keep Funko Vault status");
+
+  const mickey = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698918879"];
+  assertEquals(mickey.set_name, "Mickey & Friends: Excellent Eight", "Nostalgic Mickey should use Excellent Eight scope");
+  assertEquals(mickey.set_total, 8, "Excellent Eight denominator should be eight");
+
+  const sakura = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698556644"];
+  assertEquals(sakura.set_name, "Vocaloid", "Sakura Miku should use singular Vocaloid naming");
+  assertEquals(sakura.variant, "Cherry Blossom", "Sakura Miku should preserve cherry-blossom variant detail");
+  assertEquals(sakura.set_total, 9, "Vocaloid Pop denominator should include Sakura Miku");
+
+  const oscar = LATEST200_101_200_BATCH_D_REFRESH_REGRESSION_OVERRIDES["849803076665"];
+  assertEquals(oscar.pop_name, "Oscar the Grouch (Orange)", "Orange Oscar should use variant-aware display name");
+  assertEquals(oscar.exclusivity, "Entertainment Earth", "Orange Oscar should keep retailer exclusivity");
+  assertEquals(oscar.vault_status, "Vaulted", "Orange Oscar should keep Funko Vault status");
+  assertEquals(oscar.set_total, 25, "Sesame Street denominator should follow the full Pop checklist");
+});
+
+Deno.test("latest 100 batch A clears parser-safe set total warnings", () => {
+  const herb = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698800624"];
+  assertEquals(herb.set_name, "Saturday Night Live 50", "Herb Welch should keep SNL 50 set label");
+  assertEquals(herb.set_total, 9, "Saturday Night Live 50 should use the reviewed SNL denominator");
+  assertEquals(herb.parse_reason_codes, [], "SNL 50 should not keep stale parser warnings");
+
+  const strangerThingsPack = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698637299"];
+  assertEquals(strangerThingsPack.number, "4-Pack", "Stranger Things 8-Bit pack should preserve multipack number");
+  assertEquals(strangerThingsPack.set_total, 179, "Stranger Things pack should use the reviewed full-line denominator");
+
+  const streetArtSpiderMan = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698495448"];
+  assertEquals(streetArtSpiderMan.set_name, "Marvel Street Art", "Street Art Spider-Man should stay in Marvel Street Art");
+  assertEquals(streetArtSpiderMan.pop_type, "Pop! Deluxe", "Street Art Spider-Man should be protected as a deluxe release");
+  assertEquals(streetArtSpiderMan.set_total, 7, "Marvel Street Art denominator should stay seven");
+});
+
+Deno.test("latest 100 batch A normalizes Phantom Menace Duel of the Fates trio", () => {
+  const darthMaul = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698631952"];
+  assertEquals(darthMaul.set_name, "Star Wars: The Phantom Menace", "Darth Maul should use canonical Phantom Menace set label");
+  assertEquals(darthMaul.character, "Darth Maul", "Darth Maul character should not include scene title");
+  assertEquals(darthMaul.variant, "Duel of the Fates", "Darth Maul scene title should be captured as variant");
+  assertEquals(darthMaul.set_total, 30, "Phantom Menace denominator should stay reviewed at thirty");
+
+  const obiWan = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698626637"];
+  assertEquals(obiWan.pop_name, "Duel of the Fates: Obi-Wan Kenobi", "Obi-Wan should use normalized title casing");
+  assertEquals(obiWan.character, "Obi-Wan Kenobi", "Obi-Wan character should not include scene title");
+
+  const quiGon = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698631969"];
+  assertEquals(quiGon.character, "Qui-Gon Jinn", "Qui-Gon character should not include scene title");
+  assertEquals(quiGon.parse_reason_codes, [], "Phantom Menace trio should clear stale missing-set warnings");
+});
+
+Deno.test("latest 100 batch A protects G.I. Joe as Retro Toys", () => {
+  const leatherneck = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["889698509084"];
+  assertEquals(leatherneck.set_total, 25, "G.I. Joe denominator should stay twenty-five");
+  assertEquals(leatherneck.parse_reason_codes, [], "Leatherneck should clear stale weak-name warning");
+
+  const roadblock = LATEST100_CURRENT_BATCH_A_REFRESH_REGRESSION_OVERRIDES["849803061371"];
+  assertEquals(roadblock.pop_type, "Pop! Retro Toys", "Roadblock should not be typed as Animation");
+  assertEquals(roadblock.set_total, 25, "Roadblock should keep G.I. Joe denominator");
+});
+
+Deno.test("latest 100 batch B fills reviewed denominator-only gaps", () => {
+  const southParkStan = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698657570"];
+  assertEquals(southParkStan.set_name, "South Park", "Boyband Stan should stay in South Park");
+  assertEquals(southParkStan.set_total, 55, "South Park should reuse reviewed catalog denominator");
+
+  const dawbreaker = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698363495"];
+  assertEquals(dawbreaker.set_name, "Batman: 80th Anniversary", "Dawnbreaker should stay in Batman 80th");
+  assertEquals(dawbreaker.set_total, 33, "Batman 80th should reuse reviewed catalog denominator");
+
+  const beetlejuice = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698855174"];
+  assertEquals(beetlejuice.pop_type, "Bitty Pop! Town", "Beetlejuice Bitty Town should keep Bitty type");
+  assertEquals(beetlejuice.set_total, 18, "Beetlejuice should reuse reviewed catalog denominator");
+
+  const houseOfTheDragon = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698764704"];
+  assertEquals(houseOfTheDragon.set_total, 5, "House of the Dragon should reuse reviewed catalog denominator");
+
+  const wish = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698724210"];
+  assertEquals(wish.set_total, 6, "Wish should reuse reviewed catalog denominator");
+});
+
+Deno.test("latest 100 batch B keeps Star Wars totals and Rogue One label canonical", () => {
+  const k2so = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698104548"];
+  assertEquals(k2so.set_name, "Star Wars: Rogue One", "K-2SO should use canonical Rogue One set label");
+  assertEquals(k2so.set_total, 37, "Rogue One should reuse reviewed catalog denominator");
+  assertEquals(k2so.parse_reason_codes, [], "K-2SO should clear stale missing-set warning");
+
+  const chewbacca = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698497558"];
+  assertEquals(chewbacca.set_total, 61, "Empire Strikes Back should reuse reviewed catalog denominator");
+
+  const shaakTi = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["889698933605"];
+  assertEquals(shaakTi.set_total, 31, "Clone Wars should reuse reviewed catalog denominator");
+
+  const jabbaPack = LATEST100_CURRENT_BATCH_B_REFRESH_REGRESSION_OVERRIDES["849803050450"];
+  assertEquals(jabbaPack.pop_style, "3-Pack", "Jabba/Leia/Crumb should preserve multipack style");
+  assertEquals(jabbaPack.set_total, 58, "Return of the Jedi should reuse reviewed catalog denominator");
+});
+
+Deno.test("latest 100 batch C clears remaining parser-warning identity rows", () => {
+  const darthSion = LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698774697"];
+  assertEquals(darthSion.set_name, "Star Wars: Gaming Greats", "Darth Sion should normalize KOTOR into Gaming Greats");
+  assertEquals(darthSion.set_total, 25, "Darth Sion should reuse reviewed Gaming Greats denominator");
+  assertEquals(darthSion.variant, "Knights of the Old Republic", "Darth Sion should preserve KOTOR detail");
+  assertEquals(darthSion.parse_reason_codes, [], "Darth Sion should clear stale parser warnings");
+
+  const saviniJason = LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698914789"];
+  assertEquals(saviniJason.franchise, "Friday the 13th", "Savini Jason should have a real franchise");
+  assertEquals(saviniJason.set_name, "Friday the 13th: The Game", "Savini Jason should not keep comma-stuffed API set text");
+  assertEquals(saviniJason.variant, "Jason Universe", "Savini Jason should preserve Jason Universe detail");
+  assertEquals(saviniJason.set_total, null, "Savini Jason denominator should stay deferred until sourced");
+
+  const lebron = LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698465496"];
+  assertEquals(lebron.set_name, "Los Angeles Lakers", "LeBron #66 should normalize malformed Lakers set label");
+  assertEquals(lebron.pop_type, "Pop! NBA", "LeBron #66 should keep NBA product type");
+
+  const tyrion = LATEST100_CURRENT_BATCH_C_REFRESH_REGRESSION_OVERRIDES["889698567978"];
+  assertEquals(tyrion.set_name, "Game of Thrones", "Tyrion should normalize set casing");
+  assertEquals(tyrion.set_total, 134, "Tyrion should reuse reviewed Game of Thrones denominator");
+});
+
+Deno.test("latest 100 batch D protects sourced small-set denominators", () => {
+  const sally = LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES["849803091392"];
+  assertEquals(sally.set_name, "American Horror Story: Hotel", "Hypodermic Sally should stay in the Hotel season set");
+  assertEquals(sally.set_total, 4, "AHS Hotel should use four-item season denominator");
+
+  const cyberdemon = LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES["849803079406"];
+  assertEquals(cyberdemon.pop_name, "Cyberdemon (Deluxe)", "Cyberdemon should preserve Deluxe identity");
+  assertEquals(cyberdemon.set_total, 6, "Doom should use six-item Pop Vinyl denominator");
+
+  const oroku = LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698883054"];
+  assertEquals(oroku.exclusivity, "Target", "Oroku Hiroto #53 should keep Target exclusivity");
+  assertEquals(oroku.set_total, 12, "Last Ronin should use twelve-item Pop Comics denominator");
+});
+
+Deno.test("latest 100 batch D folds Titans rows into Teen Titans Go", () => {
+  const robinNightwing = LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698203890"];
+  assertEquals(robinNightwing.set_name, "Teen Titans Go!", "Robin as Nightwing should not remain in a separate Titans bucket");
+  assertEquals(robinNightwing.character, "Robin", "Robin as Nightwing should keep Robin as character");
+  assertEquals(robinNightwing.variant, "Nightwing", "Nightwing should be captured as variant");
+  assertEquals(robinNightwing.set_total, 36, "Teen Titans Go should use reviewed Pop Television denominator");
+
+  const robinBaby = LATEST100_CURRENT_BATCH_D_REFRESH_REGRESSION_OVERRIDES["889698260626"];
+  assertEquals(robinBaby.pop_name, "Robin with Baby", "Robin with Baby should use normalized casing");
+  assertEquals(robinBaby.exclusivity, "Hot Topic", "Robin with Baby #599 should keep Hot Topic exclusivity");
+});
+
+Deno.test("latest 100 batch E fills reviewed catalog denominators", () => {
+  const hagridTown = LATEST100_CURRENT_BATCH_E_REFRESH_REGRESSION_OVERRIDES["889698581349"];
+  assertEquals(hagridTown.pop_type, "Pop! Town", "Hagrid with Leaky Cauldron should stay a Pop! Town");
+  assertEquals(hagridTown.set_total, 219, "Harry Potter should reuse reviewed catalog denominator");
+
+  const flashUnmasked = LATEST100_CURRENT_BATCH_E_REFRESH_REGRESSION_OVERRIDES["849803055561"];
+  assertEquals(flashUnmasked.set_name, "Justice League (2017)", "Flash Unmasked should stay in Justice League 2017");
+  assertEquals(flashUnmasked.set_total, 20, "Justice League 2017 should reuse reviewed catalog denominator");
+
+  const andyRadical = LATEST100_CURRENT_BATCH_E_REFRESH_REGRESSION_OVERRIDES["889698801713"];
+  assertEquals(andyRadical.character, "Andy Dwyer", "Andy Radical should keep base character");
+  assertEquals(andyRadical.variant, "Andy Radical", "Andy Radical should keep variant detail");
+  assertEquals(andyRadical.set_total, 35, "Parks and Recreation should reuse reviewed catalog denominator");
+
+  const futuraStormtrooper = LATEST100_CURRENT_BATCH_E_REFRESH_REGRESSION_OVERRIDES["889698458610"];
+  assertEquals(futuraStormtrooper.set_total, 4, "Star Wars Art Series should keep four-item denominator");
+  assertEquals(futuraStormtrooper.variant, "Futura", "Stormtrooper Art Series should preserve Futura detail");
+});
+
+Deno.test("latest 100 batch F protects small sets and Flash convention value", () => {
+  const michael = LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES["849803039486"];
+  assertEquals(michael.pop_name, "Michael Bluth (Banana Stand)", "Michael Bluth #118 should preserve Banana Stand variant");
+  assertEquals(michael.set_total, 8, "Arrested Development should use eight-item denominator");
+
+  const bobRoss = LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES["889698257022"];
+  assertEquals(bobRoss.character, "Bob Ross", "Bob Ross with Paint Brush should not use pose as character");
+  assertEquals(bobRoss.set_total, 7, "Joy of Painting Pop Vinyl denominator should be seven");
+
+  const skylar = LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES["889698204057"];
+  assertEquals(skylar.set_name, "Elena of Avalor", "Skylar should use normalized Elena of Avalor casing");
+  assertEquals(skylar.set_total, 7, "Elena of Avalor should use seven-item Disney denominator");
+
+  const scareMare = LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES["889698804233"];
+  assertEquals(scareMare.set_name, "Funko Fusion", "Scare Mare should fix Funk Fusion typo");
+  assertEquals(scareMare.set_total, null, "Funko Fusion denominator should remain deferred");
+
+  const flash = LATEST100_CURRENT_BATCH_F_REFRESH_REGRESSION_OVERRIDES["849803055561"];
+  assertEquals(flash.exclusivity, "Summer Convention", "Flash Unmasked should keep Summer Convention exclusivity");
+  assertEquals(flash.estimated_value, 98.22, "Flash Unmasked should use UPC-specific Summer Convention value");
+});
+
+Deno.test("latest 100 batch G protects sourced small-set denominators", () => {
+  const jared = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698123310"];
+  assertEquals(jared.set_total, 5, "Silicon Valley should use the five-item PriceCharting checklist denominator");
+
+  const alan = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698444286"];
+  assertEquals(alan.set_total, 4, "Jumanji should use the four-item PriceCharting checklist denominator");
+
+  const lebron = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698563567"];
+  assertEquals(lebron.set_total, 19, "Space Jam: A New Legacy should use the 19-item PriceCharting checklist denominator");
+
+  const blaster = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698809887"];
+  assertEquals(blaster.set_total, 5, "Transformers: 40 Years should use the five-item PriceCharting checklist denominator");
+
+  const armoredBatman = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["849803095291"];
+  assertEquals(armoredBatman.variant, "Unmasked", "Armored Batman #113 should preserve Unmasked as variant detail");
+  assertEquals(armoredBatman.set_total, 7, "The Dark Knight Returns should use the seven-item PriceCharting checklist denominator");
+
+  const masterChief = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698545600"];
+  assertEquals(masterChief.pop_type, "Pop! Game Covers", "Master Chief #4 should use the Game Covers product type");
+  assertEquals(masterChief.pop_style, "Game Cover", "Master Chief #4 should keep Game Cover styling");
+  assertEquals(masterChief.set_total, 1, "Halo: Combat Evolved Game Cover should be treated as a singleton denominator");
+
+  const liuKang = LATEST100_CURRENT_BATCH_G_REFRESH_REGRESSION_OVERRIDES["889698451086"];
+  assertEquals(liuKang.set_total, 33, "Mortal Kombat should use the 33-item Funko-only PriceCharting checklist denominator");
+});
+
+Deno.test("latest 100 batch H protects scoped DC and Looney Tunes denominators", () => {
+  const sylvester = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698367134"];
+  assertEquals(sylvester.set_name, "DC Looney Tunes", "Sylvester as Batman should use the mash-up set label");
+  assertEquals(sylvester.set_total, 5, "DC Looney Tunes should use the five-item mash-up denominator");
+  assertEquals(sylvester.exclusivity, "FYE", "Sylvester as Batman should preserve FYE exclusivity");
+
+  const taz = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698862868"];
+  assertEquals(taz.set_name, "Looney Tunes: Sketched Deco", "Tasmanian Devil should use the scoped Sketched Deco set label");
+  assertEquals(taz.set_total, 5, "Looney Tunes Sketched Deco should use the five-item denominator");
+
+  const scrooge = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698506533"];
+  assertEquals(scrooge.set_name, "DC Holiday", "Batman as Ebenezer Scrooge should use the scoped DC Holiday label");
+  assertEquals(scrooge.variant, "Ebenezer Scrooge", "Batman as Ebenezer Scrooge should preserve character role as variant");
+  assertEquals(scrooge.set_total, 10, "DC Holiday should use the ten-item older holiday denominator");
+
+  const jokerFrost = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698506557"];
+  assertEquals(jokerFrost.variant, "Jack Frost", "Joker as Jack Frost should preserve role variant");
+  assertEquals(jokerFrost.set_total, 10, "Joker as Jack Frost should use the DC Holiday denominator");
+
+  const silentKnight = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698516730"];
+  assertEquals(silentKnight.variant, "Silent Knight", "Silent Knight Batman should preserve holiday variant");
+  assertEquals(silentKnight.set_total, 10, "Silent Knight Batman should use the DC Holiday denominator");
+
+  const penguin = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698107785"];
+  assertEquals(penguin.set_name, "DC Impopsters", "Penguin Impopster should use the Impopsters set label");
+  assertEquals(penguin.variant, "Impopster", "Penguin Impopster should preserve Impopster variant");
+  assertEquals(penguin.set_total, 8, "DC Impopsters should use the eight-item denominator");
+
+  const harley = LATEST100_CURRENT_BATCH_H_REFRESH_REGRESSION_OVERRIDES["889698107778"];
+  assertEquals(harley.character, "Harley Quinn", "Harley Quinn Impopster should keep Harley as character");
+  assertEquals(harley.set_total, 8, "Harley Quinn Impopster should use the DC Impopsters denominator");
+});
+
+Deno.test("latest 100 batch I protects sourced singleton and small-line denominators", () => {
+  const saviniJason = LATEST100_CURRENT_BATCH_I_REFRESH_REGRESSION_OVERRIDES["889698914789"];
+  assertEquals(saviniJason.set_name, "Friday the 13th: The Game", "Savini Jason should stay scoped to the game release");
+  assertEquals(saviniJason.set_total, 1, "Savini Jason should use a singleton game-line denominator");
+
+  const sirPentious = LATEST100_CURRENT_BATCH_I_REFRESH_REGRESSION_OVERRIDES["889698918244"];
+  assertEquals(sirPentious.set_name, "Hazbin Hotel", "Sir Pentious should stay in the Hazbin Hotel Pop line");
+  assertEquals(sirPentious.set_total, 6, "Hazbin Hotel should use the six-Pop official product denominator");
+
+  const darryl = LATEST100_CURRENT_BATCH_I_REFRESH_REGRESSION_OVERRIDES["889698573887"];
+  assertEquals(darryl.pop_type, "Mini Moments", "Darryl should preserve Mini Moments product type");
+  assertEquals(darryl.set_total, 5, "The Office Mini Moments should use the five-diorama denominator");
+
+  const tinMan = LATEST100_CURRENT_BATCH_I_REFRESH_REGRESSION_OVERRIDES["889698885690"];
+  assertEquals(tinMan.set_name, "Wicked: For Good", "Tin Man should use the scoped Wicked: For Good label");
+  assertEquals(tinMan.number, "1931", "Tin Man should use the sourced box number");
+  assertEquals(tinMan.exclusivity, "Target", "Metallic Tin Man should preserve Target retail exclusivity");
+  assertEquals(tinMan.set_total, 6, "Wicked: For Good should use the six-Pop denominator");
+});
+
+Deno.test("latest 100 batch J completes remaining frozen set totals", () => {
+  const expectedUpcs = [
+    "0889698163361",
+    "849803067175",
+    "889698114967",
+    "889698138772",
+    "889698800297",
+    "849803052461",
+    "0889698478274",
+    "889698596237",
+    "889698295208",
+    "889698904407",
+    "889698871723",
+    "671803384415",
+    "889698160032",
+    "889698202374",
+    "889698522427",
+    "889698804233",
+    "889698465496",
+    "889698442794",
+    "889698552189",
+    "889698428798",
+    "889698202145",
+    "889698854146",
+    "889698134439",
+    "889698920384",
+  ];
+
+  for (const upc of expectedUpcs) {
+    const override = LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES[upc as keyof typeof LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES];
+    assertEquals(typeof override.set_total, "number", `${upc} should have a numeric set total`);
+    assertEquals(override.needs_review, false, `${upc} should stay out of parser review`);
+  }
+
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698800297"].set_name, "DC Holiday 2024", "Holiday Harley should not merge with the older DC Holiday wave");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698800297"].set_total, 4, "DC Holiday 2024 should use the four-item holiday denominator");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698596237"].set_total, 35, "Mickey and Friends should use the Pop Vinyl denominator");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698295208"].set_name, "IT", "Georgie should normalize IT casing");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698904407"].set_total, 41, "Pennywise should use the IT franchise denominator");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698871723"].variant, "Night Vision Goggles", "Tim Murphy should preserve product-specific detail");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["671803384415"].set_total, 1, "Black Panther Pop! Pin should use a pin-scoped singleton denominator");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698804233"].pop_type, "Pop! Rides", "Scare Mare should be typed as Pop! Rides");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698465496"].set_total, 207, "NBA rows should use the Basketball line denominator");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698854146"].pop_style, "4-Pack", "Chiefs champions pack should keep multipack style");
+  assertEquals(LATEST100_CURRENT_BATCH_J_REFRESH_REGRESSION_OVERRIDES["889698134439"].set_total, 267, "WWE rows should use the WWE line denominator");
+});
+
+Deno.test("missing set cleanup batch K protects ten sourced rows and Arthur chrome 3-pack", () => {
+  const arthur = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698432160"];
+  assertEquals(arthur.pop_name, "Arthur Curry in Hero Suit (Chrome) 3-Pack", "Arthur Curry chrome row should use the 3-pack product name");
+  assertEquals(arthur.number, "3-Pack", "Arthur Curry chrome row should not keep single figure box number");
+  assertEquals(arthur.pop_style, "3-Pack", "Arthur Curry chrome row should be styled as a 3-pack");
+  assertEquals(arthur.exclusivity, "Funko Shop", "Arthur Curry chrome 3-pack should keep Funko Shop exclusivity");
+
+  const rowan = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["849803093167"];
+  assertEquals(rowan.set_name, "Ghostbusters (2016)", "Rowan's Ghost should use the 2016 Ghostbusters scope");
+  assertEquals(rowan.set_total, 7, "Ghostbusters 2016 should use the seven-figure denominator");
+  assertEquals(rowan.exclusivity, "FYE", "Rowan's Ghost should preserve FYE exclusivity");
+
+  const charlie = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698245869"];
+  assertEquals(charlie.franchise, "Peanuts", "Charlie Brown should fill franchise");
+  assertEquals(charlie.set_total, 5, "Peanuts Wave 8 should use the five-figure denominator");
+
+  const iracebeth = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698106221"];
+  assertEquals(iracebeth.set_total, 6, "Alice Through The Looking Glass should use the six-figure denominator");
+
+  const sam = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698124478"];
+  assertEquals(sam.pop_type, "Pop! Books", "Sam I Am should be typed as Pop! Books");
+  assertEquals(sam.set_total, 6, "Dr. Seuss should use the six-figure denominator");
+
+  const shelly = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698215992"];
+  const smolder = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698215985"];
+  assertEquals(shelly.set_total, 2, "Jumanji Welcome to the Jungle should use the two-figure denominator");
+  assertEquals(smolder.set_total, 2, "Dr. Smolder Bravestone should use the two-figure denominator");
+
+  const grootCandy = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698220743"];
+  assertEquals(grootCandy.variant, "With Candy Bowl", "Groot #264 should preserve candy bowl detail");
+  assertEquals(grootCandy.exclusivity, "Hot Topic", "Groot #264 should preserve Hot Topic exclusivity");
+
+  const tankTrooper = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698147200"];
+  assertEquals(tankTrooper.set_name, "Star Wars: Rogue One", "Tank Trooper should normalize Rogue One set label");
+  assertEquals(tankTrooper.set_total, 37, "Rogue One should use the reviewed denominator");
+
+  const groot202 = MISSING_SET_CLEANUP_BATCH_K_REFRESH_REGRESSION_OVERRIDES["889698132305"];
+  assertEquals(groot202.number, "202", "UPC 889698132305 should restore Groot #202");
+  assertEquals(groot202.set_total, 14, "Guardians of the Galaxy Vol. 2 should use the scoped fourteen-item denominator");
+});
+
+Deno.test("missing set cleanup batch L protects twenty reviewed denominators", () => {
+  const expectedTotals: Record<string, number> = {
+    "889698800495": 179,
+    "889698799973": 179,
+    "889698598187": 179,
+    "889698744751": 179,
+    "889698133272": 179,
+    "889698860697": 25,
+    "889698860765": 26,
+    "889698881913": 25,
+    "889698860710": 15,
+    "889698860727": 1,
+    "889698230445": 34,
+    "889698249232": 34,
+    "889698249256": 34,
+    "889698230469": 34,
+    "889698244039": 34,
+    "889698357586": 34,
+    "889698357579": 34,
+    "889698355100": 219,
+    "889698469968": 219,
+    "889698469944": 219,
+  };
+
+  assertEquals(Object.keys(MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES).length, 20, "batch L should protect exactly twenty UPCs");
+  for (const [upc, total] of Object.entries(expectedTotals)) {
+    const override = MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES[upc as keyof typeof MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES];
+    assertEquals(override.set_total, total, `${upc} should keep reviewed denominator`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear stale parser warnings`);
+  }
+
+  assertEquals(MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES["889698598187"].set_name, "Stranger Things", "Dustin blacklight should normalize the set label");
+  assertEquals(MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES["889698230445"].character, "Aladdin", "Aladdin #352 should fill missing character");
+  assertEquals(MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES["889698244039"].variant, "Red Genie", "Red Jafar as Genie should keep red genie detail as variant");
+  assertEquals(MISSING_SET_CLEANUP_BATCH_L_REFRESH_REGRESSION_OVERRIDES["889698469968"].variant, "Patronus", "Patronus Hermione should preserve Patronus variant");
+});
+
+Deno.test("review warning cleanup batch M clears twenty stale parser warnings", () => {
+  assertEquals(Object.keys(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES).length, 20, "batch M should protect exactly twenty UPCs");
+
+  for (const [upc, override] of Object.entries(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear stale parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES["889698797566"].parse_reason_codes, [], "Qimir should clear manual wave marker after review");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES["889698357555"].variant, "Elephant", "Elephant Abu should capture Elephant as variant");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES["849803040215"].set_name, "Beauty and the Beast", "Beauty and the Beast casing should normalize");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_M_REFRESH_REGRESSION_OVERRIDES["849803038984"].character, "Mrs. Potts / Chip", "Mrs. Potts and Chip should split character names");
+});
+
+Deno.test("review warning cleanup batch N clears twenty stale parser warnings", () => {
+  assertEquals(Object.keys(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES).length, 20, "batch N should protect exactly twenty UPCs");
+
+  for (const [upc, override] of Object.entries(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear stale parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES["889698585583"].set_name, "Wall-E", "WALL-E should not inherit The Suicide Squad set label");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES["889698575836"].set_total, 6, "Beauty and the Beast 30th Anniversary should include the reviewed six-row wave");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES["889698107815"].set_name, "DC Impopsters", "Two-Face Impopster should normalize to the Impopsters set");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES["889698538466"].variant, "Patronus", "Patronus Remus Lupin should preserve Patronus as variant");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_N_REFRESH_REGRESSION_OVERRIDES["889698573870"].set_total, 4, "Dug Days should use the reviewed four-row denominator");
+});
+
+Deno.test("review warning cleanup batch O clears twenty stale parser warnings", () => {
+  assertEquals(Object.keys(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES).length, 20, "batch O should protect exactly twenty UPCs");
+
+  for (const [upc, override] of Object.entries(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear stale parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES["889698417365"].franchise, "Stranger Things", "Gold Demogorgon should fix stale DC franchise");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES["889698480932"].set_total, 5, "Gummi Bears should use the reviewed five-item denominator");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES["889698483667"].set_name, "Pixar Alien Remix", "Alien Remix rows should normalize to Pixar Alien Remix");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES["889698406987"].variant, "Live Action / Flocked", "Flocked live-action Timon should preserve both variant details");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_O_REFRESH_REGRESSION_OVERRIDES["849803043391"].set_total, 12, "Batman Arkham Asylum should use the reviewed twelve-item denominator");
+});
+
+Deno.test("review warning cleanup batch P clears the final seventeen parser warnings", () => {
+  assertEquals(Object.keys(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES).length, 17, "batch P should protect the final seventeen UPCs");
+
+  for (const [upc, override] of Object.entries(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear stale parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698218580"].pop_type, "Pop! Holidays", "Krampus should be typed as Pop! Holidays");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698581752"].pop_type, "Pop! Games", "Gotham Knights Batgirl should be typed as Pop! Games");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698499903"].set_name, "DC Breast Cancer Awareness", "Pink DC rows should use the scoped awareness set");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698632720"].pop_style, "VHS Cover", "Ariel VHS row should keep VHS Cover styling");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698917629"].exclusivity, "Target", "Bullseye Eddie should preserve Target exclusivity");
+  assertEquals(REVIEW_WARNING_CLEANUP_BATCH_P_REFRESH_REGRESSION_OVERRIDES["889698903011"].set_total, 4, "Batman Ninja should use the four-item denominator");
+});
+
+Deno.test("missing set total cleanup batch Q protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch Q should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698586894"].set_name, "Wall-E", "WALL-E 2-pack should normalize set casing");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698538480"].variant, "Patronus", "Patronus Snape should preserve Patronus as variant");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698490900"].set_name, "Pixar Alien Remix", "Dug Alien should normalize to Pixar Alien Remix");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698577472"].set_total, 35, "Mickey and Friends rows should use the reviewed denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698575874"].set_total, 6, "Winter Belle should complete the Beauty and the Beast anniversary denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Q_REFRESH_REGRESSION_OVERRIDES["889698739566"].exclusivity, "Entertainment Earth", "Moana #1378 should preserve Entertainment Earth exclusivity");
+});
+
+Deno.test("missing set total cleanup batch R protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch R should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES["889698370226"].set_total, 34, "Agrabah should keep the Aladdin denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES["849803076276"].set_total, 7, "Rowan's Ghost should keep the Ghostbusters 2016 denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES["889698663830"].set_total, 8, "Plane Crazy 2-pack should keep the Disney Archives denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES["849803058982"].set_total, 11, "Cinderella should keep the reviewed Cinderella denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_R_REFRESH_REGRESSION_OVERRIDES["889698117883"].variant, "Glow in the Dark", "Maleficent should preserve the glow variant");
+});
+
+Deno.test("missing set total cleanup batch S protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch S should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES["889698432146"].set_total, 20, "Batman Batmobile ride should keep the Justice League denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES["889698827768"].set_total, 12, "Bane should keep the Arkham Asylum denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES["889698884006"].pop_style, "Premium", "Demogorgon on Fire should preserve Premium style");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES["889698287739"].character, "Ch'p / Guy Gardner / Kilowog", "Green Lantern 3-pack should split character names");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_S_REFRESH_REGRESSION_OVERRIDES["849803062194"].set_total, 61, "C-3PO should keep the Force Awakens denominator");
+});
+
+Deno.test("missing set total cleanup batch T protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch T should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES["889698312608"].set_total, 31, "Cad Bane should keep the Clone Wars denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES["849803062262"].set_total, 61, "Captain Phasma should keep the Force Awakens denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES["889698450355"].character, "Kylo Ren / Rey", "Rise of Skywalker 2-pack should split character names");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES["889698472456"].variant, "Heavy Blade / Hematite Chrome", "Knight of Ren should preserve both variant details");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_T_REFRESH_REGRESSION_OVERRIDES["889698514835"].set_total, 58, "Emperor Palpatine should keep the Return of the Jedi denominator");
+});
+
+Deno.test("missing set total cleanup batch U protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch U should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES["889698514804"].set_total, 45, "Ben Solo should keep the Rise of Skywalker denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES["849803065621"].exclusivity, "Loot Crate", "Han Solo Snow Gear should preserve Loot Crate exclusivity");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES["889698582858"].set_total, 116, "Ahsoka should keep the Mandalorian denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES["889698851824"].pop_style, "Movie Moment", "Rey and Kylo Ren should preserve Movie Moment style");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_U_REFRESH_REGRESSION_OVERRIDES["889698214643"].character, "Drax / Groot", "Drax with Groot should split character names");
+});
+
+Deno.test("missing set total cleanup batch V protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch V should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES["889698815376"].set_total, 4, "Care Bears monster rows should keep the four-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES["889698408844"].set_total, 18, "Frozen II rows should keep the reviewed eighteen-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES["889698465847"].pop_name, "Bruni", "Frozen II Bruni should be protected");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES["889698779913"].pop_style, "Deluxe", "Ariel Stained Glass should preserve Deluxe style");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_V_REFRESH_REGRESSION_OVERRIDES["889698708593"].variant, "With Bomb", "Groot should preserve With Bomb variant");
+});
+
+Deno.test("missing set total cleanup batch W protects twenty-five reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES).length, 25, "batch W should protect exactly twenty-five UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+  }
+
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES["849803058418"].set_total, 2, "Frozen Fever should keep the two-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES["889698675086"].set_total, 19, "Guardians Vol. 3 should keep the nineteen-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES["889698711609"].character, "Nebula / Mantis", "Guardians Vol. 3 2-pack should split character names");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES["889698334167"].set_total, 3, "Ralph Breaks the Internet should keep the three-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_W_REFRESH_REGRESSION_OVERRIDES["889698759496"].variant, "With Apple", "Snow White with Apple should preserve variant detail");
+});
+
+Deno.test("missing set total cleanup batch X protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch X should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Ahsoka"), 23, "Ahsoka should keep the reviewed twenty-three-item denominator");
+  assertEquals(getSetTotalOverride("Ghostbusters: Afterlife"), 20, "Ghostbusters: Afterlife should keep the reviewed twenty-item denominator");
+  assertEquals(getSetTotalOverride("Venom"), 53, "Venom should keep the reviewed fifty-three-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698721752"].set_total, 23, "Ahsoka Grey Hood should keep the Ahsoka denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698810326"].set_total, 7, "Creature Commandos should keep the seven-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698545402"].set_total, 20, "Ghostbusters: Afterlife should keep the twenty-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698334341"].variant, "Gold Chrome", "Iron Man First Ten Years should preserve Gold Chrome");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698510691"].set_total, 53, "Venom translucent chase should keep the Venom denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES["889698548991"].set_total, 6, "Victory Shawarma should keep the six-item denominator");
+});
+
+Deno.test("missing set total cleanup batch Y protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch Y should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("WWE"), 267, "WWE should keep the reviewed 267-item denominator");
+  assertEquals(getSetTotalOverride("WandaVision"), 16, "WandaVision should keep the reviewed sixteen-item denominator");
+  assertEquals(getSetTotalOverride("Fantastic Four"), 22, "Fantastic Four should keep the reviewed twenty-two-item denominator");
+  assertEquals(getSetTotalOverride("X-Men"), 55, "X-Men should keep the reviewed fifty-five-item denominator");
+  assertEquals(getSetTotalOverride("Deadpool & Wolverine"), 18, "Deadpool & Wolverine should keep the reviewed eighteen-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES["889698737043"].pop_type, "Pop! WWE", "Big Boss Man should not drift to Pop! Games");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES["889698880930"].pop_type, "Pop! Supreme", "Nicepool Supreme should keep the specialty product type");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES["889698733878"].set_total, 6, "Ghostbusters Frozen Empire should keep the six-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Y_REFRESH_REGRESSION_OVERRIDES["0849803065065"].exclusivity, "Entertainment Earth", "Black Knight should preserve Entertainment Earth exclusivity");
+});
+
+Deno.test("missing set total cleanup batch Z protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch Z should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Marvel Universe"), 1908, "Marvel Universe should keep the reviewed broad Marvel denominator");
+  assertEquals(getSetTotalOverride("Corpse Bride"), 9, "Corpse Bride should keep the reviewed nine-item denominator");
+  assertEquals(getSetTotalOverride("Supernatural"), 29, "Supernatural should keep the reviewed twenty-nine-item denominator");
+  assertEquals(getSetTotalOverride("Alice in Wonderland"), 8, "Alice in Wonderland should keep the reviewed eight-item denominator");
+  assertEquals(getSetTotalOverride("Andor"), 14, "Andor should keep the reviewed fourteen-item denominator");
+  assertEquals(getSetTotalOverride("Ant-Man and the Wasp"), 12, "Ant-Man and the Wasp should keep the reviewed twelve-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES["889698704571"].set_total, 73, "Star Wars Disney 100 train should keep the Star Wars denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES["889698412391"].set_total, 1908, "Agent Anti-Venom should keep the Marvel Universe denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_Z_REFRESH_REGRESSION_OVERRIDES["889698824132"].variant, "Sketched Deco", "Alice should preserve Sketched Deco");
+});
+
+Deno.test("missing set total cleanup batch AA protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AA should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Aladdin Live Action"), 2, "Aladdin Live Action should keep the two-item denominator");
+  assertEquals(getSetTotalOverride("Ghostbusters"), 9, "Ghostbusters should keep the nine-row local denominator");
+  assertEquals(getSetTotalOverride("Justice League"), 6, "Justice League should keep the six-row local denominator");
+  assertEquals(getSetTotalOverride("Marvel Holiday"), 7, "Marvel Holiday should keep the seven-item denominator");
+  assertEquals(getSetTotalOverride("Masters Of The Universe"), 10, "Masters Of The Universe should keep the ten-row local denominator");
+  assertEquals(getSetTotalOverride("We Are Groot"), 9, "We Are Groot should keep the nine-item denominator");
+  assertEquals(getSetTotalOverride("X-Men 20th Anniversary"), 7, "X-Men 20th Anniversary should keep the seven-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES["889698360111"].variant, "Special Edition Marshmallowed", "marshmallowed Venkman should preserve variant");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES["889698821285"].set_total, 9, "We Are Groot as Venom should use the We Are Groot denominator");
+});
+
+Deno.test("missing set total cleanup batch AB protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AB should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Pokemon"), 41, "Pokemon should keep the local forty-one-row denominator");
+  assertEquals(getSetTotalOverride("The Electric State"), 4, "The Electric State should keep the four-row local denominator");
+  assertEquals(getSetTotalOverride("The Real Ghostbusters"), 4, "The Real Ghostbusters should keep the four-row local denominator");
+  assertEquals(getSetTotalOverride("Britney Spears"), 17, "Britney Spears should keep the existing seventeen-item denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES["889698916622"].set_total, 41, "Pikachu Pop! Premium should use the Pokemon denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES["889698834766"].set_total, 4, "Peter Venkman with Slimer should use the Real Ghostbusters denominator");
+});
+
+Deno.test("missing set total cleanup batch AC protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AC_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AC should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AC_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("DC Super Heroes"), 834, "DC Super Heroes should keep the broad DC denominator");
+  assertEquals(getSetTotalOverride("Ferris Bueller's Day Off"), 3, "Ferris Bueller's Day Off should keep the three-row denominator");
+  assertEquals(getSetTotalOverride("Letterkenny"), 5, "Letterkenny should keep the five-row denominator");
+  assertEquals(getSetTotalOverride("The Queen's Gambit"), 3, "The Queen's Gambit should keep the three-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AC_REFRESH_REGRESSION_OVERRIDES["830395022017"].set_total, 834, "metallic chase Batman should use the DC Super Heroes denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AC_REFRESH_REGRESSION_OVERRIDES["889698601610"].set_total, 5, "Reilly and Jonesy two-pack should use the Letterkenny denominator");
+});
+
+Deno.test("missing set total cleanup batch AD protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AD_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AD should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AD_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("What If...?"), 49, "What If...? should keep the forty-nine-row denominator");
+  assertEquals(getSetTotalOverride("Marvel Comics"), 21, "Marvel Comics should keep the twenty-one-row denominator");
+  assertEquals(getSetTotalOverride("Marvel Universe: Series 1"), 2, "Marvel Universe: Series 1 should keep the two-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AD_REFRESH_REGRESSION_OVERRIDES["889698628143"].set_total, 49, "jumbo blacklight Infinity Killmonger should use the What If denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AD_REFRESH_REGRESSION_OVERRIDES["889698637435"].set_total, 21, "Venom comic cover should use the Marvel Comics denominator");
+});
+
+Deno.test("missing set total cleanup batch AE protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AE should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Spider-Man"), 15, "Spider-Man should keep the fifteen-row denominator");
+  assertEquals(getSetTotalOverride("Batman"), 12, "Batman should keep the twelve-row denominator");
+  assertEquals(getSetTotalOverride("DC Universe"), 834, "DC Universe should keep the broad DC denominator");
+  assertEquals(getSetTotalOverride("The Infinity Saga"), 6, "The Infinity Saga should keep the six-row denominator");
+  assertEquals(getSetTotalOverride("Thunderbolts"), 6, "Thunderbolts should keep the six-row denominator");
+  assertEquals(getSetTotalOverride("Avengers"), 3, "Avengers should keep the three-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES["889698918107"].set_total, 15, "Premium Spider-Man should use the Spider-Man denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AE_REFRESH_REGRESSION_OVERRIDES["830395035215"].set_total, 834, "New 52 Flash should use the DC Universe denominator");
+});
+
+Deno.test("missing set total cleanup batch AF protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AF should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Batman 1989"), 5, "Batman 1989 should keep the five-row denominator");
+  assertEquals(getSetTotalOverride("Black Widow"), 5, "Black Widow should keep the five-row denominator");
+  assertEquals(getSetTotalOverride("Mickey Mouse"), 5, "Mickey Mouse should keep the five-row denominator");
+  assertEquals(getSetTotalOverride("Strange Tales"), 5, "Strange Tales should keep the five-row denominator");
+  assertEquals(getSetTotalOverride("Die Hard"), 4, "Die Hard should keep the four-row denominator");
+  assertEquals(getSetTotalOverride("Marvel Studios: The Infinity Saga"), 4, "Marvel Studios: The Infinity Saga should keep the four-row denominator");
+  assertEquals(getSetTotalOverride("The Walking Dead"), 4, "The Walking Dead should keep the four-row denominator");
+  assertEquals(getSetTotalOverride("Titans"), 4, "Titans should keep the four-row denominator");
+  assertEquals(getSetTotalOverride("Anchorman: The Legend of Ron Burgundy"), 2, "Anchorman should keep the two-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES["889698495776"].set_total, 5, "metallic Joker should use the Batman 1989 denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AF_REFRESH_REGRESSION_OVERRIDES["889698830669"].set_total, 3, "bloody Shaun should use the Funko Fusion denominator");
+});
+
+Deno.test("missing set total cleanup batch AG protects fifty reviewed denominators", () => {
+  assertEquals(Object.keys(MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES).length, 50, "batch AG should protect exactly fifty UPCs");
+
+  for (const [upc, override] of Object.entries(MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES)) {
+    assertEquals(typeof override.set_total, "number", `${upc} should keep a reviewed denominator`);
+    assertEquals(override.needs_review, false, `${upc} should not require review`);
+    assertEquals(override.parse_reason_codes, [], `${upc} should clear parser codes`);
+    assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
+  }
+
+  assertEquals(getSetTotalOverride("Marvel Universe: Series 2"), 3, "Marvel Universe: Series 2 should keep the three-row denominator");
+  assertEquals(getSetTotalOverride("Olaf Presents"), 3, "Olaf Presents should keep the three-row denominator");
+  assertEquals(getSetTotalOverride("Spider-Man: The Animated Series"), 3, "Spider-Man: The Animated Series should keep the three-row denominator");
+  assertEquals(getSetTotalOverride("Star Wars: Dark Side"), 3, "Star Wars: Dark Side should keep the three-row denominator");
+  assertEquals(getSetTotalOverride("Marvel Black Light"), 2, "Marvel Black Light should keep the two-row denominator");
+  assertEquals(getSetTotalOverride("Marvel's Spider-Man"), 2, "Marvel's Spider-Man should keep the two-row denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES["889698827713"].set_total, 3, "hooded holographic Darth Maul should use the Dark Side denominator");
+  assertEquals(MISSING_SET_TOTAL_CLEANUP_BATCH_AG_REFRESH_REGRESSION_OVERRIDES["889698285698"].set_total, 2, "Funko Shop Black Light Hulk should use the Marvel Black Light denominator");
+});
+
 for (const [upc, override] of Object.entries(STAR_WARS_REFRESH_REGRESSION_OVERRIDES)) {
   Deno.test(`${upc} keeps its corrected identity during forced refresh`, () => {
     const expected = expectedRefreshResults[upc as keyof typeof expectedRefreshResults];
@@ -1584,4 +3176,48 @@ Deno.test("forced refresh preserves an existing review flag", () => {
   );
 
   assertEquals(refreshed.needs_review, true, "forced refresh should not clear review");
+});
+
+Deno.test("catalog refresh prunes stale missing-data reason codes after enrichment fills fields", () => {
+  const pruned = pruneResolvedParseReasonCodes(
+    ["missing_franchise", "missing_set", "missing_number", "missing_character", "estimated_value_missing", "variant_or_exclusive_title_noise"],
+    {
+      franchise: "Marvel",
+      set_name: "Spider-Man Mash-Up",
+      number: "1607",
+      character: "Wolverine",
+      estimated_value: 14.99,
+    },
+  );
+  assertEquals(pruned, ["variant_or_exclusive_title_noise"], "resolved missing-data warnings should be removed");
+
+  const refreshed = buildCatalogRefreshUpdate(
+    {
+      franchise: null,
+      set_name: null,
+      number: null,
+      character: null,
+      estimated_value: null,
+      parse_confidence: 0.85,
+      parse_reason_codes: ["missing_franchise", "missing_set", "missing_number", "missing_character", "estimated_value_missing"],
+      needs_review: false,
+    },
+    {
+      franchise: "Marvel",
+      set_name: "Spider-Man Mash-Up",
+      number: "1607",
+      character: "Wolverine",
+      estimated_value: 14.99,
+      parse_confidence: 0.98,
+      parse_reason_codes: ["missing_franchise", "missing_set", "missing_number", "missing_character", "estimated_value_missing"],
+      needs_review: false,
+    },
+    {
+      forceRefresh: false,
+      hasExclusivityOverride: false,
+      imageBlocked: false,
+      resolvedRefreshEstimatedValue: 14.99,
+    },
+  );
+  assertEquals(refreshed.parse_reason_codes, [], "merged refresh row should not keep stale missing-data warnings");
 });
