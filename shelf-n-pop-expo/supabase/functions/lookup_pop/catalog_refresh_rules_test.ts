@@ -2982,7 +2982,8 @@ Deno.test("missing set total cleanup batch AA protects fifty reviewed denominato
     assertEquals(getStaticCatalogOverride(upc)?.set_total, override.set_total, `${upc} should be served by the denominator-bearing static override`);
   }
 
-  assertEquals(getSetTotalOverride("Aladdin Live Action"), 2, "Aladdin Live Action should keep the two-item denominator");
+  assertEquals(getSetTotalOverride("Aladdin"), 20, "Aladdin should keep the reviewed twenty-item denominator");
+  assertEquals(getSetTotalOverride("Aladdin Live Action"), 20, "Aladdin Live Action should normalize to the reviewed Aladdin denominator");
   assertEquals(getSetTotalOverride("Ghostbusters"), 9, "Ghostbusters should keep the nine-row local denominator");
   assertEquals(getSetTotalOverride("Justice League"), 6, "Justice League should keep the six-row local denominator");
   assertEquals(getSetTotalOverride("Marvel Holiday"), 7, "Marvel Holiday should keep the seven-item denominator");

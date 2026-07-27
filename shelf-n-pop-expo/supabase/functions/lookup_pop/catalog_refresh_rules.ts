@@ -8,8 +8,8 @@ export const BLOCKED_IMAGE_UPCS = new Set([
 export const SET_TOTAL_OVERRIDES: Record<string, number> = {
   "300": 6,
   "300 Movie": 6,
-  "Aladdin": 34,
-  "Aladdin Live Action": 2,
+  "Aladdin": 20,
+  "Aladdin Live Action": 20,
   "Alice in Wonderland": 8,
   "Alice Through The Looking Glass": 6,
   "Animaniacs": 8,
@@ -8736,8 +8736,8 @@ export const MISSING_SET_TOTAL_CLEANUP_BATCH_AB_REFRESH_REGRESSION_OVERRIDES = {
 };
 
 export const MISSING_SET_TOTAL_CLEANUP_BATCH_AA_REFRESH_REGRESSION_OVERRIDES = {
-  "889698370257": { pop_name: "Jafar", character: "Jafar", franchise: "Disney", set_name: "Aladdin Live Action", set_total: 2, number: "542", variant: null, exclusivity: null, pop_type: "Pop! Disney", pop_style: "Standard", vault_status: "Active", estimated_value: 8.39, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
-  "889698375641": { pop_name: "Princess Jasmine", character: "Princess Jasmine", franchise: "Disney", set_name: "Aladdin Live Action", set_total: 2, number: "543", variant: null, exclusivity: null, pop_type: "Pop! Disney", pop_style: "Standard", vault_status: "Active", estimated_value: 11.15, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698370257": { pop_name: "Jafar (Royal Vizier) (Live Action)", character: "Jafar", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "542", variant: "Royal Vizier / Live Action", exclusivity: null, pop_type: "Pop! Disney", pop_style: "Standard", vault_status: "Active", estimated_value: 8.39, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698375641": { pop_name: "Princess Jasmine (Desert Moon)", character: "Princess Jasmine", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "543", variant: "Desert Moon", exclusivity: null, pop_type: "Pop! Disney", pop_style: "Standard", vault_status: "Active", estimated_value: 11.15, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
   "889698759533": { pop_name: "Winston Zeddemore", character: "Winston Zeddemore", franchise: "Ghostbusters", set_name: "Ghostbusters", set_total: 9, number: "1882", variant: null, exclusivity: null, pop_type: "Pop! Movies", pop_style: "Standard", vault_status: "Active", estimated_value: 13.78, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
   "889698759540": { pop_name: "Egon Spengler", character: "Egon Spengler", franchise: "Ghostbusters", set_name: "Ghostbusters", set_total: 9, number: "1883", variant: null, exclusivity: null, pop_type: "Pop! Movies", pop_style: "Standard", vault_status: "Active", estimated_value: 12.05, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
   "889698759557": { pop_name: "Peter Venkman", character: "Peter Venkman", franchise: "Ghostbusters", set_name: "Ghostbusters", set_total: 9, number: "1884", variant: null, exclusivity: null, pop_type: "Pop! Movies", pop_style: "Standard", vault_status: "Active", estimated_value: 10, parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
@@ -8801,10 +8801,20 @@ const CATALOG_REFRESH_STATIC_OVERRIDES: Record<string, Record<string, any>> = {
   },
 };
 
+export const ENCANTO_ALADDIN_AUDIT_REFRESH_REGRESSION_OVERRIDES = {
+  "889698370226": { pop_name: "Aladdin of Agrabah (with Abu)", character: "Aladdin", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "538", variant: "With Abu", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698370233": { pop_name: "Aladdin (Prince Ali)", character: "Aladdin", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "540", variant: "Prince Ali", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698370257": { pop_name: "Jafar (Royal Vizier) (Live Action)", character: "Jafar", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "542", variant: "Royal Vizier / Live Action", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698375641": { pop_name: "Princess Jasmine (Desert Moon)", character: "Princess Jasmine", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "543", variant: "Desert Moon", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698380638": { pop_name: "Genie (Diamond)", character: "Genie", franchise: "Disney", set_name: "Aladdin", set_total: 20, number: "476", variant: "Diamond", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+  "889698744577": { pop_name: "Bruno Madrigal with Prophecy (Glow in the Dark)", character: "Bruno Madrigal", franchise: "Disney", set_name: "Encanto", set_total: 11, number: "1425", variant: "Glow in the Dark / With Prophecy", exclusivity: "BoxLunch", pop_type: "Pop! Disney", pop_style: "Standard", parse_confidence: 0.98, needs_review: false, parse_reason_codes: [], warnings: [] },
+};
+
 type CatalogRow = Record<string, any>;
 
 export function getStaticCatalogOverride(upc: string): CatalogRow | null {
-  return (APPROVED_CATALOG_CLEANUP_OVERRIDES as Record<string, CatalogRow>)[upc]
+  return (ENCANTO_ALADDIN_AUDIT_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
+    ?? (APPROVED_CATALOG_CLEANUP_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (LATEST_200_CATALOG_REVIEW_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (LATEST_50_SCANNED_REVIEW_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
     ?? (MISSING_SET_TOTAL_CLEANUP_BATCH_X_REFRESH_REGRESSION_OVERRIDES as Record<string, CatalogRow>)[upc]
